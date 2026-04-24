@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import nodemailer, { Transporter } from 'nodemailer';
 
@@ -11,6 +11,7 @@ export type SendEmailParams = {
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
   private readonly transporter: Transporter | null;
   private readonly from: string;
 
@@ -22,11 +23,7 @@ export class EmailService {
     this.from = this.config.get<string>('SMTP_FROM') ?? 'no-reply@example.com';
 
     if (!host) {
-      const nodeEnv = (this.config.get<string>('NODE_ENV') ?? process.env.NODE_ENV ?? '').toLowerCase();
-      const isProd = nodeEnv === 'production';
-      if (isProd) {
-        throw new Error('Missing SMTP_HOST in production environment');
-      }
+      this.logger.warn('SMTP_HOST is not configured. Email sending will be mocked.');
       this.transporter = null;
       return;
     }
@@ -41,9 +38,7 @@ export class EmailService {
 
   async send(params: SendEmailParams) {
     if (!this.transporter) {
-      // In dev, allow running without SMTP.
-      // eslint-disable-next-line no-console
-      console.log('[email:mock]', params);
+      this.logger.warn(`Email mocked: ${params.to} - ${params.subject}`);
       return { ok: true, mocked: true };
     }
 

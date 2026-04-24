@@ -190,6 +190,19 @@ docker compose up -d
 
 > Docker Compose 会自动读取同目录下的 `.env` 文件。
 
+
+### 邮件配置说明
+
+SMTP 是可选配置。不配置 SMTP 时，后端会正常启动，邮件发送会降级为模拟发送并写入日志。生产环境如果需要邮箱验证、找回密码或系统通知，请在 `.env` 中配置：
+
+```bash
+SMTP_HOST=smtp.example.com
+SMTP_PORT=465
+SMTP_USER=your_email@example.com
+SMTP_PASS=your_smtp_password
+SMTP_FROM=FlowMuse <your_email@example.com>
+```
+
 ## 数据持久化
 
 FlowMuse 使用本地目录挂载保存运行数据，服务器重启或容器重建后数据不会丢失。
@@ -396,7 +409,7 @@ flowmuse/
 | `APP_PUBLIC_URL` / `FRONTEND_URL` | 后端 / 前端公网地址 |
 | `STORAGE_DRIVER` | `local` 或 `cos` |
 | `COS_*` | 腾讯云 COS 配置 |
-| `SMTP_*` | 邮件发送配置 |
+| `SMTP_*` | 邮件发送配置；不配置时系统会以模拟发送方式运行，不会阻塞启动 |
 | `OPENAI_DEEP_RESEARCH_API_KEY` | 外部深度研究 API Bearer Token |
 
 ## 安全建议
@@ -406,6 +419,7 @@ flowmuse/
 - MySQL 和 Redis 默认不暴露到宿主机，请保持内部访问。
 - 推荐使用 Nginx / Caddy 等反向代理，并为前端域名启用 HTTPS。
 - 使用 COS、SMTP、支付等第三方服务时，请使用最小权限密钥。
+- 如果不配置 SMTP，注册验证、找回密码等邮件会被模拟发送，生产环境建议配置真实 SMTP。
 
 ## Roadmap
 
