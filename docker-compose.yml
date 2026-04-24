@@ -1,9 +1,31 @@
+# FlowMuse 单文件 Docker Compose 部署配置。
+#
+# 快速启动：
+#   docker compose up -d
+#
+# 自定义前后端宿主机端口：
+#   BACKEND_PORT=6000 FRONTEND_PORT=6001 docker compose up -d
+#
+# 生产环境建议：
+#   在本文件同目录创建 .env 文件，用于覆盖数据库密码、JWT 密钥、
+#   站点公网地址和端口等配置。Docker Compose 会自动读取 .env。
+#
+# 数据持久化：
+#   运行数据保存在 ./data 目录，服务器重启或容器重建后不会丢失。
+#   除非你明确要重置实例，否则不要删除 ./data 目录。
+
 services:
+  # 内部 MySQL 服务。
+  # 不暴露到宿主机，因此不会占用服务器已有的 3306 端口。
+  # 数据持久化保存在 ./data/mysql。
   mysql:
     image: mysql:8.0
     container_name: flowmuse-mysql
     restart: unless-stopped
     environment:
+      # 生产环境请通过 .env 覆盖这些默认密码：
+      #   MYSQL_ROOT_PASSWORD=your_root_password
+      #   MYSQL_PASSWORD=your_db_password
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change_root_password}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-flowmuse}
       MYSQL_USER: ${MYSQL_USER:-flowmuse}
@@ -24,6 +46,9 @@ services:
       retries: 10
       start_period: 30s
 
+  # 内部 Redis 服务，用于队列和缓存。
+  # 不暴露到宿主机，因此不会占用服务器已有的 6379 端口。
+  # 数据持久化保存在 ./data/redis。
   redis:
     image: redis:7
     container_name: flowmuse-redis
@@ -41,24 +66,37 @@ services:
       retries: 10
       start_period: 10s
 
+  # NestJS 后端 API 服务。
+  # 默认端口映射：宿主机 3000 -> 容器 3000。
+  # 可通过 BACKEND_PORT=6000 docker compose up -d 改为宿主机 6000。
   backend:
     image: hjxwz123/flowmuse-backend:latest
     container_name: flowmuse-backend
     restart: unless-stopped
     environment:
+      # 内部服务连接配置，通常不需要修改。
       DATABASE_URL: mysql://${MYSQL_USER:-flowmuse}:${MYSQL_PASSWORD:-change_db_password}@mysql:3306/${MYSQL_DATABASE:-flowmuse}?charset=utf8mb4
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD:-}
       REDIS_DB: ${REDIS_DB:-0}
       PORT: 3000
+
+      # 公网地址配置，用于邮件链接、文件链接、回调和第三方集成。
+      # 生产环境建议设置为真实域名，例如：
+      #   APP_PUBLIC_URL=https://api.example.com
+      #   FRONTEND_URL=https://example.com
       APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:3000}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3001}
+
+      # 安全密钥。生产环境必须替换默认值。
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-to-random-string}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-to-another-random-string}
       JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-15m}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-30d}
       APP_ENCRYPTION_KEY: ${APP_ENCRYPTION_KEY:-change-me-32-bytes-minimum-length}
+
+      # 存储配置。默认使用本地存储，也可配置腾讯云 COS。
       STORAGE_DRIVER: ${STORAGE_DRIVER:-local}
       COS_SECRET_ID: ${COS_SECRET_ID:-}
       COS_SECRET_KEY: ${COS_SECRET_KEY:-}
@@ -66,6 +104,8 @@ services:
       COS_BUCKET: ${COS_BUCKET:-}
       COS_PUBLIC_BASE_URL: ${COS_PUBLIC_BASE_URL:-}
       COS_ACL: ${COS_ACL:-}
+
+      # 可选第三方集成配置。
       MJ_WEBHOOK_SECRET: ${MJ_WEBHOOK_SECRET:-}
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-465}
@@ -78,23 +118,28 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    # 启动 API 服务前自动执行数据库迁移。
     command: >
       sh -c "./node_modules/.bin/prisma migrate deploy && node dist/src/main.js"
     ports:
       - "${BACKEND_PORT:-3000}:3000"
     volumes:
+      # STORAGE_DRIVER=local 时，本地上传文件会保存到这里。
       - ./data/uploads:/app/uploads
 
+  # Next.js 前端服务。
+  # 默认端口映射：宿主机 3001 -> 容器 3001。
+  # 可通过 FRONTEND_PORT=6001 docker compose up -d 改为宿主机 6001。
   frontend:
     image: hjxwz123/flowmuse-frontend:latest
     container_name: flowmuse-frontend
     restart: unless-stopped
     environment:
       PORT: 3001
+      # 前端容器内部访问后端的地址，用于 Next.js rewrites 代理。
       BACKEND_URL: http://backend:3000
     depends_on:
       backend:
         condition: service_started
     ports:
       - "${FRONTEND_PORT:-3001}:3001"
-
