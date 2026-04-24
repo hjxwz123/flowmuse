@@ -46,16 +46,37 @@ services:
       start_period: 10s
 
   backend:
-    image: ${BACKEND_IMAGE:-ghcr.io/your-username/flowmuse-backend:latest}
+    image: hjxwz123/flowmuse-backend:latest
     container_name: flowmuse-backend
     restart: unless-stopped
-    env_file:
-      - .env.docker
     environment:
       DATABASE_URL: mysql://${MYSQL_USER:-flowmuse}:${MYSQL_PASSWORD:-change_db_password}@mysql:3306/${MYSQL_DATABASE:-flowmuse}?charset=utf8mb4
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_DB: ${REDIS_DB:-0}
       PORT: 3000
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:3000}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3001}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-to-random-string}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-to-another-random-string}
+      JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-30d}
+      APP_ENCRYPTION_KEY: ${APP_ENCRYPTION_KEY:-change-me-32-bytes-minimum-length}
+      STORAGE_DRIVER: ${STORAGE_DRIVER:-local}
+      COS_SECRET_ID: ${COS_SECRET_ID:-}
+      COS_SECRET_KEY: ${COS_SECRET_KEY:-}
+      COS_REGION: ${COS_REGION:-ap-beijing}
+      COS_BUCKET: ${COS_BUCKET:-}
+      COS_PUBLIC_BASE_URL: ${COS_PUBLIC_BASE_URL:-}
+      COS_ACL: ${COS_ACL:-}
+      MJ_WEBHOOK_SECRET: ${MJ_WEBHOOK_SECRET:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-FlowMuse <noreply@example.com>}
+      OPENAI_DEEP_RESEARCH_API_KEY: ${OPENAI_DEEP_RESEARCH_API_KEY:-}
     depends_on:
       mysql:
         condition: service_healthy
@@ -69,12 +90,12 @@ services:
       - uploads_data:/app/uploads
 
   frontend:
-    image: ${FRONTEND_IMAGE:-ghcr.io/your-username/flowmuse-frontend:latest}
+    image: hjxwz123/flowmuse-frontend:latest
     container_name: flowmuse-frontend
     restart: unless-stopped
     environment:
       PORT: 3001
-      BACKEND_URL: ${BACKEND_URL:-http://backend:3000}
+      BACKEND_URL: http://backend:3000
     depends_on:
       backend:
         condition: service_started
