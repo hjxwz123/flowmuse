@@ -1,0 +1,102 @@
+{
+  "loading": "Loading...",
+  "loadMore": "Load More",
+  "noData": "No data",
+  "save": "Save",
+  "nav": {
+    "gallery": "Gallery",
+    "create": "Create",
+    "prompts": "Prompts",
+    "tasks": "Tasks",
+    "packages": "Packages",
+    "dashboard": "Dashboard",
+    "myGallery": "My Gallery",
+    "favorites": "Favorites"
+  },
+  "buttons": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "delete": "Delete",
+    "edit": "Edit",
+    "generate": "Generate",
+    "retry": "Retry",
+    "download": "Download",
+    "share": "Share",
+    "like": "Like",
+    "favorite": "Favorite",
+    "upload": "Upload",
+    "search": "Search",
+    "confirm": "Confirm",
+    "back": "Back"
+  },
+  "actions": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "close": "Close",
+    "generate": "Generate",
+    "retry": "Retry",
+    "download": "Download",
+    "share": "Share",
+    "like": "Like",
+    "favorite": "Favorite",
+    "upload": "Upload",
+    "search": "Search",
+    "confirm": "Confirm",
+    "back": "Back"
+  },
+  "labels": {
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "prompt": "Prompt",
+    "negativePrompt": "Negative Prompt",
+    "model": "Model",
+    "status": "Status",
+    "credits": "Credits",
+    "price": "Price",
+    "description": "Description",
+    "createdAt": "Created At",
+    "expireDate": "Expire Date"
+  },
+  "placeholders": {
+    "searchGallery": "Search gallery...",
+    "enterPrompt": "Enter your prompt to describe the image you want...",
+    "enterVideoPrompt": "Enter your prompt to describe the video you want...",
+    "enterEmail": "Enter your email",
+    "enterPassword": "Enter your password",
+    "enterUsername": "Enter your username"
+  },
+  "status": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "completed": "Completed",
+    "failed": "Failed",
+    "active": "Active",
+    "expired": "Expired"
+  },
+  "pages": {
+    "about": {
+      "title": "About Us",
+      "empty": "No content available"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "empty": "No content available"
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "empty": "No content available"
+    }
+  }
+}

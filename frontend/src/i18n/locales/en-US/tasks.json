@@ -1,0 +1,161 @@
+{
+  "title": "My Tasks",
+  "subtitle": "Track the status, progress, and results of image, video, and research jobs in one place.",
+  "hero": {
+    "badge": "Tasks"
+  },
+  "stats": {
+    "total": "{count} tasks",
+    "visible": "{count} shown"
+  },
+  "tabs": {
+    "all": "All",
+    "pending": "Pending",
+    "processing": "Processing",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "status": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "info": {
+    "type": "Type",
+    "model": "Model",
+    "prompt": "Prompt",
+    "cost": "Credits Cost",
+    "createdAt": "Created At",
+    "completedAt": "Completed At",
+    "error": "Error Message"
+  },
+  "actions": {
+    "view": "View Details",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "setPublic": "Set Public",
+    "setPrivate": "Set Private",
+    "requestPublic": "Request Public",
+    "cancelPublicRequest": "Cancel Request",
+    "download": "Download",
+    "share": "Share"
+  },
+  "midjourney": {
+    "actions": "Actions",
+    "submitting": "Submitting...",
+    "buttons": {
+      "upscale": "Upscale",
+      "upscale2x": "Upscale (2x)",
+      "upscale4x": "Upscale (4x)",
+      "variation": "Variation",
+      "variations": "Make Variations",
+      "varyRegion": "Vary (Region)",
+      "varySubtle": "Vary (Subtle)",
+      "varyStrong": "Vary (Strong)",
+      "zoomOut": "Zoom Out",
+      "zoomOut2x": "Zoom Out 2x",
+      "zoomOut1_5x": "Zoom Out 1.5x",
+      "customZoom": "Custom Zoom",
+      "makeSquare": "Make Square",
+      "panLeft": "Pan Left",
+      "panRight": "Pan Right",
+      "panUp": "Pan Up",
+      "panDown": "Pan Down",
+      "reroll": "Reroll",
+      "u1": "U1",
+      "u2": "U2",
+      "u3": "U3",
+      "u4": "U4",
+      "v1": "V1",
+      "v2": "V2",
+      "v3": "V3",
+      "v4": "V4",
+      "inpaint": "Vary Region"
+    }
+  },
+  "maskEditor": {
+    "title": "Vary Region",
+    "description": "Paint the region you want to regenerate (white areas will be regenerated)",
+    "brushSize": "Brush Size",
+    "prompt": "Region Prompt",
+    "promptPlaceholder": "Describe what you want to generate in the selected region...",
+    "promptHint": "Optional: Leave empty to use original prompt",
+    "clear": "Clear",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "waitingForTask": "Waiting for task to be ready...",
+    "loading": "Loading image...",
+    "error": "Submission failed, please try again"
+  },
+  "empty": {
+    "title": "No Tasks",
+    "description": "You haven't created any tasks yet. Go to the creation studio to get started!",
+    "action": "Start Creating"
+  },
+  "toolInvocation": "Tool Invocation",
+  "polling": {
+    "active": "Task status syncing live..."
+  },
+  "research": {
+    "badge": "Deep Research",
+    "taskNo": "Task No.",
+    "stage": "Stage",
+    "progress": "Progress",
+    "viewReport": "View Report",
+    "hideReport": "Hide Report",
+    "refresh": "Refresh",
+    "exportWord": "Export Word",
+    "exportSuccess": "Research report exported to Word",
+    "exportFailed": "Failed to export Word report",
+    "stages": {
+      "queued": "Queued",
+      "decomposing": "Decomposing Topic",
+      "planningQueries": "Planning Queries",
+      "searching": "Web Searching",
+      "writingReport": "Writing Report",
+      "completed": "Completed",
+      "failed": "Failed"
+    }
+  },
+  "confirm": {
+    "delete": {
+      "title": "Confirm Delete",
+      "message": "Are you sure you want to delete this task? This action cannot be undone.",
+      "confirm": "Confirm Delete",
+      "cancel": "Cancel"
+    },
+    "retry": {
+      "title": "Confirm Retry",
+      "message": "Are you sure you want to retry this task?",
+      "confirm": "Confirm Retry",
+      "cancel": "Cancel"
+    }
+  },
+  "success": {
+    "deleted": "Task deleted",
+    "retried": "Task resubmitted",
+    "publicSet": "Set to public",
+    "privateSet": "Set to private"
+  },
+  "publicModeration": {
+    "label": "Public Review",
+    "private": "Not submitted",
+    "pending": "Awaiting review",
+    "approved": "Approved for public gallery",
+    "rejected": "Public request rejected",
+    "pendingHint": "The work has been submitted for public review and will only appear after admin approval.",
+    "rejectedHint": "The public request was rejected. You can revise the work and submit again.",
+    "noteLabel": "Review Note"
+  },
+  "errors": {
+    "load": "Failed to load tasks",
+    "delete": "Failed to delete task",
+    "cancel": "Failed to cancel task",
+    "retry": "Failed to retry task",
+    "setPublic": "Failed to set public status",
+    "mjAction": "Failed to execute Midjourney action"
+  }
+}

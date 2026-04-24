@@ -1,0 +1,134 @@
+{
+  "title": "Store",
+  "subtitle": "Purchase packages or credits to start your AI creation journey",
+  "packageCard": {
+    "name": "Package Name",
+    "price": "Price",
+    "originalPrice": "Original Price",
+    "creditsPerDay": "Daily",
+    "credits": "Credits",
+    "duration": "Duration",
+    "totalCredits": "Total Credits",
+    "dailyLimit": "Daily Limit",
+    "noLimit": "Usage Limit",
+    "unlimited": "Unlimited",
+    "popular": "Popular",
+    "buy": "Buy Now",
+    "comingSoon": "Coming Soon"
+  },
+  "subscriptionPackages": {
+    "title": "Subscription Packages",
+    "subtitle": "Daily credit limits with time-based billing"
+  },
+  "creditPackages": {
+    "title": "Credit Packages",
+    "subtitle": "Permanent credits, never expire",
+    "permanentBadge": "Permanent"
+  },
+  "actions": {
+    "buyCode": "Buy Code"
+  },
+  "period": {
+    "monthly": "Monthly",
+    "yearly": "Yearly"
+  },
+  "membership": {
+    "title": "Membership",
+    "subtitle": "Choose a membership tier and subscribe monthly or yearly to unlock its benefits",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "currentLabel": "Current membership:",
+    "expireAt": "Expires at: {time}",
+    "loading": "Loading membership tiers...",
+    "empty": "No membership tiers available",
+    "currentLevel": "Current Tier",
+    "available": "Available",
+    "billedMonthly": "Billed monthly",
+    "billedYearly": "Billed yearly",
+    "bonusPermanentCredits": "Includes {credits} permanent bonus credits",
+    "dailyCredits": "Includes {credits} daily credits (valid for the current day)",
+    "noBenefits": "No benefits listed yet",
+    "renew": "Renew Membership",
+    "subscribe": "Subscribe"
+  },
+  "customBuy": {
+    "title": "Custom Credit Purchase",
+    "subtitle": "Buy exactly what you need, credits never expire",
+    "inputLabel": "Credits to purchase",
+    "inputPlaceholder": "Enter credit amount",
+    "priceDisplay": "Total",
+    "rateHint": "Rate: {rate} credits per ¥1",
+    "limitHint": "Range: {min} ~ {max} credits",
+    "buyButton": "Buy Now"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "membershipRules": {
+      "question": "How are renewals, upgrades, and downgrades handled?",
+      "answer": "Membership orders follow these rules:\n\n1. Buying the same level extends your current expiration time\n2. Buying a higher level takes effect immediately, and the remaining value of your current membership is converted into time on the new level\n3. Buying a lower level does not downgrade you immediately. It is queued and will take effect after your current membership and any already queued memberships end\n\nTip: If you buy multiple future lower-level memberships in a row, they are activated in purchase order."
+    },
+    "howConsume": {
+      "question": "How are credits consumed?",
+      "answer": "When you create image or video tasks, the system deducts credits in this order:\n\n1. Package credits are used first (starting with the earliest expiring package)\n2. If the package's daily limit is reached, permanent credits are used\n3. If all packages are insufficient, permanent credits make up the difference\n\nTip: Package credits are subject to daily limits, while permanent credits have no daily restrictions."
+    },
+    "dailyLimitReached": {
+      "question": "What happens when the daily limit is reached?",
+      "answer": "When a package's daily limit is exhausted, if you continue creating tasks, the system will automatically deduct from your permanent credits.\n\nFor example: If the package has a daily limit of 10 credits and you've used all 10 today, creating more tasks will deduct from permanent credits.\n\nTip: Permanent credits never expire, so you can use them with confidence."
+    }
+  },
+  "redeem": {
+    "title": "Redeem Code",
+    "subtitle": "Have a redeem code? Enter it here",
+    "placeholder": "Enter redeem code",
+    "button": "Redeem",
+    "success": {
+      "title": "Redeemed Successfully",
+      "credits": "Received {credits} credits",
+      "package": "Received package \"{name}\"",
+      "membership": "Membership redeemed: {name} ({period} × {cycles})"
+    },
+    "error": {
+      "invalid": "Invalid redeem code",
+      "used": "Redeem code already used",
+      "expired": "Redeem code expired",
+      "failed": "Redemption failed, please try again later"
+    },
+    "history": {
+      "title": "Redeem History",
+      "code": "Code",
+      "type": "Type",
+      "value": "Value",
+      "time": "Redeemed At",
+      "empty": "No redeem history"
+    }
+  },
+  "payDialog": {
+    "title": "WeChat Pay",
+    "loading": "Generating QR code...",
+    "scanInstruction": "Scan the QR code above with WeChat to complete payment",
+    "expiresAt": "QR code valid until {time}",
+    "successTitle": "Payment successful!",
+    "close": "Close",
+    "safeTip": "Secure payment protected by WeChat Pay",
+    "errors": {
+      "createFailed": "Failed to create order. Please try again later.",
+      "expired": "This order has expired. Please start the payment again."
+    },
+    "pending": {
+      "membership": "Waiting for payment. Your membership order will be processed automatically after payment succeeds...",
+      "credits": "Waiting for payment. Credits will be added automatically after payment succeeds...",
+      "package": "Waiting for payment. Your package will be activated automatically after payment succeeds..."
+    },
+    "success": {
+      "membership": "Membership purchased successfully. Redirecting...",
+      "credits": "Credits have been added. Redirecting...",
+      "package": "Package activated successfully. Redirecting..."
+    },
+    "orderTitle": {
+      "credits": "{credits} credits",
+      "membership": "{name} Membership ({period})"
+    }
+  },
+  "empty": "No packages available",
+  "loading": "Loading..."
+}

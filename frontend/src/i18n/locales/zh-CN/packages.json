@@ -1,0 +1,134 @@
+{
+  "title": "商城",
+  "subtitle": "购买套餐或积分，开启AI创作之旅",
+  "packageCard": {
+    "name": "套餐名称",
+    "price": "价格",
+    "originalPrice": "原价",
+    "creditsPerDay": "每日",
+    "credits": "点数",
+    "duration": "有效期",
+    "totalCredits": "总额度",
+    "dailyLimit": "每日限制",
+    "noLimit": "使用限制",
+    "unlimited": "不限制",
+    "popular": "热门",
+    "buy": "立即购买",
+    "comingSoon": "未开启在线支付"
+  },
+  "subscriptionPackages": {
+    "title": "时长套餐",
+    "subtitle": "按天计费，每日积分上限"
+  },
+  "creditPackages": {
+    "title": "积分充值",
+    "subtitle": "永久积分，无时效限制",
+    "permanentBadge": "永久"
+  },
+  "actions": {
+    "buyCode": "购买卡密"
+  },
+  "period": {
+    "monthly": "月付",
+    "yearly": "年付"
+  },
+  "membership": {
+    "title": "会员中心",
+    "subtitle": "选择会员等级并开通月付或年付，享受对应权益",
+    "monthly": "月付",
+    "yearly": "年付",
+    "currentLabel": "当前会员：",
+    "expireAt": "到期时间：{time}",
+    "loading": "会员等级加载中...",
+    "empty": "暂无可购买会员等级",
+    "currentLevel": "当前等级",
+    "available": "可开通",
+    "billedMonthly": "按月计费",
+    "billedYearly": "按年计费",
+    "bonusPermanentCredits": "充值赠送永久积分 {credits}",
+    "dailyCredits": "每日赠送积分 {credits}（当日有效）",
+    "noBenefits": "暂无权益说明",
+    "renew": "续费会员",
+    "subscribe": "开通会员"
+  },
+  "customBuy": {
+    "title": "自定义购买积分",
+    "subtitle": "按需购买，积分永久有效",
+    "inputLabel": "购买积分数量",
+    "inputPlaceholder": "输入积分数量",
+    "priceDisplay": "需支付",
+    "rateHint": "汇率：1元 = {rate}积分",
+    "limitHint": "可购买范围：{min} ~ {max} 积分",
+    "buyButton": "立即购买"
+  },
+  "faq": {
+    "title": "常见问题",
+    "membershipRules": {
+      "question": "会员续费、升级和降级是怎么处理的？",
+      "answer": "会员订单会按以下规则处理：\n\n1. 同等级购买：直接顺延当前会员到期时间\n2. 更高等级购买：立即切换到新等级，并按剩余会员价值折算新等级时长\n3. 更低等级购买：不会立刻降级，而是排队到当前会员以及已排队会员结束后依次生效\n\n提示：如果你连续购买多个未来生效的低等级会员，系统会按购买顺序依次排队生效。"
+    },
+    "howConsume": {
+      "question": "点数如何消耗？",
+      "answer": "当你创建图片或视频任务时，系统会按以下顺序扣除点数：\n\n1. 优先使用套餐点数（从最早到期的套餐开始）\n2. 如果套餐当日限额已用完，会继续扣除永久点数\n3. 如果所有套餐都不够用，使用永久点数补足\n\n提示：套餐点数受每日限制约束，永久点数没有每日限制。"
+    },
+    "dailyLimitReached": {
+      "question": "套餐每日限额用完后会怎样？",
+      "answer": "当套餐的每日限额用完后，如果你继续创建任务，系统会自动扣除你的永久点数。\n\n例如：套餐每日限制 10 点，你今天已用完 10 点，再创建任务时会从永久点数中扣除。\n\n提示：永久点数没有过期时间，可以放心使用。"
+    }
+  },
+  "redeem": {
+    "title": "兑换码",
+    "subtitle": "有兑换码？在这里输入",
+    "placeholder": "请输入兑换码",
+    "button": "兑换",
+    "success": {
+      "title": "兑换成功",
+      "credits": "获得 {credits} 点数",
+      "package": "获得套餐「{name}」",
+      "membership": "会员兑换成功：{name}（{period} × {cycles}期）"
+    },
+    "error": {
+      "invalid": "兑换码无效",
+      "used": "兑换码已使用",
+      "expired": "兑换码已过期",
+      "failed": "兑换失败，请检查兑换码状态或稍后再试"
+    },
+    "history": {
+      "title": "兑换记录",
+      "code": "兑换码",
+      "type": "类型",
+      "value": "价值",
+      "time": "兑换时间",
+      "empty": "暂无兑换记录"
+    }
+  },
+  "payDialog": {
+    "title": "微信扫码支付",
+    "loading": "正在生成支付码...",
+    "scanInstruction": "使用微信扫描上方二维码完成支付",
+    "expiresAt": "二维码有效期至 {time}",
+    "successTitle": "支付成功！",
+    "close": "关闭",
+    "safeTip": "安全支付由微信支付提供保障",
+    "errors": {
+      "createFailed": "创建订单失败，请稍后重试",
+      "expired": "订单已过期，请重新发起支付"
+    },
+    "pending": {
+      "membership": "等待扫码支付中，支付成功后系统将自动处理会员订单...",
+      "credits": "等待扫码支付中，支付成功后积分将自动到账...",
+      "package": "等待扫码支付中，支付成功后将自动激活套餐..."
+    },
+    "success": {
+      "membership": "会员购买成功，正在跳转...",
+      "credits": "积分已到账，正在跳转...",
+      "package": "套餐已激活，正在跳转..."
+    },
+    "orderTitle": {
+      "credits": "{credits} 积分",
+      "membership": "{name}会员（{period}）"
+    }
+  },
+  "empty": "暂无可用套餐",
+  "loading": "加载中..."
+}

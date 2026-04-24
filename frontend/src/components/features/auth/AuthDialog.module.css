@@ -1,0 +1,287 @@
+.overlay {
+  --dialog-font: var(--font-inter, Inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --dialog-bg: #020202;
+  --dialog-border: rgba(255, 255, 255, 0.1);
+  --dialog-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.8),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  --dialog-close-bg: rgba(255, 255, 255, 0.05);
+  --dialog-close-border: rgba(255, 255, 255, 0.1);
+  --dialog-close-text: #aaaaaa;
+  --dialog-grid: rgba(255, 255, 255, 0.03);
+  --dialog-radial: rgba(30, 30, 40, 0.5);
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+:global(.light) .overlay {
+  --dialog-bg: #ffffff;
+  --dialog-border: rgba(15, 23, 42, 0.08);
+  --dialog-shadow:
+    0 28px 72px rgba(15, 23, 42, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  --dialog-close-bg: rgba(17, 17, 17, 0.045);
+  --dialog-close-border: rgba(17, 17, 17, 0.08);
+  --dialog-close-text: rgba(17, 17, 17, 0.6);
+  --dialog-grid: rgba(17, 17, 17, 0.045);
+  --dialog-radial: rgba(17, 17, 17, 0.04);
+  background: rgba(246, 248, 251, 0.56);
+}
+
+.dialog {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 430px) minmax(300px, 380px);
+  width: min(900px, calc(100vw - 40px));
+  min-height: 0;
+  height: auto;
+  max-height: none;
+  margin: auto;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid var(--dialog-border);
+  background: var(--dialog-bg);
+  box-shadow: var(--dialog-shadow);
+}
+
+.dialogLogin {
+  grid-template-columns: minmax(0, 400px) minmax(280px, 340px);
+  width: min(820px, calc(100vw - 40px));
+}
+
+.dialogRegister {
+  grid-template-columns: minmax(0, 500px) minmax(320px, 400px);
+  width: min(980px, calc(100vw - 40px));
+}
+
+.ambientBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: floatOrb 15s ease-in-out infinite alternate;
+}
+
+.orbOne {
+  top: -200px;
+  left: -200px;
+  width: 500px;
+  height: 500px;
+  background: rgba(79, 70, 229, 0.3);
+}
+
+.orbTwo {
+  right: 30%;
+  bottom: -110px;
+  width: 400px;
+  height: 400px;
+  background: rgba(59, 130, 246, 0.2);
+  animation-delay: -5s;
+}
+
+:global(.light) .orbOne {
+  background: rgba(79, 70, 229, 0.16);
+}
+
+:global(.light) .orbTwo {
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  display: inline-flex;
+  height: 36px;
+  width: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--dialog-close-border);
+  border-radius: 999px;
+  background: var(--dialog-close-bg);
+  color: var(--dialog-close-text);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.closeButton:hover,
+.closeButton:focus-visible {
+  transform: rotate(90deg);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+:global(.light) .closeButton:hover,
+:global(.light) .closeButton:focus-visible {
+  background: rgba(17, 17, 17, 0.08);
+  border-color: rgba(17, 17, 17, 0.12);
+  color: #111111;
+}
+
+.closeButton svg {
+  height: 18px;
+  width: 18px;
+}
+
+.contentPane {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  align-items: stretch;
+  justify-content: center;
+  overflow: hidden;
+  padding: 26px 24px 22px;
+}
+
+.contentPaneLogin {
+  padding-top: 24px;
+  padding-bottom: 20px;
+}
+
+.dialogRegister .contentPane {
+  padding-bottom: 24px;
+}
+
+.contentInner {
+  display: flex;
+  width: min(100%, 420px);
+  min-width: 0;
+  align-items: stretch;
+  justify-content: center;
+  font-family: var(--dialog-font);
+  container-type: inline-size;
+}
+
+.contentInnerLogin {
+  width: min(100%, 380px);
+}
+
+.contentInnerRegister {
+  width: min(100%, 500px);
+}
+
+.showcasePane {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  background:
+    radial-gradient(circle at center, var(--dialog-radial) 0%, transparent 70%),
+    linear-gradient(var(--dialog-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--dialog-grid) 1px, transparent 1px);
+  background-size: auto, 40px 40px, 40px 40px;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%);
+  mask-image: linear-gradient(to right, transparent, black 10%);
+}
+
+:global(.light) .showcasePane {
+  border-left-color: rgba(17, 17, 17, 0.08);
+}
+
+@media (max-width: 960px), (max-height: 880px) {
+  .overlay {
+    align-items: flex-start;
+    padding: 16px 12px;
+  }
+
+  .dialog,
+  .dialogLogin,
+  .dialogRegister {
+    grid-template-columns: 1fr;
+    width: min(520px, 100%);
+    min-height: 0;
+    height: auto;
+    max-height: none;
+  }
+
+  .showcasePane {
+    display: none;
+  }
+
+  .contentPane,
+  .contentPaneLogin {
+    overflow: visible;
+    padding: 42px 22px 22px;
+  }
+
+  .dialogRegister .contentPane {
+    padding-bottom: 24px;
+  }
+
+  .contentInner,
+  .contentInnerLogin {
+    width: min(100%, 428px);
+  }
+
+  .dialogRegister {
+    width: min(600px, 100%);
+  }
+
+  .contentInnerRegister {
+    width: min(100%, 500px);
+  }
+}
+
+@media (max-width: 640px) {
+  .overlay {
+    padding: 12px;
+  }
+
+  .dialog,
+  .dialogLogin,
+  .dialogRegister {
+    width: 100%;
+    border-radius: 22px;
+  }
+
+  .contentPane,
+  .contentPaneLogin {
+    padding: 40px 18px 18px;
+  }
+
+  .dialogRegister .contentPane {
+    padding-bottom: 20px;
+  }
+
+  .closeButton {
+    top: 14px;
+    right: 14px;
+  }
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(50px, 50px) scale(1.1);
+  }
+}

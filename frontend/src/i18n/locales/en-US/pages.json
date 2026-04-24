@@ -1,0 +1,14 @@
+{
+  "about": {
+    "title": "About Us",
+    "empty": "No content available"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "empty": "No content available"
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "empty": "No content available"
+  }
+}

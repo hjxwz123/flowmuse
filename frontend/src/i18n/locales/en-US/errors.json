@@ -1,0 +1,49 @@
+{
+  "auth": {
+    "invalidEmail": "Invalid email format",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "passwordNotMatch": "Passwords do not match",
+    "emailExists": "This email is already registered",
+    "invalidCredentials": "Invalid email or password",
+    "tokenExpired": "Session expired, please login again",
+    "emailNotVerified": "Email not verified, please check your inbox",
+    "userBanned": "Your account has been banned. Please contact admin if you have questions",
+    "unauthorized": "Unauthorized, please login first",
+    "forbidden": "Access denied",
+    "emailDomainNotAllowed": "This email domain is not allowed for registration",
+    "inviteCodeRequired": "This site is invite-only right now. Please enter an invite code",
+    "invalidInviteCode": "Invalid or unavailable invite code",
+    "humanVerificationRequired": "Please complete the human verification first",
+    "humanVerificationFailed": "Human verification failed, please try again",
+    "humanVerificationUnavailable": "Human verification is temporarily unavailable. Please try again later or ask the administrator to check the configuration"
+  },
+  "tasks": {
+    "generateFailed": "Generation failed, please try again",
+    "insufficientCredits": "Insufficient credits, please purchase a package",
+    "pollTimeout": "Polling timeout, please refresh manually",
+    "deleteFailed": "Delete failed",
+    "retryFailed": "Retry failed"
+  },
+  "network": {
+    "timeout": "Request timeout, please check your network connection",
+    "serverError": "Server error, please try again later",
+    "notFound": "Resource not found",
+    "badRequest": "Invalid request parameters",
+    "unknownError": "Unknown error, please try again later"
+  },
+  "boundary": {
+    "title": "Something went wrong",
+    "description": "The application encountered an error. Please try again in a moment.",
+    "retry": "Retry",
+    "home": "Back to Home",
+    "debugId": "Error ID: {id}"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidFormat": "Invalid format",
+    "tooLong": "Content is too long",
+    "tooShort": "Content is too short",
+    "fileTooLarge": "File is too large, max {size}MB",
+    "invalidFileType": "File type not supported"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "title": "收件箱",
+  "subtitle": "任务结束后会自动发送消息到这里",
+  "tabs": {
+    "unread": "未读",
+    "all": "全部"
+  },
+  "actions": {
+    "back": "返回列表",
+    "markAllRead": "全部标为已读",
+    "delete": "删除",
+    "openWork": "查看作品页",
+    "openResult": "查看结果",
+    "loadMore": "加载更多",
+    "loading": "加载中..."
+  },
+  "fields": {
+    "prompt": "提示词",
+    "message": "通知内容",
+    "workContent": "作品内容",
+    "error": "错误信息"
+  },
+  "empty": {
+    "unread": "暂无未读消息",
+    "all": "暂无消息"
+  },
+  "login": {
+    "desc": "请先登录以查看收件箱",
+    "cta": "前往登录"
+  }
+}

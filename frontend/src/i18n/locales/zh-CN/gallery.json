@@ -1,0 +1,55 @@
+{
+  "title": "探索画廊",
+  "search": "搜索作品",
+  "searchPlaceholder": "搜索 prompt 关键词...",
+  "tabs": {
+    "all": "全部",
+    "images": "图片",
+    "videos": "视频"
+  },
+  "filters": {
+    "newest": "最新",
+    "popular": "最热"
+  },
+  "empty": {
+    "title": "暂无作品",
+    "description": "这里还没有公开的作品，快去创作第一个吧！",
+    "searchEmpty": "未找到匹配的作品",
+    "searchDescription": "试试其他关键词吧"
+  },
+  "detail": {
+    "back": "返回画廊",
+    "prompt": "提示词",
+    "copy": "复制提示词",
+    "copied": "已复制",
+    "negativePrompt": "负面提示词",
+    "model": "模型",
+    "createdAt": "创建时间",
+    "likes": "点赞",
+    "favorites": "收藏",
+    "creator": "创作者",
+    "reference": "参考图（垫图）",
+    "referenceSource": "原图源文件",
+    "comments": "评论",
+    "commentPlaceholder": "写下你对这件作品的想法...",
+    "commentLoginPlaceholder": "登录后参与评论",
+    "send": "发送",
+    "sending": "发送中…",
+    "commentsEmpty": "暂无评论，来发表第一条评论吧",
+    "delete": "删除",
+    "deleting": "删除中…",
+    "downloadHd": "高清下载",
+    "downloadFailed": "下载失败，请重试",
+    "untitled": "未命名作品",
+    "notFoundTitle": "作品未找到",
+    "notFoundDescription": "该作品可能已被删除或设为私密。",
+    "actions": {
+      "like": "点赞",
+      "unlike": "取消点赞",
+      "favorite": "收藏",
+      "unfavorite": "取消收藏",
+      "download": "下载",
+      "share": "分享"
+    }
+  }
+}

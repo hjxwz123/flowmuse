@@ -1,0 +1,102 @@
+{
+  "loading": "加载中...",
+  "loadMore": "加载更多",
+  "noData": "暂无数据",
+  "save": "保存",
+  "nav": {
+    "gallery": "画廊",
+    "create": "创作",
+    "prompts": "提示词推荐",
+    "tasks": "任务",
+    "packages": "套餐",
+    "dashboard": "用户中心",
+    "myGallery": "我的作品",
+    "favorites": "我的收藏"
+  },
+  "buttons": {
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出",
+    "save": "保存",
+    "cancel": "取消",
+    "submit": "提交",
+    "delete": "删除",
+    "edit": "编辑",
+    "generate": "生成",
+    "retry": "重试",
+    "download": "下载",
+    "share": "分享",
+    "like": "点赞",
+    "favorite": "收藏",
+    "upload": "上传",
+    "search": "搜索",
+    "confirm": "确认",
+    "back": "返回"
+  },
+  "actions": {
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出",
+    "save": "保存",
+    "cancel": "取消",
+    "submit": "提交",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "close": "关闭",
+    "generate": "生成",
+    "retry": "重试",
+    "download": "下载",
+    "share": "分享",
+    "like": "点赞",
+    "favorite": "收藏",
+    "upload": "上传",
+    "search": "搜索",
+    "confirm": "确认",
+    "back": "返回"
+  },
+  "labels": {
+    "email": "邮箱",
+    "password": "密码",
+    "username": "用户名",
+    "prompt": "提示词",
+    "negativePrompt": "反向提示词",
+    "model": "模型",
+    "status": "状态",
+    "credits": "点数",
+    "price": "价格",
+    "description": "描述",
+    "createdAt": "创建时间",
+    "expireDate": "到期时间"
+  },
+  "placeholders": {
+    "searchGallery": "搜索画廊...",
+    "enterPrompt": "请输入提示词，描述你想要的图片...",
+    "enterVideoPrompt": "请输入提示词，描述你想要的视频...",
+    "enterEmail": "请输入邮箱地址",
+    "enterPassword": "请输入密码",
+    "enterUsername": "请输入用户名"
+  },
+  "status": {
+    "pending": "等待中",
+    "processing": "处理中",
+    "completed": "已完成",
+    "failed": "失败",
+    "active": "有效",
+    "expired": "已过期"
+  },
+  "pages": {
+    "about": {
+      "title": "关于我们",
+      "empty": "暂无内容"
+    },
+    "privacy": {
+      "title": "隐私政策",
+      "empty": "暂无内容"
+    },
+    "terms": {
+      "title": "使用条款",
+      "empty": "暂无内容"
+    }
+  }
+}

@@ -1,0 +1,690 @@
+{
+  "nav": {
+    "entrance": "Admin Panel",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "models": "Models",
+    "tasks": "Tasks",
+    "projects": "Projects",
+    "chat": "Chats",
+    "chatModeration": "Chat Moderation",
+    "gallery": "Gallery",
+    "packages": "Packages",
+    "redeemCodes": "Redeem Codes",
+    "payments": "Payments",
+    "site": "Site Settings",
+    "paymentConfig": "Payment Config",
+    "emailWhitelist": "Email Whitelist",
+    "aiConfig": "AI Config",
+    "chatModelConfig": "Chat Model Config",
+    "announcements": "Announcements",
+    "templates": "Templates",
+    "tools": "Tools",
+    "memberships": "Membership Levels",
+    "config": "Config",
+    "backToFrontend": "Back to Site",
+    "storeGroup": "Store",
+    "contentGroup": "Content",
+    "settingsGroup": "Settings"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "stats": {
+      "totalUsers": "Total Users",
+      "newUsersToday": "New Today",
+      "creditsConsumed": "Credits Used",
+      "totalTasks": "Total Tasks"
+    },
+    "charts": {
+      "userGrowth": "User Growth Trend",
+      "creditUsage": "Credit Usage Trend",
+      "taskStats": "Task Status Distribution"
+    },
+    "period": {
+      "last7Days": "Last 7 Days",
+      "last30Days": "Last 30 Days",
+      "thisMonth": "This Month",
+      "lastMonth": "Last Month"
+    }
+  },
+  "users": {
+    "title": "User Management",
+    "list": "User List",
+    "detail": "User Detail",
+    "filters": {
+      "all": "All Users",
+      "role": "Role",
+      "status": "Status"
+    },
+    "roles": {
+      "user": "User",
+      "admin": "Admin"
+    },
+    "status": {
+      "active": "Active",
+      "banned": "Banned",
+      "unverified": "Unverified"
+    },
+    "fields": {
+      "email": "Email",
+      "username": "Username",
+      "role": "Role",
+      "status": "Status",
+      "credits": "Credits",
+      "createdAt": "Joined At",
+      "lastLoginAt": "Last Login"
+    },
+    "actions": {
+      "enable": "Enable",
+      "disable": "Disable",
+      "ban": "Ban User",
+      "unban": "Unban User",
+      "adjustCredits": "Adjust Credits",
+      "viewDetail": "View Detail",
+      "delete": "Delete User"
+    },
+    "banModal": {
+      "title": "Ban User",
+      "reasonLabel": "Ban Reason",
+      "reasonPlaceholder": "Enter the ban reason shown to the user during login",
+      "reasonHint": "A ban reason is required. Explain the rule violation or handling basis.",
+      "submit": "Confirm Ban",
+      "cancel": "Cancel",
+      "currentReason": "Current Ban Reason",
+      "reasonRequired": "Please enter a ban reason"
+    },
+    "deleteModal": {
+      "title": "Permanently Delete User",
+      "description": "This permanently removes the user and their related tasks, chats, credits, referrals, orders, redeem data, and more. This cannot be undone.",
+      "confirmLabel": "Enter the user's email to confirm deletion",
+      "confirmPlaceholder": "Enter the full email address",
+      "confirmHint": "Deletion is enabled only when the email matches exactly.",
+      "cancel": "Cancel",
+      "submit": "Delete Permanently",
+      "success": "User permanently deleted",
+      "failed": "Failed to delete user. Please try again.",
+      "selfForbidden": "You cannot delete the currently signed-in admin",
+      "confirmMismatch": "The entered email does not match this user"
+    },
+    "invite": {
+      "title": "Referral Relations",
+      "description": "See who invited this user and which users they have invited.",
+      "inviteCode": "Invite Code",
+      "invitedBy": "Invited By",
+      "invitedAt": "Invited At",
+      "registeredAt": "Registered At",
+      "invitees": "Invited Users",
+      "inviteesCount": "{count} invited",
+      "none": "No inviter",
+      "noInvitees": "This user has not invited anyone yet"
+    },
+    "tabs": {
+      "basic": "Basic Info",
+      "credits": "Credits",
+      "creations": "Creations",
+      "packages": "Packages"
+    },
+    "adjustCreditsModal": {
+      "title": "Adjust User Credits",
+      "amount": "Amount",
+      "type": "Type",
+      "add": "Add",
+      "deduct": "Deduct",
+      "reason": "Reason",
+      "submit": "Confirm"
+    }
+  },
+  "models": {
+    "title": "Model Management",
+    "tabs": {
+      "providers": "Providers",
+      "channels": "Channels",
+      "models": "Models"
+    },
+    "providers": {
+      "title": "Provider Management",
+      "add": "Add Provider",
+      "edit": "Edit Provider",
+      "fields": {
+        "name": "Name",
+        "type": "Type",
+        "enabled": "Enabled",
+        "sort": "Sort"
+      }
+    },
+    "channels": {
+      "title": "Channel Management",
+      "add": "Add Channel",
+      "edit": "Edit Channel",
+      "fields": {
+        "name": "Channel Name",
+        "provider": "Provider",
+        "baseUrl": "Base URL",
+        "apiKey": "API Key",
+        "weight": "Weight",
+        "priority": "Priority",
+        "status": "Status",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
+      },
+      "actions": {
+        "testConnection": "Test Connection"
+      }
+    },
+    "models": {
+      "title": "Model Management",
+      "add": "Add Model",
+      "edit": "Edit Model",
+      "reorderHint": "Drag the handle on the left to reorder models. The saved order becomes the frontend display order.",
+      "savingOrder": "Saving order...",
+      "saveOrderSuccess": "Model order updated",
+      "saveOrderError": "Failed to save model order",
+      "fields": {
+        "drag": "Drag",
+        "name": "Model Name",
+        "type": "Type",
+        "provider": "Provider",
+        "channel": "Channel",
+        "sortOrder": "Sort",
+        "creditsCost": "Credits Cost",
+        "specialCreditsCost": "Special Credits",
+        "enabled": "Enabled"
+      },
+      "types": {
+        "image": "Image",
+        "video": "Video",
+        "chat": "Chat"
+      }
+    }
+  },
+  "tasks": {
+    "title": "Task Management",
+    "list": "Task List",
+    "filters": {
+      "all": "All Tasks",
+      "type": "Type",
+      "status": "Status",
+      "dateRange": "Date Range"
+    },
+    "types": {
+      "image": "Image",
+      "video": "Video"
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed"
+    },
+    "fields": {
+      "id": "Task ID",
+      "taskNo": "Task No.",
+      "user": "User",
+      "type": "Type",
+      "status": "Status",
+      "prompt": "Prompt",
+      "model": "Model",
+      "provider": "Provider",
+      "credits": "Credits",
+      "createdAt": "Created At",
+      "completedAt": "Completed At"
+    },
+    "actions": {
+      "viewDetail": "View Detail",
+      "retry": "Retry",
+      "delete": "Delete"
+    }
+  },
+  "chat": {
+    "title": "Chat Conversations",
+    "description": "Review user conversations and full message timelines",
+    "searchPlaceholder": "Search by title, content, or user email",
+    "search": "Search",
+    "total": "{total} conversations",
+    "conversationList": "Conversation List",
+    "conversationEmpty": "No conversations found",
+    "conversationLoading": "Loading conversations...",
+    "messageLoading": "Loading messages...",
+    "messageEmpty": "Select a conversation to view messages",
+    "messageCount": "Messages",
+    "lastMessage": "Last Message",
+    "user": "User",
+    "model": "Model",
+    "pin": "Pinned",
+    "unpin": "Normal",
+    "delete": "Delete Conversation",
+    "deleting": "Deleting...",
+    "deleteConfirm": "Delete conversation \"{title}\"? This will also remove all messages and files.",
+    "deleteSuccess": "Conversation deleted",
+    "deleteFailed": "Failed to delete conversation",
+    "refresh": "Refresh",
+    "paginationPrev": "Previous",
+    "paginationNext": "Next"
+  },
+  "chatModeration": {
+    "title": "Moderation Center",
+    "description": "Review blocked input moderation logs and moderate public content in one place",
+    "searchPlaceholder": "Search by user, conversation, task, content, or model",
+    "search": "Search",
+    "refresh": "Refresh",
+    "empty": "No blocked records",
+    "loading": "Loading blocked records...",
+    "total": "{total} records",
+    "paginationPrev": "Previous",
+    "paginationNext": "Next",
+    "tabs": {
+      "input": "Input Moderation",
+      "inputDesc": "Chat, image generation, and prompt optimization blocks",
+      "content": "Public Content",
+      "contentDesc": "Review images and videos submitted for public display"
+    },
+    "sources": {
+      "all": "All Sources",
+      "chat": "Chat",
+      "imageGenerate": "Image Generation",
+      "promptOptimize": "Prompt Optimization"
+    },
+    "scenes": {
+      "chat_message": "Chat Message",
+      "image_generate_prompt": "Image Prompt",
+      "image_generate_negative_prompt": "Negative Prompt",
+      "midjourney_modal_prompt": "Midjourney Modal Prompt",
+      "midjourney_edits_prompt": "Midjourney Edit Prompt",
+      "prompt_optimize_prompt": "Prompt Optimization Input"
+    },
+    "fields": {
+      "user": "User",
+      "conversation": "Conversation",
+      "task": "Task",
+      "model": "Moderation Model",
+      "content": "Blocked Message",
+      "response": "Model Response",
+      "time": "Blocked At"
+    }
+  },
+  "gallery": {
+    "title": "Content Moderation",
+    "filters": {
+      "all": "All Content",
+      "type": "Type",
+      "status": "Status",
+      "visibility": "Visibility"
+    },
+    "visibility": {
+      "public": "Public",
+      "private": "Private"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "hide": "Hide",
+      "delete": "Delete",
+      "batchActions": "Batch Actions"
+    }
+  },
+  "packages": {
+    "title": "Package Management",
+    "add": "Add Package",
+    "edit": "Edit Package",
+    "delete": "Delete Package",
+    "fields": {
+      "name": "Package Name",
+      "nameEn": "English Package Name",
+      "duration": "Duration",
+      "durationDays": "Days",
+      "creditsPerDay": "Daily Credits",
+      "totalCredits": "Total Credits",
+      "credits": "Credits",
+      "price": "Price",
+      "originalPrice": "Original Price",
+      "description": "Description",
+      "descriptionEn": "English Description",
+      "sortOrder": "Sort Order",
+      "status": "Status",
+      "enabled": "Enabled",
+      "sort": "Sort"
+    },
+    "form": {
+      "nameRequired": "Package name is required",
+      "nameEnPlaceholder": "e.g. Starter Credits",
+      "descriptionEnPlaceholder": "Description shown on the English packages page",
+      "durationRequired": "Duration is required",
+      "creditsRequired": "Credits is required",
+      "priceRequired": "Price is required"
+    },
+    "confirm": {
+      "delete": "Are you sure you want to delete this package?"
+    }
+  },
+  "memberships": {
+    "title": "Membership Level Management",
+    "description": "Configure membership levels, monthly/yearly pricing, colors, and member benefits.",
+    "add": "Add Membership Level",
+    "edit": "Edit Membership Level",
+    "empty": "No membership levels yet",
+    "fields": {
+      "name": "Level Name",
+      "nameEn": "English Level Name",
+      "color": "Color",
+      "price": "Pricing",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "monthlyPrice": "Monthly Price",
+      "yearlyPrice": "Yearly Price",
+      "bonusPermanentCredits": "Recharge Bonus Credits",
+      "benefits": "Benefits",
+      "benefitsEn": "English Benefits",
+      "moreBenefits": "more benefits",
+      "sortOrder": "Sort",
+      "status": "Status",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "isActive": "Active"
+    },
+    "actions": {
+      "enable": "Enable",
+      "disable": "Disable",
+      "deleting": "Deleting..."
+    },
+    "form": {
+      "nameRequired": "Please enter a level name",
+      "colorRequired": "Please enter a color value",
+      "monthlyPriceRequired": "Please enter a valid monthly price",
+      "yearlyPriceRequired": "Please enter a valid yearly price",
+      "bonusPermanentCreditsInvalid": "Recharge bonus credits must be a non-negative integer",
+      "sortOrderInvalid": "Sort order must be a non-negative integer",
+      "namePlaceholder": "e.g. Gold Member",
+      "nameEnPlaceholder": "e.g. Gold Membership",
+      "benefitsPlaceholder": "One benefit per line, for example:\nPriority model access\nHigh-resolution output",
+      "benefitsHint": "Each line is saved as one benefit and shown in frontend membership cards.",
+      "benefitsEnPlaceholder": "One English benefit per line, for example:\nPriority model access\nHigh-resolution output",
+      "benefitsEnHint": "The English packages page uses these benefits first and falls back to the default benefits when left empty."
+    },
+    "confirm": {
+      "delete": "Delete membership level \"{name}\"?"
+    },
+    "error": {
+      "load": "Failed to load membership levels",
+      "save": "Failed to save membership level",
+      "delete": "Failed to delete membership level"
+    }
+  },
+  "redeemCodes": {
+    "title": "Redeem Code Management",
+    "create": "Create Code",
+    "batchCreate": "Batch Create",
+    "generate": "Generate Code",
+    "batchGenerate": "Batch Generate",
+    "export": "Export",
+    "viewLogs": "View Usage Logs",
+    "fields": {
+      "code": "Code",
+      "type": "Type",
+      "value": "Value",
+      "maxUseCount": "Max Uses",
+      "usedCount": "Used",
+      "expireDate": "Expiry Date",
+      "status": "Status",
+      "noExpiry": "Never Expires",
+      "description": "Notes",
+      "credits": "Credits",
+      "usedBy": "Used By",
+      "usedAt": "Used At",
+      "createdAt": "Created At"
+    },
+    "types": {
+      "package": "Package",
+      "credits": "Credits"
+    },
+    "status": {
+      "active": "Active",
+      "disabled": "Disabled",
+      "expired": "Expired",
+      "unused": "Unused",
+      "used": "Used"
+    },
+    "filters": {
+      "all": "All",
+      "type": "Type",
+      "status": "Status",
+      "search": "Search code"
+    },
+    "form": {
+      "typeLabel": "Type",
+      "packageLabel": "Select Package",
+      "creditsLabel": "Credits",
+      "codeLabel": "Code",
+      "codeHint": "Leave blank to auto-generate",
+      "maxUsesLabel": "Max Uses",
+      "expiryLabel": "Expiry Date",
+      "quantityLabel": "Quantity",
+      "success": "Successfully generated {count} codes"
+    },
+    "logs": {
+      "title": "Usage Logs",
+      "user": "User",
+      "time": "Used At",
+      "empty": "No usage records"
+    },
+    "confirm": {
+      "delete": "Are you sure you want to delete this code?"
+    }
+  },
+  "emailWhitelist": {
+    "title": "Email Domain Whitelist",
+    "description": "Restrict registration to specific email domains",
+    "enable": "Enable Email Domain Whitelist",
+    "enableHint": "When enabled, only users with whitelisted email domains can register",
+    "domains": "Allowed Email Domains",
+    "addDomain": "Add",
+    "domainPlaceholder": "Enter domain, e.g. gmail.com",
+    "noDomains": "No whitelisted domains",
+    "noDomainsHint": "Add domains to restrict registration to those email domains only",
+    "allowedCount": "Currently allowing {count} domain(s)",
+    "invalidDomain": "Please enter a valid domain format",
+    "domainExists": "This domain already exists",
+    "save": "Save Settings",
+    "saving": "Saving...",
+    "success": "Email whitelist settings saved",
+    "error": "Failed to save email whitelist settings"
+  },
+  "common": {
+    "actions": {
+      "create": "Create",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "submit": "Submit",
+      "search": "Search",
+      "filter": "Filter",
+      "reset": "Reset",
+      "export": "Export",
+      "import": "Import",
+      "refresh": "Refresh",
+      "back": "Back",
+      "close": "Close"
+    },
+    "filters": {
+      "search": "Search",
+      "all": "All",
+      "type": "Type",
+      "status": "Status"
+    },
+    "status": {
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "loading": "Loading...",
+      "success": "Success",
+      "error": "Error",
+      "noData": "No Data"
+    },
+    "pagination": {
+      "total": "Total {total} items",
+      "page": "Page {current} / {total}",
+      "perPage": "Per Page",
+      "items": "items"
+    },
+    "confirm": {
+      "delete": "Confirm delete?",
+      "enable": "Confirm enable?",
+      "disable": "Confirm disable?",
+      "action": "Confirm this action?"
+    }
+  },
+  "templates": {
+    "title": "Template Management",
+    "description": "Manage official creation templates to help users get started quickly",
+    "add": "New Template",
+    "edit": "Edit Template",
+    "fields": {
+      "title": "Template Name",
+      "description": "Description",
+      "type": "Type",
+      "category": "Category",
+      "coverUrl": "Cover Image URL",
+      "prompt": "Preset Prompt",
+      "modelId": "Specify Model (optional)",
+      "parameters": "Parameters (JSON, optional)",
+      "sortOrder": "Sort Order",
+      "isPublic": "Public"
+    },
+    "types": {
+      "image": "Image",
+      "video": "Video"
+    },
+    "confirm": {
+      "delete": "Are you sure you want to delete this template?"
+    },
+    "success": {
+      "created": "Template created",
+      "updated": "Template updated",
+      "deleted": "Template deleted"
+    },
+    "error": {
+      "load": "Failed to load templates",
+      "save": "Failed to save template",
+      "delete": "Failed to delete template"
+    }
+  },
+  "tools": {
+    "title": "Tool Management",
+    "description": "Manage AI tools — users upload images and generate instantly",
+    "add": "New Tool",
+    "edit": "Edit Tool",
+    "fields": {
+      "title": "Tool Name",
+      "description": "Description",
+      "notes": "Instructions",
+      "type": "Type",
+      "category": "Category",
+      "model": "Model",
+      "imageCount": "Image Slots",
+      "imageLabels": "Image Labels",
+      "coverUrl": "Cover URL",
+      "prompt": "Preset Prompt",
+      "parameters": "Parameters (JSON, optional)",
+      "sortOrder": "Sort Order",
+      "isActive": "Active"
+    },
+    "confirm": {
+      "delete": "Are you sure you want to delete this tool?"
+    },
+    "error": {
+      "delete": "Failed to delete tool"
+    }
+  },
+  "site": {
+    "title": "Site Settings",
+    "description": "Manage basic site configuration",
+    "sections": {
+      "siteInfo": "Site Information",
+      "registration": "Registration"
+    },
+    "fields": {
+      "siteTitle": "Site Title",
+      "siteIcon": "Site Icon URL",
+      "siteIconHint": "Recommended size: 40×40 px. Supports PNG/JPG/SVG",
+      "siteFooter": "Footer Text",
+      "registrationEnabled": "Allow User Registration",
+      "initialRegisterCredits": "Initial Credits for New Users",
+      "initialRegisterCreditsHint": "Permanent credits automatically granted on registration"
+    },
+    "save": "Save Settings",
+    "saving": "Saving...",
+    "success": "Site settings saved",
+    "error": "Failed to save site settings"
+  },
+  "announcements": {
+    "title": "Announcements",
+    "description": "Manage system announcements and notices",
+    "create": "Create Announcement",
+    "edit": "Edit Announcement",
+    "delete": "Delete Announcement",
+    "fields": {
+      "title": "Title",
+      "content": "Content",
+      "isActive": "Active",
+      "isPinned": "Pinned",
+      "sortOrder": "Sort Order",
+      "sortOrderHint": "Lower number = higher priority",
+      "startsAt": "Start Time",
+      "endsAt": "End Time",
+      "createdAt": "Created At"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "form": {
+      "titlePlaceholder": "Enter announcement title",
+      "contentPlaceholder": "Enter announcement content",
+      "required": "Required"
+    },
+    "actions": {
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    },
+    "success": {
+      "created": "Announcement created",
+      "updated": "Announcement updated",
+      "deleted": "Announcement deleted"
+    },
+    "error": {
+      "load": "Failed to load announcements",
+      "save": "Failed to save announcement",
+      "delete": "Failed to delete announcement"
+    },
+    "confirm": {
+      "delete": "Are you sure you want to delete this announcement?"
+    },
+    "empty": "No announcements"
+  },
+  "portal": {
+    "mobileToggle": "Expand menu",
+    "groups": {
+      "operations": {
+        "title": "Core Operations",
+        "description": "Monitor users, generation tasks, chats, and moderation."
+      },
+      "ai": {
+        "title": "AI Capabilities",
+        "description": "Maintain model/provider/channel setups plus unified AI, chat file, and web search settings."
+      },
+      "content": {
+        "title": "Content Operations",
+        "description": "Manage templates, tools, and announcements."
+      },
+      "commerce": {
+        "title": "Commerce & Finance",
+        "description": "Maintain packages, redeem codes, and payment records."
+      },
+      "settings": {
+        "title": "System Settings",
+        "description": "Configure site basics, moderation, payment options, and email whitelist."
+      }
+    }
+  }
+}

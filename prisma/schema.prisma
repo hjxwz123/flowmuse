@@ -1,0 +1,971 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  user
+  admin
+}
+
+enum UserStatus {
+  active
+  banned
+  unverified
+}
+
+enum UserAuthEventType {
+  register
+  login
+}
+
+enum RedeemCodeType {
+  membership
+  credits
+}
+
+enum RedeemCodeStatus {
+  active
+  expired
+  disabled
+}
+
+enum CreditLogType {
+  redeem
+  consume
+  refund
+  admin_adjust
+  expire
+}
+
+enum CreditSource {
+  permanent
+  membership
+}
+
+enum ApiChannelStatus {
+  active
+  disabled
+}
+
+enum AiModelType {
+  image
+  video
+  chat
+}
+
+enum TaskStatus {
+  pending
+  processing
+  completed
+  failed
+}
+
+enum GalleryTargetType {
+  image
+  video
+}
+
+enum PaymentOrderStatus {
+  pending
+  paid
+  failed
+  expired
+}
+
+enum MembershipPeriod {
+  monthly
+  yearly
+}
+
+enum ChatMessageRole {
+  user
+  assistant
+  system
+}
+
+enum PublicModerationStatus {
+  private
+  pending
+  approved
+  rejected
+}
+
+enum ProjectAssetKind {
+  image
+  video
+  document
+}
+
+enum ProjectAssetSource {
+  upload
+  task
+}
+
+enum ProjectPromptType {
+  image
+  video
+}
+
+model User {
+  id               BigInt     @id @default(autoincrement()) @db.BigInt
+  email            String     @unique @db.VarChar(255)
+  password         String     @db.VarChar(255)
+  username         String?    @db.VarChar(100)
+  avatar           String?    @db.VarChar(500)
+  inviteCode       String?    @unique @map("invite_code") @db.VarChar(32)
+  invitedById      BigInt?    @map("invited_by_id") @db.BigInt
+  invitedAt        DateTime?  @map("invited_at")
+  permanentCredits Int        @default(0) @map("permanent_credits")
+  role             UserRole   @default(user)
+  status           UserStatus @default(active)
+  banReason        String?    @map("ban_reason") @db.Text
+  banExpireAt      DateTime?  @map("ban_expire_at")
+  emailVerified    Boolean    @default(false) @map("email_verified")
+  membershipLevelId BigInt?   @map("membership_level_id") @db.BigInt
+  membershipExpireAt DateTime? @map("membership_expire_at")
+  membershipRateFenPerDay Decimal? @map("membership_rate_fen_per_day") @db.Decimal(14, 6)
+  membershipDailyCredits Int  @default(0) @map("membership_daily_credits")
+  membershipDailyDate DateTime? @db.Date @map("membership_daily_date")
+  lastLoginAt      DateTime?  @map("last_login_at")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+
+  redeemLogs        RedeemLog[]
+  creditLogs        CreditLog[]
+  imageTasks        ImageTask[]
+  videoTasks        VideoTask[]
+  inboxMessages     InboxMessage[]
+  galleryLikes      GalleryLike[]
+  galleryFavorites  GalleryFavorite[]
+  galleryComments   GalleryComment[]
+  paymentOrders     PaymentOrder[]
+  projects          Project[]
+  projectAssets     ProjectAsset[]
+  projectInspirations ProjectInspiration[]
+  projectPrompts    ProjectPrompt[]
+  createdRedeemCodes RedeemCode[] @relation("RedeemCodeCreator")
+  userTemplates      Template[]
+  chatConversations  ChatConversation[]
+  chatMessages       ChatMessage[]
+  chatFiles          ChatFile[]
+  chatModerationLogs ChatModerationLog[]
+  inputModerationLogs InputModerationLog[]
+  researchTasks      ResearchTask[]
+  authEvents         UserAuthEvent[]
+  membershipLevel    MembershipLevel? @relation("ActiveMembershipLevel", fields: [membershipLevelId], references: [id])
+  membershipSchedules UserMembershipSchedule[]
+  invitedBy          User?            @relation("UserInvites", fields: [invitedById], references: [id], onDelete: SetNull)
+  invitees           User[]           @relation("UserInvites")
+  inviteRewardLogsAsInviter InviteRewardLog[] @relation("InviteRewardLogInviter")
+  inviteRewardLogsAsInvitee InviteRewardLog[] @relation("InviteRewardLogInvitee")
+
+  @@index([createdAt], name: "users_created_at_idx")
+  @@index([invitedById], name: "users_invited_by_id_idx")
+  @@map("users")
+}
+
+model UserAuthEvent {
+  id        BigInt            @id @default(autoincrement()) @db.BigInt
+  userId    BigInt            @map("user_id") @db.BigInt
+  type      UserAuthEventType
+  ip        String?           @db.VarChar(128)
+  userAgent String?           @map("user_agent") @db.VarChar(500)
+  createdAt DateTime          @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt], name: "user_auth_event_idx_user_time")
+  @@map("user_auth_events")
+}
+
+model Package {
+  id            BigInt   @id @default(autoincrement()) @db.BigInt
+  name          String   @db.VarChar(100)
+  nameEn        String?  @map("name_en") @db.VarChar(100)
+  packageType   String   @default("subscription") @db.VarChar(20) @map("package_type")
+  durationDays  Int      @map("duration_days")
+  creditsPerDay Int      @map("credits_per_day")
+  totalCredits  Int      @map("total_credits")
+  price         Decimal  @db.Decimal(10, 2)
+  originalPrice Decimal? @map("original_price") @db.Decimal(10, 2)
+  description   String?  @db.Text
+  descriptionEn String?  @map("description_en") @db.Text
+  sortOrder     Int      @default(0) @map("sort_order")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  paymentOrders   PaymentOrder[]
+
+  @@map("packages")
+}
+
+model RedeemCode {
+  id          BigInt          @id @default(autoincrement()) @db.BigInt
+  code        String          @unique @db.VarChar(64)
+  type        RedeemCodeType
+  membershipLevelId BigInt?   @map("membership_level_id") @db.BigInt
+  membershipPeriod MembershipPeriod? @map("membership_period")
+  membershipCycles Int?       @default(1) @map("membership_cycles")
+  credits     Int?
+  maxUseCount Int             @default(1) @map("max_use_count")
+  usedCount   Int             @default(0) @map("used_count")
+  expireDate  DateTime?       @map("expire_date")
+  status      RedeemCodeStatus
+  description String?         @db.VarChar(500)
+  createdBy   BigInt?         @map("created_by") @db.BigInt
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  membershipLevel MembershipLevel? @relation(fields: [membershipLevelId], references: [id])
+  creator User?    @relation("RedeemCodeCreator", fields: [createdBy], references: [id])
+  logs    RedeemLog[]
+
+  @@index([code, status], name: "idx_code")
+  @@map("redeem_codes")
+}
+
+model RedeemLog {
+  id         BigInt         @id @default(autoincrement()) @db.BigInt
+  userId     BigInt         @map("user_id") @db.BigInt
+  codeId     BigInt         @map("code_id") @db.BigInt
+  code       String         @db.VarChar(64)
+  type       RedeemCodeType
+  membershipLevelId BigInt? @map("membership_level_id") @db.BigInt
+  membershipPeriod MembershipPeriod? @map("membership_period")
+  membershipCycles Int?     @default(1) @map("membership_cycles")
+  credits    Int?
+  redeemedAt DateTime       @default(now()) @map("redeemed_at")
+
+  user User             @relation(fields: [userId], references: [id])
+  codeRef RedeemCode    @relation(fields: [codeId], references: [id])
+  membershipLevel MembershipLevel? @relation(fields: [membershipLevelId], references: [id])
+
+  @@index([userId, codeId], name: "idx_user_code")
+  @@map("redeem_logs")
+}
+
+model InviteRewardLog {
+  id                   BigInt   @id @default(autoincrement()) @db.BigInt
+  eventKey             String   @unique @map("event_key") @db.VarChar(128)
+  inviterId            BigInt   @map("inviter_id") @db.BigInt
+  inviteeId            BigInt   @map("invitee_id") @db.BigInt
+  rewardType           String   @map("reward_type") @db.VarChar(20)
+  inviterRewardCredits Int      @default(0) @map("inviter_reward_credits")
+  inviteeRewardCredits Int      @default(0) @map("invitee_reward_credits")
+  orderNo              String?  @map("order_no") @db.VarChar(64)
+  orderAmountFen       Int?     @map("order_amount_fen")
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  inviter User @relation("InviteRewardLogInviter", fields: [inviterId], references: [id])
+  invitee User @relation("InviteRewardLogInvitee", fields: [inviteeId], references: [id])
+
+  @@index([inviterId, createdAt], name: "invite_reward_idx_inviter_time")
+  @@index([inviteeId, createdAt], name: "invite_reward_idx_invitee_time")
+  @@index([rewardType, createdAt], name: "invite_reward_idx_type_time")
+  @@map("invite_reward_logs")
+}
+
+model CreditLog {
+  id           BigInt        @id @default(autoincrement()) @db.BigInt
+  userId       BigInt        @map("user_id") @db.BigInt
+  amount       Int
+  balanceAfter Int           @map("balance_after")
+  type         CreditLogType
+  source       CreditSource
+  relatedId    BigInt?       @map("related_id") @db.BigInt
+  description  String?       @db.VarChar(500)
+  createdAt    DateTime      @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([createdAt, type], name: "credit_log_idx_time_type")
+  @@index([userId, createdAt], name: "idx_user_time")
+  @@map("credit_logs")
+}
+
+model DashboardDailyMetric {
+  date           DateTime @id @db.Date
+  newUsers       Int      @default(0) @map("new_users")
+  imageCompleted Int      @default(0) @map("image_completed")
+  imageFailed    Int      @default(0) @map("image_failed")
+  videoCompleted Int      @default(0) @map("video_completed")
+  videoFailed    Int      @default(0) @map("video_failed")
+  paidOrders     Int      @default(0) @map("paid_orders")
+  revenueFen     Int      @default(0) @map("revenue_fen")
+  creditsIssued  Int      @default(0) @map("credits_issued")
+  creditsUsed    Int      @default(0) @map("credits_used")
+  refreshedAt    DateTime @default(now()) @map("refreshed_at")
+
+  @@index([refreshedAt], name: "dashboard_metric_idx_refreshed")
+  @@map("dashboard_daily_metrics")
+}
+
+model ApiChannel {
+  id           BigInt          @id @default(autoincrement()) @db.BigInt
+  name         String          @db.VarChar(100)
+  provider     String          @db.VarChar(50)
+  baseUrl      String          @map("base_url") @db.VarChar(500)
+  apiKey       String?         @map("api_key") @db.VarChar(500)
+  apiSecret    String?         @map("api_secret") @db.VarChar(500)
+  extraHeaders Json?           @map("extra_headers")
+  timeout      Int             @default(300000)
+  maxRetry     Int             @default(3) @map("max_retry")
+  rateLimit    Int?            @map("rate_limit")
+  status       ApiChannelStatus @default(active)
+  priority     Int             @default(0)
+  description  String?         @db.Text
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  models     AiModel[]
+  imageTasks ImageTask[]
+  videoTasks VideoTask[]
+  researchTasks ResearchTask[]
+
+  @@index([provider, status, priority], name: "idx_provider_status")
+  @@map("api_channels")
+}
+
+model AiModel {
+  id               BigInt    @id @default(autoincrement()) @db.BigInt
+  name             String    @db.VarChar(100)
+  modelKey         String    @map("model_key") @db.VarChar(100)
+  icon             String?   @db.Text
+  type             AiModelType
+  provider         String    @db.VarChar(50)
+  channelId        BigInt    @map("channel_id") @db.BigInt
+  creditsPerUse    Int       @map("credits_per_use")
+  specialCreditsPerUse Int?  @map("special_credits_per_use")
+  extraCreditsConfig Json?   @map("extra_credits_config")
+  defaultParams    Json?     @map("default_params")
+  paramConstraints Json?     @map("param_constraints")
+  isActive         Boolean   @default(true) @map("is_active")
+  sortOrder        Int       @default(0) @map("sort_order")
+  description      String?   @db.Text
+  supportsImageInput      Boolean? @map("supports_image_input")
+  supportsResolutionSelect Boolean? @map("supports_resolution_select")
+  supportsSizeSelect      Boolean? @map("supports_size_select")
+  supportsQuickMode      Boolean? @map("supports_quick_mode")
+  supportsAgentMode      Boolean? @map("supports_agent_mode")
+  supportsAutoMode       Boolean? @map("supports_auto_mode")
+  freeUserDailyQuestionLimit Int? @map("free_user_daily_question_limit")
+  memberDailyQuestionLimit Int? @map("member_daily_question_limit")
+  maxContextRounds Int? @map("max_context_rounds")
+  systemPrompt String? @map("system_prompt") @db.Text
+  deepResearchCreditsCost Int? @map("deep_research_credits_cost")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  channel ApiChannel @relation(fields: [channelId], references: [id])
+  imageTasks ImageTask[]
+  videoTasks VideoTask[]
+  researchTasks ResearchTask[]
+  tools      Tool[]
+  chatConversations ChatConversation[]
+  chatModerationLogs ChatModerationLog[]
+  inputModerationLogs InputModerationLog[]
+
+  @@index([type, isActive, sortOrder], name: "idx_type_active")
+  @@index([provider], name: "idx_provider")
+  @@map("ai_models")
+}
+
+model ModelProvider {
+  id             BigInt   @id @default(autoincrement()) @db.BigInt
+  provider       String   @unique @db.VarChar(50)
+  displayName    String   @map("display_name") @db.VarChar(100)
+  adapterClass   String   @map("adapter_class") @db.VarChar(200)
+  icon           String?  @db.Text
+  supportTypes   Json     @map("support_types")
+  defaultParams  Json?    @map("default_params")
+  paramSchema    Json?    @map("param_schema")
+  webhookRequired Boolean @default(false) @map("webhook_required")
+  isActive       Boolean  @default(true) @map("is_active")
+  sortOrder      Int      @default(0) @map("sort_order")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive, sortOrder], name: "idx_active")
+  @@map("model_providers")
+}
+
+model ImageTask {
+  id            BigInt     @id @default(autoincrement()) @db.BigInt
+  userId        BigInt     @map("user_id") @db.BigInt
+  modelId       BigInt     @map("model_id") @db.BigInt
+  channelId     BigInt     @map("channel_id") @db.BigInt
+  projectId     BigInt?    @map("project_id") @db.BigInt
+  taskNo        String     @unique @map("task_no") @db.VarChar(64)
+  provider      String     @db.VarChar(50)
+  providerTaskId String?   @map("provider_task_id") @db.VarChar(255)
+  prompt        String     @db.Text
+  negativePrompt String?   @map("negative_prompt") @db.Text
+  parameters    Json?
+  providerData  Json?      @map("provider_data")
+  status        TaskStatus
+  resultUrl     String?    @map("result_url") @db.VarChar(500)
+  thumbnailUrl  String?    @map("thumbnail_url") @db.VarChar(500)
+  ossKey        String?    @map("oss_key") @db.VarChar(500)
+  creditsCost   Int?       @map("credits_cost")
+  creditSource  CreditSource? @map("credit_source")
+  isPublic      Boolean    @default(false) @map("is_public")
+  publicModerationStatus PublicModerationStatus @default(private) @map("public_moderation_status")
+  publicRequestedAt DateTime? @map("public_requested_at")
+  publicModeratedAt DateTime? @map("public_moderated_at")
+  publicModeratedBy String? @map("public_moderated_by") @db.VarChar(255)
+  publicModerationNote String? @map("public_moderation_note") @db.Text
+  errorMessage  String?    @map("error_message") @db.Text
+  retryCount    Int        @default(0) @map("retry_count")
+  startedAt     DateTime?  @map("started_at")
+  completedAt   DateTime?  @map("completed_at")
+  deletedAt     DateTime?  @map("deleted_at")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  toolId        BigInt?    @map("tool_id") @db.BigInt
+
+  user    User       @relation(fields: [userId], references: [id])
+  model   AiModel    @relation(fields: [modelId], references: [id])
+  channel ApiChannel @relation(fields: [channelId], references: [id])
+  project Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  projectAssets ProjectAsset[]
+  tool    Tool?      @relation("ImageTaskTool", fields: [toolId], references: [id])
+
+  @@index([userId, createdAt], name: "idx_user_time")
+  @@index([isPublic, status, createdAt], name: "idx_public")
+  @@index([publicModerationStatus, createdAt], name: "idx_public_moderation")
+  @@index([provider, providerTaskId], name: "idx_provider_task")
+  @@index([projectId, createdAt], name: "idx_project_time")
+  @@index([status, createdAt], name: "idx_status")
+  @@index([userId, status, createdAt], name: "image_task_idx_user_status_created")
+  @@index([channelId, status, completedAt], name: "image_task_idx_channel_status_completed")
+  @@index([status, completedAt], name: "image_task_idx_status_completed")
+  @@map("image_tasks")
+}
+
+model VideoTask {
+  id            BigInt     @id @default(autoincrement()) @db.BigInt
+  userId        BigInt     @map("user_id") @db.BigInt
+  modelId       BigInt     @map("model_id") @db.BigInt
+  channelId     BigInt     @map("channel_id") @db.BigInt
+  projectId     BigInt?    @map("project_id") @db.BigInt
+  taskNo        String     @unique @map("task_no") @db.VarChar(64)
+  provider      String     @db.VarChar(50)
+  providerTaskId String?   @map("provider_task_id") @db.VarChar(255)
+  prompt        String     @db.Text
+  parameters    Json?
+  providerData  Json?      @map("provider_data")
+  autoProjectShotId String? @map("auto_project_shot_id") @db.VarChar(120)
+  autoProjectWorkflowStage String? @map("auto_project_workflow_stage") @db.VarChar(40)
+  autoProjectFinalStoryboard Boolean? @map("auto_project_final_storyboard")
+  status        TaskStatus
+  resultUrl     String?    @map("result_url") @db.VarChar(500)
+  thumbnailUrl  String?    @map("thumbnail_url") @db.VarChar(500)
+  ossKey        String?    @map("oss_key") @db.VarChar(500)
+  creditsCost   Int?       @map("credits_cost")
+  creditSource  CreditSource? @map("credit_source")
+  isPublic      Boolean    @default(false) @map("is_public")
+  publicModerationStatus PublicModerationStatus @default(private) @map("public_moderation_status")
+  publicRequestedAt DateTime? @map("public_requested_at")
+  publicModeratedAt DateTime? @map("public_moderated_at")
+  publicModeratedBy String? @map("public_moderated_by") @db.VarChar(255)
+  publicModerationNote String? @map("public_moderation_note") @db.Text
+  errorMessage  String?    @map("error_message") @db.Text
+  retryCount    Int        @default(0) @map("retry_count")
+  startedAt     DateTime?  @map("started_at")
+  completedAt   DateTime?  @map("completed_at")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  toolId        BigInt?    @map("tool_id") @db.BigInt
+
+  user    User       @relation(fields: [userId], references: [id])
+  model   AiModel    @relation(fields: [modelId], references: [id])
+  channel ApiChannel @relation(fields: [channelId], references: [id])
+  project Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  projectAssets ProjectAsset[]
+  tool    Tool?      @relation("VideoTaskTool", fields: [toolId], references: [id])
+
+  @@index([userId, createdAt], name: "idx_user_time")
+  @@index([isPublic, status, createdAt], name: "idx_public")
+  @@index([publicModerationStatus, createdAt], name: "idx_public_moderation")
+  @@index([provider, providerTaskId], name: "idx_provider_task")
+  @@index([projectId, createdAt], name: "idx_project_time")
+  @@index([projectId, autoProjectFinalStoryboard, autoProjectShotId, createdAt], name: "idx_project_storyboard_lookup")
+  @@index([projectId, autoProjectWorkflowStage, createdAt], name: "idx_project_auto_stage_time")
+  @@index([status, createdAt], name: "idx_status")
+  @@index([userId, status, createdAt], name: "video_task_idx_user_status_created")
+  @@index([channelId, status, completedAt], name: "video_task_idx_channel_status_completed")
+  @@index([status, completedAt], name: "video_task_idx_status_completed")
+  @@map("video_tasks")
+}
+
+model Project {
+  id          BigInt     @id @default(autoincrement()) @db.BigInt
+  userId      BigInt     @map("user_id") @db.BigInt
+  name        String     @db.VarChar(120)
+  concept     String?    @db.Text
+  description String?    @db.Text
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  user        User       @relation(fields: [userId], references: [id])
+  assets      ProjectAsset[]
+  inspirations ProjectInspiration[]
+  prompts     ProjectPrompt[]
+  chatContextConversations ChatConversation[]
+  imageTasks  ImageTask[]
+  videoTasks  VideoTask[]
+
+  @@index([userId, updatedAt], name: "project_idx_user_time")
+  @@map("projects")
+}
+
+model ProjectAsset {
+  id           BigInt             @id @default(autoincrement()) @db.BigInt
+  userId       BigInt             @map("user_id") @db.BigInt
+  projectId    BigInt             @map("project_id") @db.BigInt
+  kind         ProjectAssetKind
+  source       ProjectAssetSource
+  title        String             @db.VarChar(255)
+  description  String?            @db.Text
+  sourcePrompt String?            @map("source_prompt") @db.Text
+  fileName     String?            @map("file_name") @db.VarChar(255)
+  mimeType     String?            @map("mime_type") @db.VarChar(120)
+  fileSize     Int?               @map("file_size")
+  url          String             @db.VarChar(500)
+  thumbnailUrl String?            @map("thumbnail_url") @db.VarChar(500)
+  ossKey       String?            @map("oss_key") @db.VarChar(500)
+  imageTaskId  BigInt?            @map("image_task_id") @db.BigInt
+  videoTaskId  BigInt?            @map("video_task_id") @db.BigInt
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+
+  user         User               @relation(fields: [userId], references: [id])
+  project      Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  imageTask    ImageTask?         @relation(fields: [imageTaskId], references: [id], onDelete: SetNull)
+  videoTask    VideoTask?         @relation(fields: [videoTaskId], references: [id], onDelete: SetNull)
+  parsedFile   ChatFile?
+
+  @@unique([projectId, imageTaskId], name: "project_asset_project_image_task_unique")
+  @@unique([projectId, videoTaskId], name: "project_asset_project_video_task_unique")
+  @@index([projectId, createdAt], name: "project_asset_idx_project_time")
+  @@index([userId, createdAt], name: "project_asset_idx_user_time")
+  @@map("project_assets")
+}
+
+model ProjectInspiration {
+  id              BigInt    @id @default(autoincrement()) @db.BigInt
+  userId          BigInt    @map("user_id") @db.BigInt
+  projectId       BigInt    @map("project_id") @db.BigInt
+  title           String    @db.VarChar(160)
+  episodeNumber   Int?      @map("episode_number")
+  ideaText        String    @map("idea_text") @db.LongText
+  contextText     String?   @map("context_text") @db.LongText
+  plotText        String?   @map("plot_text") @db.LongText
+  generatedPrompt String?   @map("generated_prompt") @db.LongText
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id])
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt], name: "project_inspiration_idx_project_time")
+  @@index([userId, createdAt], name: "project_inspiration_idx_user_time")
+  @@index([projectId, episodeNumber], name: "project_inspiration_idx_project_episode")
+  @@map("project_inspirations")
+}
+
+model ProjectPrompt {
+  id        BigInt            @id @default(autoincrement()) @db.BigInt
+  userId    BigInt            @map("user_id") @db.BigInt
+  projectId BigInt            @map("project_id") @db.BigInt
+  type      ProjectPromptType
+  title     String            @db.VarChar(160)
+  prompt    String            @db.LongText
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt], name: "project_prompt_idx_project_time")
+  @@index([userId, createdAt], name: "project_prompt_idx_user_time")
+  @@index([projectId, type], name: "project_prompt_idx_project_type")
+  @@map("project_prompts")
+}
+
+model ResearchTask {
+  id            BigInt     @id @default(autoincrement()) @db.BigInt
+  userId        BigInt     @map("user_id") @db.BigInt
+  modelId       BigInt     @map("model_id") @db.BigInt
+  channelId     BigInt     @map("channel_id") @db.BigInt
+  taskNo        String     @unique @map("task_no") @db.VarChar(64)
+  topic         String     @db.Text
+  status        TaskStatus
+  stage         String     @default("queued") @db.VarChar(50)
+  progress      Int        @default(0)
+  plan          Json?
+  queries       Json?
+  findings      Json?
+  report        String?    @db.LongText
+  providerData  Json?      @map("provider_data")
+  creditsCost   Int?       @map("credits_cost")
+  creditSource  CreditSource? @map("credit_source")
+  errorMessage  String?    @map("error_message") @db.Text
+  retryCount    Int        @default(0) @map("retry_count")
+  startedAt     DateTime?  @map("started_at")
+  completedAt   DateTime?  @map("completed_at")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  user    User       @relation(fields: [userId], references: [id])
+  model   AiModel    @relation(fields: [modelId], references: [id])
+  channel ApiChannel @relation(fields: [channelId], references: [id])
+
+  @@index([userId, createdAt], name: "research_task_idx_user_time")
+  @@index([status, createdAt], name: "research_task_idx_status")
+  @@index([taskNo], name: "research_task_idx_task_no")
+  @@index([userId, status, createdAt], name: "research_task_idx_user_status_time")
+  @@map("research_tasks")
+}
+
+model GalleryLike {
+  id         BigInt          @id @default(autoincrement()) @db.BigInt
+  userId     BigInt          @map("user_id") @db.BigInt
+  targetType GalleryTargetType @map("target_type")
+  targetId   BigInt          @map("target_id") @db.BigInt
+  createdAt  DateTime        @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, targetType, targetId], name: "uk_user_target")
+  @@index([targetType, targetId], name: "idx_target")
+  @@map("gallery_likes")
+}
+
+model GalleryFavorite {
+  id         BigInt          @id @default(autoincrement()) @db.BigInt
+  userId     BigInt          @map("user_id") @db.BigInt
+  targetType GalleryTargetType @map("target_type")
+  targetId   BigInt          @map("target_id") @db.BigInt
+  createdAt  DateTime        @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, targetType, targetId], name: "uk_user_target")
+  @@index([userId, createdAt], name: "idx_user_time")
+  @@index([targetType, targetId], name: "gallery_favorite_idx_target")
+  @@map("gallery_favorites")
+}
+
+model GalleryComment {
+  id         BigInt            @id @default(autoincrement()) @db.BigInt
+  userId     BigInt            @map("user_id") @db.BigInt
+  targetType GalleryTargetType @map("target_type")
+  targetId   BigInt            @map("target_id") @db.BigInt
+  content    String            @db.Text
+  createdAt  DateTime          @default(now()) @map("created_at")
+  updatedAt  DateTime          @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([targetType, targetId, createdAt], name: "idx_target_time")
+  @@index([userId, createdAt], name: "gc_idx_user_time")
+  @@map("gallery_comments")
+}
+
+model SystemConfig {
+  id          BigInt   @id @default(autoincrement()) @db.BigInt
+  key         String   @unique @db.VarChar(100)
+  value       String?  @db.Text
+  description String?  @db.VarChar(500)
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("system_configs")
+}
+
+model Announcement {
+  id        BigInt   @id @default(autoincrement()) @db.BigInt
+  title     String   @db.VarChar(200)
+  content   String   @db.Text
+  isActive  Boolean  @default(true) @map("is_active")
+  isPinned  Boolean  @default(false) @map("is_pinned")
+  sortOrder Int      @default(0) @map("sort_order")
+  startsAt  DateTime? @map("starts_at")
+  endsAt    DateTime? @map("ends_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive, isPinned, sortOrder, createdAt], name: "idx_active")
+  @@index([startsAt, endsAt], name: "idx_window")
+  @@map("announcements")
+}
+
+model InboxMessage {
+  id          BigInt    @id @default(autoincrement()) @db.BigInt
+  userId      BigInt    @map("user_id") @db.BigInt
+  type        String    @db.VarChar(50)
+  level       String?   @db.VarChar(20)
+  title       String    @db.VarChar(200)
+  content     String?   @db.Text
+  relatedType String?   @map("related_type") @db.VarChar(20)
+  relatedId   BigInt?   @map("related_id") @db.BigInt
+  dedupKey    String?   @unique @map("dedup_key") @db.VarChar(150)
+  meta        Json?     @map("meta")
+  isRead      Boolean   @default(false) @map("is_read")
+  readAt      DateTime? @map("read_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead, createdAt], name: "idx_user_read")
+  @@index([userId, relatedType, relatedId], name: "idx_related")
+  @@map("inbox_messages")
+}
+
+model Template {
+  id          BigInt      @id @default(autoincrement()) @db.BigInt
+  title       String      @db.VarChar(200)
+  description String?     @db.Text
+  coverUrl    String?     @map("cover_url") @db.VarChar(500)
+  prompt      String      @db.Text
+  type        AiModelType
+  modelId     BigInt?     @map("model_id") @db.BigInt
+  parameters  Json?
+  category    String?     @db.VarChar(100)
+  isPublic    Boolean     @default(true) @map("is_public")
+  sortOrder   Int         @default(0) @map("sort_order")
+  createdBy   BigInt?     @map("created_by") @db.BigInt
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  user User? @relation(fields: [createdBy], references: [id])
+
+  @@index([isPublic, createdBy, sortOrder], name: "idx_public_sort")
+  @@index([type, isPublic], name: "idx_type_public")
+  @@map("templates")
+}
+
+model Tool {
+  id          BigInt      @id @default(autoincrement()) @db.BigInt
+  title       String      @db.VarChar(200)
+  description String?     @db.Text
+  notes       String?     @db.Text
+  coverUrl    String?     @map("cover_url") @db.VarChar(500)
+  prompt      String      @db.Text
+  type        AiModelType
+  modelId     BigInt      @map("model_id") @db.BigInt
+  imageCount  Int         @default(1) @map("image_count")
+  imageLabels Json?       @map("image_labels")
+  parameters  Json?
+  category    String?     @db.VarChar(100)
+  isActive    Boolean     @default(true) @map("is_active")
+  sortOrder   Int         @default(0) @map("sort_order")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  model AiModel @relation(fields: [modelId], references: [id])
+  imageTasks ImageTask[] @relation("ImageTaskTool")
+  videoTasks VideoTask[] @relation("VideoTaskTool")
+
+  @@index([isActive, sortOrder], name: "tool_idx_active_sort")
+  @@index([type, isActive], name: "tool_idx_type_active")
+  @@map("tools")
+}
+
+model PaymentOrder {
+  id            BigInt             @id @default(autoincrement()) @db.BigInt
+  orderNo       String             @unique @db.VarChar(64)
+  userId        BigInt             @map("user_id") @db.BigInt
+  packageId     BigInt?            @map("package_id") @db.BigInt
+  membershipLevelId BigInt?        @map("membership_level_id") @db.BigInt
+  membershipPeriod  MembershipPeriod? @map("membership_period")
+  credits       Int?               // 自定义购买的积分数
+  orderType     String             @default("package") @db.VarChar(20) @map("order_type")
+  amount        Int                // 单位：分
+  status        PaymentOrderStatus @default(pending)
+  payType       String             @default("wechat_native") @db.VarChar(20) @map("pay_type")
+  transactionId String?            @map("transaction_id") @db.VarChar(64)
+  codeUrl       String?            @map("code_url") @db.VarChar(500)
+  expireAt      DateTime           @map("expire_at")
+  paidAt        DateTime?          @map("paid_at")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id])
+  package Package? @relation(fields: [packageId], references: [id])
+  membershipLevel MembershipLevel? @relation(fields: [membershipLevelId], references: [id])
+
+  @@index([userId, status], name: "idx_payment_user_status")
+  @@index([orderNo], name: "idx_payment_order_no")
+  @@index([expireAt, status], name: "idx_payment_expire")
+  @@index([userId, createdAt], name: "payment_order_idx_user_created")
+  @@index([status, paidAt], name: "payment_order_idx_status_paid_at")
+  @@map("payment_orders")
+}
+
+model MembershipLevel {
+  id           BigInt   @id @default(autoincrement()) @db.BigInt
+  name         String   @db.VarChar(100)
+  nameEn       String?  @map("name_en") @db.VarChar(100)
+  color        String   @db.VarChar(20)
+  monthlyPrice Decimal  @map("monthly_price") @db.Decimal(10, 2)
+  yearlyPrice  Decimal  @map("yearly_price") @db.Decimal(10, 2)
+  dailyCredits Int      @default(0) @map("daily_credits")
+  bonusPermanentCredits Int @default(0) @map("bonus_permanent_credits")
+  benefits     Json?
+  benefitsEn   Json?    @map("benefits_en")
+  permissions  Json?
+  sortOrder    Int      @default(0) @map("sort_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  activeUsers   User[] @relation("ActiveMembershipLevel")
+  membershipSchedules UserMembershipSchedule[]
+  redeemCodes   RedeemCode[]
+  redeemLogs    RedeemLog[]
+  paymentOrders PaymentOrder[]
+
+  @@index([isActive, sortOrder], name: "idx_membership_active_sort")
+  @@map("membership_levels")
+}
+
+model UserMembershipSchedule {
+  id                BigInt          @id @default(autoincrement()) @db.BigInt
+  userId            BigInt          @map("user_id") @db.BigInt
+  membershipLevelId BigInt          @map("membership_level_id") @db.BigInt
+  startsAt          DateTime        @map("starts_at")
+  expireAt          DateTime        @map("expire_at")
+  rateFenPerDay     Decimal         @map("rate_fen_per_day") @db.Decimal(14, 6)
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  membershipLevel MembershipLevel @relation(fields: [membershipLevelId], references: [id])
+
+  @@index([userId, startsAt], name: "membership_schedule_idx_user_start")
+  @@index([membershipLevelId, expireAt], name: "membership_schedule_idx_level_expire")
+  @@map("user_membership_schedules")
+}
+
+model ChatConversation {
+  id            BigInt   @id @default(autoincrement()) @db.BigInt
+  userId        BigInt   @map("user_id") @db.BigInt
+  modelId       BigInt   @map("model_id") @db.BigInt
+  projectContextId BigInt? @map("project_context_id") @db.BigInt
+  title         String   @db.VarChar(200)
+  isPinned      Boolean  @default(false) @map("is_pinned")
+  composerMode  String?  @map("composer_mode") @db.VarChar(20)
+  lastMessageAt DateTime @map("last_message_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  model    AiModel     @relation(fields: [modelId], references: [id])
+  projectContext Project? @relation(fields: [projectContextId], references: [id], onDelete: SetNull)
+  messages ChatMessage[]
+  files    ChatFile[]
+  moderationLogs ChatModerationLog[]
+
+  @@index([userId, updatedAt], name: "chat_conv_idx_user_updated")
+  @@index([userId, isPinned, updatedAt], name: "chat_conv_idx_user_pin_updated")
+  @@index([modelId], name: "chat_conv_idx_model")
+  @@index([projectContextId], name: "chat_conv_idx_project_context")
+  @@map("chat_conversations")
+}
+
+model ChatMessage {
+  id             BigInt          @id @default(autoincrement()) @db.BigInt
+  conversationId BigInt          @map("conversation_id") @db.BigInt
+  userId         BigInt          @map("user_id") @db.BigInt
+  role           ChatMessageRole
+  content        String          @db.LongText
+  images         Json?
+  files          Json?
+  providerData   Json?           @map("provider_data")
+  createdAt      DateTime        @default(now()) @map("created_at")
+
+  conversation ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt], name: "chat_msg_idx_conv_time")
+  @@index([userId, createdAt], name: "chat_msg_idx_user_time")
+  @@index([userId, role, createdAt], name: "chat_msg_idx_user_role_time")
+  @@map("chat_messages")
+}
+
+model ChatModerationLog {
+  id              BigInt           @id @default(autoincrement()) @db.BigInt
+  userId          BigInt           @map("user_id") @db.BigInt
+  conversationId  BigInt?          @map("conversation_id") @db.BigInt
+  modelId         BigInt           @map("model_id") @db.BigInt
+  content         String           @db.LongText
+  reason          String?          @db.Text
+  providerModel   String?          @map("provider_model") @db.VarChar(100)
+  providerResponse String?         @map("provider_response") @db.LongText
+  createdAt       DateTime         @default(now()) @map("created_at")
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation ChatConversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  model        AiModel          @relation(fields: [modelId], references: [id])
+
+  @@index([userId, createdAt], name: "chat_moderation_idx_user_time")
+  @@index([conversationId, createdAt], name: "chat_moderation_idx_conv_time")
+  @@index([modelId, createdAt], name: "chat_moderation_idx_model_time")
+  @@map("chat_moderation_logs")
+}
+
+model InputModerationLog {
+  id               BigInt    @id @default(autoincrement()) @db.BigInt
+  userId           BigInt    @map("user_id") @db.BigInt
+  modelId          BigInt?   @map("model_id") @db.BigInt
+  source           String    @db.VarChar(30)
+  scene            String    @db.VarChar(60)
+  content          String    @db.LongText
+  reason           String?   @db.Text
+  providerModel    String?   @map("provider_model") @db.VarChar(100)
+  providerResponse String?   @map("provider_response") @db.LongText
+  taskId           BigInt?   @map("task_id") @db.BigInt
+  taskNo           String?   @map("task_no") @db.VarChar(64)
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  user  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  model AiModel? @relation(fields: [modelId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt], name: "input_moderation_idx_user_time")
+  @@index([source, createdAt], name: "input_moderation_idx_source_time")
+  @@index([scene, createdAt], name: "input_moderation_idx_scene_time")
+  @@index([modelId, createdAt], name: "input_moderation_idx_model_time")
+  @@index([taskId, createdAt], name: "input_moderation_idx_task_time")
+  @@map("input_moderation_logs")
+}
+
+model ChatFile {
+  id             BigInt           @id @default(autoincrement()) @db.BigInt
+  userId         BigInt           @map("user_id") @db.BigInt
+  conversationId BigInt?          @map("conversation_id") @db.BigInt
+  projectAssetId BigInt?          @unique @map("project_asset_id") @db.BigInt
+  fileName       String           @map("file_name") @db.VarChar(255)
+  mimeType       String           @map("mime_type") @db.VarChar(120)
+  fileSize       Int              @map("file_size")
+  extension      String           @db.VarChar(20)
+  extractedText  String           @map("extracted_text") @db.LongText
+  textLength     Int              @map("text_length")
+  status         String           @db.VarChar(20)
+  errorMessage   String?          @map("error_message") @db.Text
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation ChatConversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  projectAsset ProjectAsset?    @relation(fields: [projectAssetId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt], name: "chat_file_idx_conv_time")
+  @@index([userId, createdAt], name: "chat_file_idx_user_time")
+  @@index([projectAssetId, createdAt], name: "chat_file_idx_project_asset_time")
+  @@map("chat_files")
+}

@@ -1,0 +1,31 @@
+{
+  "title": "Inbox",
+  "subtitle": "When a task finishes, a message will appear here",
+  "tabs": {
+    "unread": "Unread",
+    "all": "All"
+  },
+  "actions": {
+    "back": "Back",
+    "markAllRead": "Mark all as read",
+    "delete": "Delete",
+    "openWork": "Open work",
+    "openResult": "Open result",
+    "loadMore": "Load more",
+    "loading": "Loading..."
+  },
+  "fields": {
+    "prompt": "Prompt",
+    "message": "Message",
+    "workContent": "Work content",
+    "error": "Error"
+  },
+  "empty": {
+    "unread": "No unread messages",
+    "all": "No messages"
+  },
+  "login": {
+    "desc": "Please sign in to view your inbox",
+    "cta": "Sign in"
+  }
+}

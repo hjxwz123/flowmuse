@@ -1,0 +1,118 @@
+{
+  "title": "Dashboard",
+  "menu": {
+    "profile": "Profile",
+    "myGallery": "My Gallery",
+    "favorites": "Favorites",
+    "credits": "Credits",
+    "invite": "Invite Rewards",
+    "packages": "My Packages"
+  },
+  "profile": {
+    "title": "Profile",
+    "avatar": "Avatar",
+    "uploadAvatar": "Upload Avatar",
+    "email": "Email",
+    "username": "Username",
+    "emailVerified": "Email Verified",
+    "emailUnverified": "Email Unverified",
+    "changePassword": "Change Password",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "saveSuccess": "Saved successfully",
+    "uploadSuccess": "Avatar uploaded successfully",
+    "passwordChanged": "Password changed successfully"
+  },
+  "orders": {
+    "title": "Orders",
+    "empty": "No payment records yet",
+    "credits": "{value} credits",
+    "status": {
+      "pending": "Pending Payment",
+      "paid": "Paid",
+      "failed": "Failed",
+      "expired": "Expired"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "credits": {
+    "title": "Credits",
+    "balance": "Balance",
+    "permanent": "Permanent Credits",
+    "package": "Package Credits",
+    "total": "Total Credits",
+    "history": "Transaction History",
+    "type": {
+      "redeem": "Redeem",
+      "consume": "Consume",
+      "refund": "Refund",
+      "admin_adjust": "Admin Adjustment",
+      "expire": "Expired"
+    },
+    "source": {
+      "permanent": "Permanent",
+      "package": "Package"
+    },
+    "amount": "Amount",
+    "balanceAfter": "Balance",
+    "description": "Description",
+    "time": "Time",
+    "noLogs": "No transaction records"
+  },
+  "invite": {
+    "title": "Invite Rewards",
+    "subtitle": "Create your invite code and signup link. Rewards start after your friend verifies their email and then pays.",
+    "description": "When a friend signs up with your invite code and completes email verification, you receive {inviter} credits and they receive {invitee} credits.",
+    "invitedCount": "Invited Users",
+    "totalReward": "Total Referral Credits",
+    "rewardRate": "Rebate Ratio",
+    "rewardRateValue": "{rate} credits / yuan",
+    "code": "Invite Code",
+    "link": "Invite Link",
+    "copyCode": "Copy Code",
+    "copyLink": "Copy Link",
+    "copyCodeSuccess": "Invite code copied",
+    "copyLinkSuccess": "Invite link copied",
+    "copyFailed": "Copy failed, please copy it manually",
+    "loadFailed": "Failed to load invite info",
+    "paymentRewardHint": "Reward rule: the invite relationship becomes effective after email verification. The admin can set a decimal ratio such as 0.5, which means every paid 1 yuan produces 0.5 credits. Because credits are integers, the final reward is always rounded up. Current ratio: {rate} credits per paid yuan.",
+    "inviteesTitle": "Invited Users",
+    "noInvitees": "No invite records yet",
+    "invitedAt": "Invite Bound At",
+    "registeredAt": "Registered At"
+  },
+  "myGallery": {
+    "title": "My Gallery",
+    "tabs": {
+      "images": "Images",
+      "videos": "Videos"
+    },
+    "empty": "No artworks yet, start creating now!",
+    "goCreate": "Create Now"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "tabs": {
+      "images": "Images",
+      "videos": "Videos"
+    },
+    "empty": "No favorites yet",
+    "goGallery": "Explore Gallery"
+  },
+  "myPackages": {
+    "title": "My Packages",
+    "empty": "No packages",
+    "packageName": "Package Name",
+    "creditsPerDay": "Credits Per Day",
+    "remaining": "Remaining",
+    "expireDate": "Expire Date",
+    "status": {
+      "active": "Active",
+      "expired": "Expired"
+    }
+  }
+}

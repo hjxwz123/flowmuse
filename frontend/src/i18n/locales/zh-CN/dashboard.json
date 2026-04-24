@@ -1,0 +1,118 @@
+{
+  "title": "用户中心",
+  "menu": {
+    "profile": "个人资料",
+    "myGallery": "我的作品",
+    "favorites": "我的收藏",
+    "credits": "点数明细",
+    "invite": "邀请奖励",
+    "packages": "我的套餐"
+  },
+  "profile": {
+    "title": "个人资料",
+    "avatar": "头像",
+    "uploadAvatar": "上传头像",
+    "email": "邮箱",
+    "username": "用户名",
+    "emailVerified": "邮箱已验证",
+    "emailUnverified": "邮箱未验证",
+    "changePassword": "修改密码",
+    "oldPassword": "旧密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认密码",
+    "saveSuccess": "保存成功",
+    "uploadSuccess": "头像上传成功",
+    "passwordChanged": "密码修改成功"
+  },
+  "orders": {
+    "title": "支付记录",
+    "empty": "暂无支付记录",
+    "credits": "{value} 积分",
+    "status": {
+      "pending": "待支付",
+      "paid": "已支付",
+      "failed": "失败",
+      "expired": "已过期"
+    },
+    "pagination": {
+      "previous": "上一页",
+      "next": "下一页"
+    }
+  },
+  "credits": {
+    "title": "点数明细",
+    "balance": "余额",
+    "permanent": "永久点数",
+    "package": "套餐点数",
+    "total": "总点数",
+    "history": "流水记录",
+    "type": {
+      "redeem": "兑换",
+      "consume": "消费",
+      "refund": "退款",
+      "admin_adjust": "管理员调整",
+      "expire": "过期清零"
+    },
+    "source": {
+      "permanent": "永久",
+      "package": "套餐"
+    },
+    "amount": "变动",
+    "balanceAfter": "余额",
+    "description": "说明",
+    "time": "时间",
+    "noLogs": "暂无流水记录"
+  },
+  "invite": {
+    "title": "邀请奖励",
+    "subtitle": "生成你的邀请码和专属注册链接，邀请好友完成邮箱验证并消费后即可获得返利积分。",
+    "description": "好友通过你的邀请码注册并完成邮箱验证后，你可获得 {inviter} 积分，对方获得 {invitee} 积分。",
+    "invitedCount": "已邀请人数",
+    "totalReward": "累计邀请积分",
+    "rewardRate": "消费返利比例",
+    "rewardRateValue": "{rate} 积分 / 元",
+    "code": "邀请码",
+    "link": "邀请注册链接",
+    "copyCode": "复制邀请码",
+    "copyLink": "复制邀请链接",
+    "copyCodeSuccess": "邀请码已复制",
+    "copyLinkSuccess": "邀请链接已复制",
+    "copyFailed": "复制失败，请手动复制",
+    "loadFailed": "加载邀请信息失败",
+    "paymentRewardHint": "返利规则：好友完成邮箱验证后，邀请关系生效；当前消费返利比例为每 1 元返 {rate} 积分。",
+    "inviteesTitle": "已邀请用户",
+    "noInvitees": "暂时还没有邀请记录",
+    "invitedAt": "邀请绑定时间",
+    "registeredAt": "注册时间"
+  },
+  "myGallery": {
+    "title": "我的作品",
+    "tabs": {
+      "images": "图片",
+      "videos": "视频"
+    },
+    "empty": "还没有作品，快去创作吧！",
+    "goCreate": "去创作"
+  },
+  "favorites": {
+    "title": "我的收藏",
+    "tabs": {
+      "images": "图片",
+      "videos": "视频"
+    },
+    "empty": "还没有收藏任何作品",
+    "goGallery": "去画廊逛逛"
+  },
+  "myPackages": {
+    "title": "我的套餐",
+    "empty": "暂无套餐",
+    "packageName": "套餐名称",
+    "creditsPerDay": "每日点数",
+    "remaining": "剩余点数",
+    "expireDate": "到期时间",
+    "status": {
+      "active": "有效",
+      "expired": "已过期"
+    }
+  }
+}

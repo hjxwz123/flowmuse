@@ -1,0 +1,45 @@
+{
+  "title": "Toolbox",
+  "description": "Curated AI tools — upload an image and generate instantly",
+  "hero": {
+    "badge": "Tools"
+  },
+  "stats": {
+    "total": "{count} tools",
+    "visible": "{count} shown"
+  },
+  "use": "Use Now",
+  "notes": "Instructions",
+  "submit": "Generate",
+  "submitting": "Submitting...",
+  "creditsPerUse": "{n} credits",
+  "balance": "Balance: {balance}",
+  "filters": {
+    "all": "All",
+    "image": "Image",
+    "video": "Video"
+  },
+  "type": {
+    "image": "Image",
+    "video": "Video"
+  },
+  "upload": {
+    "click": "Click or drag to upload"
+  },
+  "empty": {
+    "title": "No Tools Yet",
+    "description": "No tools have been added by admin"
+  },
+  "success": {
+    "submitted": "Task submitted. Check the Tasks page for progress."
+  },
+  "error": {
+    "loginRequired": "Please log in first",
+    "uploadRequired": "Please upload all {count} image(s)",
+    "fileSize": "Image must be under {mb}MB",
+    "submitFailed": "Submission failed. Please try again.",
+    "insufficientCredits": "Insufficient credits for this tool",
+    "balanceInsufficient": "Insufficient credits (balance: {balance})",
+    "buyCredits": "Buy Credits"
+  }
+}

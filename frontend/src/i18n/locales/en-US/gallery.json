@@ -1,0 +1,55 @@
+{
+  "title": "Explore Gallery",
+  "search": "Search Artworks",
+  "searchPlaceholder": "Search by prompt keywords...",
+  "tabs": {
+    "all": "All",
+    "images": "Images",
+    "videos": "Videos"
+  },
+  "filters": {
+    "newest": "Newest",
+    "popular": "Popular"
+  },
+  "empty": {
+    "title": "No Artworks Yet",
+    "description": "There are no public artworks yet. Be the first to create one!",
+    "searchEmpty": "No matching artworks found",
+    "searchDescription": "Try different keywords"
+  },
+  "detail": {
+    "back": "Back to Gallery",
+    "prompt": "Prompt",
+    "copy": "Copy Prompt",
+    "copied": "Copied",
+    "negativePrompt": "Negative Prompt",
+    "model": "Model",
+    "createdAt": "Created At",
+    "likes": "Likes",
+    "favorites": "Favorites",
+    "creator": "Creator",
+    "reference": "Reference Images",
+    "referenceSource": "Reference Source",
+    "comments": "Comments",
+    "commentPlaceholder": "Share your thoughts about this artwork...",
+    "commentLoginPlaceholder": "Sign in to comment",
+    "send": "Send",
+    "sending": "Sending…",
+    "commentsEmpty": "No comments yet. Be the first to share one.",
+    "delete": "Delete",
+    "deleting": "Deleting…",
+    "downloadHd": "Download HD",
+    "downloadFailed": "Download failed. Please try again.",
+    "untitled": "Untitled Artwork",
+    "notFoundTitle": "Artwork Not Found",
+    "notFoundDescription": "This artwork may have been deleted or set to private.",
+    "actions": {
+      "like": "Like",
+      "unlike": "Unlike",
+      "favorite": "Favorite",
+      "unfavorite": "Unfavorite",
+      "download": "Download",
+      "share": "Share"
+    }
+  }
+}

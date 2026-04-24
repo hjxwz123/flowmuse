@@ -1,0 +1,14 @@
+{
+  "about": {
+    "title": "关于我们",
+    "empty": "暂无内容"
+  },
+  "privacy": {
+    "title": "隐私政策",
+    "empty": "暂无内容"
+  },
+  "terms": {
+    "title": "使用条款",
+    "empty": "暂无内容"
+  }
+}
