@@ -226,7 +226,7 @@ export function GalleryDetailContent({ type, id }: GalleryDetailProps) {
 
     try {
       const fileExtension = type === 'image' ? 'png' : 'mp4'
-      const fileName = `aigallery_${detail.item.id}_${Date.now()}.${fileExtension}`
+      const fileName = `flowmuse_${detail.item.id}_${Date.now()}.${fileExtension}`
       const response = await fetch(detail.item.resultUrl)
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)

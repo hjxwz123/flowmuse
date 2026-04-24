@@ -25,7 +25,7 @@
 
 #### 布局
 - **左侧**: 品牌展示区
-  - AI Gallery 大标题 (6xl 字体)
+  - FlowMuse 大标题 (6xl 字体)
   - 欢迎语
   - 3 个功能特性列表（带图标）
 - **右侧**: 登录表单卡片
@@ -362,7 +362,7 @@ const [focusedField, setFocusedField] = useState<string | null>(null)
 - **移动端 (< 1024px)**:
   - 品牌展示区隐藏
   - 表单卡片居中全屏显示
-  - 顶部显示 AI Gallery logo
+  - 顶部显示 FlowMuse logo
 
 - **桌面端 (≥ 1024px)**:
   - 分屏布局 (50/50)
@@ -378,7 +378,7 @@ const [focusedField, setFocusedField] = useState<string | null>(null)
   className="lg:hidden absolute top-8 left-1/2 -translate-x-1/2 z-20"
 >
   <h1 className="font-display text-3xl font-bold bg-gradient-to-r from-aurora-pink via-aurora-purple to-aurora-blue bg-clip-text text-transparent">
-    AI Gallery
+    FlowMuse
   </h1>
 </motion.div>
 ```

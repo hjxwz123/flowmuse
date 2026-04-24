@@ -298,7 +298,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
     try {
       // 获取文件扩展名
       const fileExt = task.type === 'image' ? 'png' : 'mp4'
-      const fileName = `aigallery_${task.taskNo}_${Date.now()}.${fileExt}`
+      const fileName = `flowmuse_${task.taskNo}_${Date.now()}.${fileExt}`
 
       // 尝试通过 fetch 下载（支持同源或配置了 CORS 的资源）
       try {

@@ -282,7 +282,7 @@ export class OpenaiDeepResearchService {
         id: `${row.modelKey}${OpenaiDeepResearchService.MODEL_SUFFIX}`,
         object: 'model',
         created: Math.floor(row.createdAt.getTime() / 1000),
-        owned_by: 'aigallery',
+        owned_by: 'flowmuse',
         root: row.modelKey,
         parent: null as string | null,
       }));

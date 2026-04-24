@@ -1,6 +1,6 @@
 <div align="center">
 
-# AI Gallery
+# FlowMuse
 
 面向 AI 创作者与运营团队的一体化创作平台：自动工作流、Agent 助手、项目资产管理、图片 / 视频生成、公共画廊与商业化后台。
 
@@ -15,9 +15,9 @@
 
 ---
 
-## 为什么是 AI Gallery
+## 为什么是 FlowMuse
 
-AI Gallery 不只是一个“生成图片 / 视频”的站点。它围绕真实创作链路设计：从对话式需求收集、Agent 自动追问、素材上传与解析，到项目资产沉淀、提示词管理、图片 / 视频任务生成、画廊发布和后台运营管理，形成完整闭环。
+FlowMuse 不只是一个“生成图片 / 视频”的站点。它围绕真实创作链路设计：从对话式需求收集、Agent 自动追问、素材上传与解析，到项目资产沉淀、提示词管理、图片 / 视频任务生成、画廊发布和后台运营管理，形成完整闭环。
 
 ## 核心能力
 
@@ -89,8 +89,8 @@ cp .env.docker.example .env.docker
 编辑 `.env.docker`，至少修改：
 
 ```bash
-BACKEND_IMAGE=ghcr.io/your-username/aigallery-backend:latest
-FRONTEND_IMAGE=ghcr.io/your-username/aigallery-frontend:latest
+BACKEND_IMAGE=ghcr.io/your-username/flowmuse-backend:latest
+FRONTEND_IMAGE=ghcr.io/your-username/flowmuse-frontend:latest
 MYSQL_ROOT_PASSWORD=change_root_password
 MYSQL_PASSWORD=change_db_password
 JWT_ACCESS_SECRET=change-me-to-random-string
@@ -157,25 +157,25 @@ docker compose --env-file .env.docker down
 docker login
 
 # 构建后端
-docker build -f Dockerfile.backend -t yourname/aigallery-backend:latest .
+docker build -f Dockerfile.backend -t yourname/flowmuse-backend:latest .
 
 # 构建前端
 docker build \
   -f Dockerfile.frontend \
   --build-arg NEXT_PUBLIC_API_BASE_URL=/api \
   --build-arg BACKEND_URL=http://backend:3000 \
-  -t yourname/aigallery-frontend:latest .
+  -t yourname/flowmuse-frontend:latest .
 
 # 推送
-docker push yourname/aigallery-backend:latest
-docker push yourname/aigallery-frontend:latest
+docker push yourname/flowmuse-backend:latest
+docker push yourname/flowmuse-frontend:latest
 ```
 
 然后修改 `.env.docker`：
 
 ```bash
-BACKEND_IMAGE=yourname/aigallery-backend:latest
-FRONTEND_IMAGE=yourname/aigallery-frontend:latest
+BACKEND_IMAGE=yourname/flowmuse-backend:latest
+FRONTEND_IMAGE=yourname/flowmuse-frontend:latest
 ```
 
 ### GitHub Container Registry 示例
@@ -183,15 +183,15 @@ FRONTEND_IMAGE=yourname/aigallery-frontend:latest
 ```bash
 docker login ghcr.io
 
-docker build -f Dockerfile.backend -t ghcr.io/your-username/aigallery-backend:latest .
+docker build -f Dockerfile.backend -t ghcr.io/your-username/flowmuse-backend:latest .
 docker build \
   -f Dockerfile.frontend \
   --build-arg NEXT_PUBLIC_API_BASE_URL=/api \
   --build-arg BACKEND_URL=http://backend:3000 \
-  -t ghcr.io/your-username/aigallery-frontend:latest .
+  -t ghcr.io/your-username/flowmuse-frontend:latest .
 
-docker push ghcr.io/your-username/aigallery-backend:latest
-docker push ghcr.io/your-username/aigallery-frontend:latest
+docker push ghcr.io/your-username/flowmuse-backend:latest
+docker push ghcr.io/your-username/flowmuse-frontend:latest
 ```
 
 ## 本地开发
@@ -231,7 +231,7 @@ npm run dev:all
 ## 目录结构
 
 ```text
-aigallery/
+flowmuse/
 ├── src/                    # NestJS 后端：auth、chat、projects、images、videos、gallery、admin 等
 ├── frontend/               # Next.js 前端：页面、组件、API client、store、i18n
 ├── prisma/                 # 数据模型、迁移和 seed

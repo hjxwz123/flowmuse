@@ -1,12 +1,12 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: aigallery-mysql
+    container_name: flowmuse-mysql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change_root_password}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-aigallery}
-      MYSQL_USER: ${MYSQL_USER:-aigallery}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-flowmuse}
+      MYSQL_USER: ${MYSQL_USER:-flowmuse}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change_db_password}
       TZ: Asia/Shanghai
     command:
@@ -28,7 +28,7 @@ services:
 
   redis:
     image: redis:7
-    container_name: aigallery-redis
+    container_name: flowmuse-redis
     restart: unless-stopped
     command:
       - redis-server
@@ -46,13 +46,13 @@ services:
       start_period: 10s
 
   backend:
-    image: ${BACKEND_IMAGE:-ghcr.io/your-username/aigallery-backend:latest}
-    container_name: aigallery-backend
+    image: ${BACKEND_IMAGE:-ghcr.io/your-username/flowmuse-backend:latest}
+    container_name: flowmuse-backend
     restart: unless-stopped
     env_file:
       - .env.docker
     environment:
-      DATABASE_URL: mysql://${MYSQL_USER:-aigallery}:${MYSQL_PASSWORD:-change_db_password}@mysql:3306/${MYSQL_DATABASE:-aigallery}?charset=utf8mb4
+      DATABASE_URL: mysql://${MYSQL_USER:-flowmuse}:${MYSQL_PASSWORD:-change_db_password}@mysql:3306/${MYSQL_DATABASE:-flowmuse}?charset=utf8mb4
       REDIS_HOST: redis
       REDIS_PORT: 6379
       PORT: 3000
@@ -69,8 +69,8 @@ services:
       - uploads_data:/app/uploads
 
   frontend:
-    image: ${FRONTEND_IMAGE:-ghcr.io/your-username/aigallery-frontend:latest}
-    container_name: aigallery-frontend
+    image: ${FRONTEND_IMAGE:-ghcr.io/your-username/flowmuse-frontend:latest}
+    container_name: flowmuse-frontend
     restart: unless-stopped
     environment:
       PORT: 3001
