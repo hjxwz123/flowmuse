@@ -14,7 +14,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ./data/mysql:/var/lib/mysql
     healthcheck:
       test:
         - CMD-SHELL
@@ -33,7 +33,7 @@ services:
       - --appendonly
       - "yes"
     volumes:
-      - redis_data:/data
+      - ./data/redis:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -83,7 +83,7 @@ services:
     ports:
       - "${BACKEND_PORT:-3000}:3000"
     volumes:
-      - uploads_data:/app/uploads
+      - ./data/uploads:/app/uploads
 
   frontend:
     image: hjxwz123/flowmuse-frontend:latest
@@ -98,7 +98,3 @@ services:
     ports:
       - "${FRONTEND_PORT:-3001}:3001"
 
-volumes:
-  mysql_data:
-  redis_data:
-  uploads_data:

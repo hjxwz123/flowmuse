@@ -194,12 +194,46 @@ docker compose pull
 # 重启服务
 docker compose up -d
 
-# 停止服务
+# 停止服务，数据仍保留在 ./data
 docker compose down
-
-# 停止并删除数据卷，慎用
-docker compose down -v
 ```
+
+## Data Persistence
+
+FlowMuse 使用本地目录挂载保存运行数据，服务器重启或容器重建后数据不会丢失：
+
+```text
+flowmuse/
+├── docker-compose.yml
+└── data/
+    ├── mysql/      # MySQL database files
+    ├── redis/      # Redis appendonly data
+    └── uploads/    # Local uploaded files
+```
+
+对应挂载关系：
+
+| Path | Container Path | Description |
+| --- | --- | --- |
+| `./data/mysql` | `/var/lib/mysql` | MySQL 数据库文件 |
+| `./data/redis` | `/data` | Redis 持久化数据 |
+| `./data/uploads` | `/app/uploads` | 本地上传文件 |
+
+备份数据：
+
+```bash
+tar -czf flowmuse-data-$(date +%Y%m%d).tar.gz data/
+```
+
+恢复数据时，先停止服务，再解压备份：
+
+```bash
+docker compose down
+tar -xzf flowmuse-data-YYYYMMDD.tar.gz
+docker compose up -d
+```
+
+不要删除 `data/` 目录。也不要在生产环境执行会清理项目目录数据的命令。
 
 ## Publish Images
 
@@ -297,6 +331,7 @@ flowmuse/
 ├── Dockerfile.backend      # Backend image build file
 ├── Dockerfile.frontend     # Frontend image build file
 ├── docker-compose.yml      # Single-file cloud deployment
+├── data/                   # Runtime data: mysql, redis, uploads
 └── README.md
 ```
 
