@@ -35,6 +35,8 @@ const DEFAULT_SITE_FORM_DATA = {
   siteIcon: '',
   siteFooter: '',
   homeTopMarqueeText: '',
+  homeHeroImageUrls: '',
+  homeHeroVideoUrl: '',
   startupPopupType: 'image' as 'image' | 'html',
   startupPopupImageUrl: '',
   startupPopupHtml: '',
@@ -780,6 +782,47 @@ export default function AdminSiteSettingsPage() {
                 <p className={helpTextCls}>
                   仅在首页顶部展示，为滚动消息条样式；留空则不显示。
                 </p>
+              </div>
+
+              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                <h3 className="text-sm font-semibold text-stone-900">首页背景轮播</h3>
+                <p className="mt-1 text-xs leading-6 text-stone-500">
+                  用于首页首屏背景。图片 URL 每行一个，也支持英文逗号分隔；留空时使用系统内置公开网络资源，不会使用私有 COS 地址。
+                </p>
+
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <label className={labelCls}>图片背景 URL 列表</label>
+                    <textarea
+                      value={formData.homeHeroImageUrls}
+                      onChange={(e) =>
+                        setFormData({ ...formData, homeHeroImageUrls: e.target.value })
+                      }
+                      rows={5}
+                      className={textareaCls}
+                      placeholder={'https://example.com/image-1.jpg\nhttps://example.com/image-2.jpg'}
+                    />
+                    <p className={helpTextCls}>
+                      图片模式下自动轮播；建议使用可公开访问的 HTTPS 图片地址。
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className={labelCls}>视频背景 URL</label>
+                    <input
+                      type="text"
+                      value={formData.homeHeroVideoUrl}
+                      onChange={(e) =>
+                        setFormData({ ...formData, homeHeroVideoUrl: e.target.value })
+                      }
+                      className={inputCls}
+                      placeholder="https://example.com/background.mp4"
+                    />
+                    <p className={helpTextCls}>
+                      视频模式下使用；留空时使用系统内置公开演示视频。
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">

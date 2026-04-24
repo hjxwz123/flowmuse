@@ -8,6 +8,8 @@ export const SYSTEM_SETTING_KEYS = {
   siteIcon: 'site.icon',
   siteFooter: 'site.footer',
   homeTopMarqueeText: 'site.homeTopMarqueeText',
+  homeHeroImageUrls: 'site.homeHeroImageUrls',
+  homeHeroVideoUrl: 'site.homeHeroVideoUrl',
   startupPopupType: 'site.startupPopupType',
   startupPopupImageUrl: 'site.startupPopupImageUrl',
   startupPopupHtml: 'site.startupPopupHtml',
@@ -88,6 +90,8 @@ export type PublicSystemSettings = {
   siteIcon: string;
   siteFooter: string;
   homeTopMarqueeText: string;
+  homeHeroImageUrls: string;
+  homeHeroVideoUrl: string;
   startupPopupType: 'image' | 'html';
   startupPopupImageUrl: string;
   startupPopupHtml: string;
@@ -138,6 +142,8 @@ export const DEFAULT_PUBLIC_SETTINGS: PublicSystemSettings = {
   siteIcon: '',
   siteFooter: '',
   homeTopMarqueeText: '',
+  homeHeroImageUrls: '',
+  homeHeroVideoUrl: '',
   startupPopupType: 'image',
   startupPopupImageUrl: '',
   startupPopupHtml: '',

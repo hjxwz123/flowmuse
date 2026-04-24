@@ -14,6 +14,8 @@ export interface SiteSettings {
   siteIcon: string
   siteFooter: string
   homeTopMarqueeText: string
+  homeHeroImageUrls: string
+  homeHeroVideoUrl: string
   startupPopupType: 'image' | 'html'
   startupPopupImageUrl: string
   startupPopupHtml: string
@@ -66,6 +68,8 @@ export interface UpdateSiteSettingsRequest {
   siteIcon?: string
   siteFooter?: string
   homeTopMarqueeText?: string
+  homeHeroImageUrls?: string
+  homeHeroVideoUrl?: string
   startupPopupType?: 'image' | 'html'
   startupPopupImageUrl?: string
   startupPopupHtml?: string

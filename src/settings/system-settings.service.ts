@@ -67,6 +67,8 @@ const PUBLIC_SETTINGS_KEYS = [
   SYSTEM_SETTING_KEYS.siteIcon,
   SYSTEM_SETTING_KEYS.siteFooter,
   SYSTEM_SETTING_KEYS.homeTopMarqueeText,
+  SYSTEM_SETTING_KEYS.homeHeroImageUrls,
+  SYSTEM_SETTING_KEYS.homeHeroVideoUrl,
   SYSTEM_SETTING_KEYS.startupPopupType,
   SYSTEM_SETTING_KEYS.startupPopupImageUrl,
   SYSTEM_SETTING_KEYS.startupPopupHtml,
@@ -185,6 +187,8 @@ export class SystemSettingsService {
           siteIcon: (map.get(SYSTEM_SETTING_KEYS.siteIcon) ?? DEFAULT_PUBLIC_SETTINGS.siteIcon) || DEFAULT_PUBLIC_SETTINGS.siteIcon,
           siteFooter: (map.get(SYSTEM_SETTING_KEYS.siteFooter) ?? DEFAULT_PUBLIC_SETTINGS.siteFooter) || DEFAULT_PUBLIC_SETTINGS.siteFooter,
           homeTopMarqueeText: map.get(SYSTEM_SETTING_KEYS.homeTopMarqueeText) ?? DEFAULT_PUBLIC_SETTINGS.homeTopMarqueeText,
+          homeHeroImageUrls: map.get(SYSTEM_SETTING_KEYS.homeHeroImageUrls) ?? DEFAULT_PUBLIC_SETTINGS.homeHeroImageUrls,
+          homeHeroVideoUrl: map.get(SYSTEM_SETTING_KEYS.homeHeroVideoUrl) ?? DEFAULT_PUBLIC_SETTINGS.homeHeroVideoUrl,
           startupPopupType: (() => {
             const raw = (map.get(SYSTEM_SETTING_KEYS.startupPopupType) ?? DEFAULT_PUBLIC_SETTINGS.startupPopupType).trim().toLowerCase();
             return raw === 'html' ? 'html' : 'image';
@@ -493,6 +497,42 @@ export class SystemSettingsService {
           update: {
             value: input.homeTopMarqueeText,
             description: 'Homepage top marquee text',
+          },
+        }),
+      );
+    }
+
+    if (typeof input.homeHeroImageUrls === 'string') {
+      shouldBumpPublicCache = true;
+      ops.push(
+        this.prisma.systemConfig.upsert({
+          where: { key: SYSTEM_SETTING_KEYS.homeHeroImageUrls },
+          create: {
+            key: SYSTEM_SETTING_KEYS.homeHeroImageUrls,
+            value: input.homeHeroImageUrls,
+            description: 'Homepage hero background image URLs, one URL per line',
+          },
+          update: {
+            value: input.homeHeroImageUrls,
+            description: 'Homepage hero background image URLs, one URL per line',
+          },
+        }),
+      );
+    }
+
+    if (typeof input.homeHeroVideoUrl === 'string') {
+      shouldBumpPublicCache = true;
+      ops.push(
+        this.prisma.systemConfig.upsert({
+          where: { key: SYSTEM_SETTING_KEYS.homeHeroVideoUrl },
+          create: {
+            key: SYSTEM_SETTING_KEYS.homeHeroVideoUrl,
+            value: input.homeHeroVideoUrl,
+            description: 'Homepage hero background video URL',
+          },
+          update: {
+            value: input.homeHeroVideoUrl,
+            description: 'Homepage hero background video URL',
           },
         }),
       );

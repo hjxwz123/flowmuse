@@ -56,6 +56,16 @@ export class UpdateSiteSettingsDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(5000)
+  homeHeroImageUrls?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  homeHeroVideoUrl?: string;
+
+  @IsOptional()
+  @IsString()
   @IsIn(['image', 'html'])
   startupPopupType?: 'image' | 'html';
 

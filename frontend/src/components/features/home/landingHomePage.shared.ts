@@ -38,16 +38,14 @@ export type DisplayTask = ApiTask & {
 export const PAGE_SIZE = 12
 export const HOME_NAV_TRANSITION_MS = 520
 export const HOME_HERO_IMAGE_BACKGROUNDS = [
-  'https://draw-1300185934.cos.ap-beijing.myqcloud.com/images/img_s3J_XFQ9a08IrsPVsjhrFj4X.jpeg',
-  'https://draw-1300185934.cos.ap-beijing.myqcloud.com/images/img_DzN04mH3GluY1UFDqelDl6pr.jpeg',
-  'https://draw-1300185934.cos.ap-beijing.myqcloud.com/images/img_5zKHtnfyvdVJGBbJIt7QZbck.jpeg',
-  'https://draw-1300185934.cos.ap-beijing.myqcloud.com/images/img_9aH_WX33VS1FpUvvasGIVtoo.jpeg',
-  'https://draw-1300185934.cos.ap-beijing.myqcloud.com/images/img_XgfSbwHxWRxWImXw_QItHclF.jpeg',
-  'https://draw-1300185934.cos.ap-beijing.myqcloud.com/images/img_m4JHNdt25XKoxUqPdAqH8cWu.jpeg',
-  'https://draw-1300185934.cos.ap-beijing.myqcloud.com/images/img_HsM87DBbtVYtSAI6MTitxVwk.jpeg',
+  'https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=1920&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1920&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?q=80&w=1920&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=1920&auto=format&fit=crop',
   '/images/9.png',
 ]
-export const HOME_HERO_VIDEO_BACKGROUND = 'https://draw-1300185934.cos.ap-beijing.myqcloud.com/project-assets/videos/project_vid_1776005713358_09761a4eaeb0.mp4'
+export const HOME_HERO_VIDEO_BACKGROUND = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4'
+
 
 export function getLandingHomeCopy(locale: string): LandingHomeCopy {
   const isZh = locale.toLowerCase().startsWith('zh')

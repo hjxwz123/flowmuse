@@ -9,6 +9,8 @@ type SiteSettingsSnapshot = {
   siteIcon?: string
   siteFooter?: string
   homeTopMarqueeText?: string
+  homeHeroImageUrls?: string
+  homeHeroVideoUrl?: string
 }
 
 type PublicFeedSnapshot = {
@@ -58,8 +60,10 @@ function unwrapSiteSettings(payload: unknown): SiteSettingsSnapshot | null {
   const siteIcon = readString(source, 'siteIcon')
   const siteFooter = readString(source, 'siteFooter')
   const homeTopMarqueeText = readString(source, 'homeTopMarqueeText')
+  const homeHeroImageUrls = readString(source, 'homeHeroImageUrls')
+  const homeHeroVideoUrl = readString(source, 'homeHeroVideoUrl')
 
-  if (registrationEnabled === undefined && !siteTitle && !siteIcon && !siteFooter && !homeTopMarqueeText) {
+  if (registrationEnabled === undefined && !siteTitle && !siteIcon && !siteFooter && !homeTopMarqueeText && !homeHeroImageUrls && !homeHeroVideoUrl) {
     return null
   }
 
@@ -69,6 +73,8 @@ function unwrapSiteSettings(payload: unknown): SiteSettingsSnapshot | null {
     siteIcon,
     siteFooter,
     homeTopMarqueeText,
+    homeHeroImageUrls,
+    homeHeroVideoUrl,
   }
 }
 
@@ -149,6 +155,8 @@ export default async function HomePage({
       siteIcon={settings?.siteIcon?.trim() || ''}
       siteFooter={settings?.siteFooter?.trim() || ''}
       marqueeText={settings?.homeTopMarqueeText?.trim() || ''}
+      homeHeroImageUrls={settings?.homeHeroImageUrls?.trim() || ''}
+      homeHeroVideoUrl={settings?.homeHeroVideoUrl?.trim() || ''}
       initialGalleryItems={publicFeed?.data ?? []}
       initialGalleryPage={publicFeed?.pagination.page ?? 0}
       initialGalleryHasMore={publicFeed?.pagination.hasMore ?? false}

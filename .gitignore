@@ -39,3 +39,6 @@ frontend/.env.*
 *.zip
 login_result*.html
 j.json
+
+# personal notes
+personal.md

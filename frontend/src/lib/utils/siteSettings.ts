@@ -38,6 +38,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   siteIcon: '/logo.svg',
   siteFooter: '',
   homeTopMarqueeText: '',
+  homeHeroImageUrls: '',
+  homeHeroVideoUrl: '',
   startupPopupType: 'image',
   startupPopupImageUrl: '',
   startupPopupHtml: '',

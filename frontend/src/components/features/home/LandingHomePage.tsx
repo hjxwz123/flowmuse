@@ -22,6 +22,8 @@ export type LandingHomePageProps = {
   siteIcon: string
   siteFooter: string
   marqueeText?: string
+  homeHeroImageUrls?: string
+  homeHeroVideoUrl?: string
   initialGalleryItems: ApiTask[]
   initialGalleryPage: number
   initialGalleryHasMore: boolean
@@ -33,6 +35,8 @@ export function LandingHomePage({
   siteTitle,
   siteIcon,
   siteFooter,
+  homeHeroImageUrls,
+  homeHeroVideoUrl,
   initialGalleryItems,
   initialGalleryPage,
   initialGalleryHasMore,
@@ -40,8 +44,14 @@ export function LandingHomePage({
   const copy = getLandingHomeCopy(locale)
   const currentYear = new Date().getFullYear()
   const footerText = siteFooter.trim() || `© ${currentYear} ${siteTitle}`
-  const backgroundImages = HOME_HERO_IMAGE_BACKGROUNDS.filter((item) => item.trim().length > 0)
-  const backgroundVideo = HOME_HERO_VIDEO_BACKGROUND.trim()
+  const configuredBackgroundImages = (homeHeroImageUrls || '')
+    .split(/\r?\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+  const backgroundImages = configuredBackgroundImages.length > 0
+    ? configuredBackgroundImages
+    : HOME_HERO_IMAGE_BACKGROUNDS.filter((item) => item.trim().length > 0)
+  const backgroundVideo = (homeHeroVideoUrl?.trim() || HOME_HERO_VIDEO_BACKGROUND).trim()
 
   return (
     <LandingHomePageShellClient
