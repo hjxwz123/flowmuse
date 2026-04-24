@@ -108,14 +108,14 @@ docker compose up -d
 docker-compose up -d
 ```
 
-默认访问地址：
+默认只暴露前后端端口：
 
 | Service | URL |
 | --- | --- |
 | Frontend | `http://localhost:3001` |
 | Backend API | `http://localhost:3000/api` |
-| MySQL | `localhost:3306` |
-| Redis | `localhost:6379` |
+
+MySQL 和 Redis 仅在 Docker 内部网络中使用，不映射到宿主机端口，因此不会占用服务器已有的 `3306` / `6379`。
 
 ### 3. 初始化管理员
 
@@ -154,6 +154,8 @@ JWT_REFRESH_SECRET=your_refresh_secret
 APP_ENCRYPTION_KEY=your_32_chars_min_key
 APP_PUBLIC_URL=http://your-server-ip:3000
 FRONTEND_URL=http://your-server-ip:3001
+BACKEND_PORT=3000
+FRONTEND_PORT=3001
 ```
 
 然后启动：
@@ -172,6 +174,8 @@ JWT_REFRESH_SECRET=your_refresh_secret \
 APP_ENCRYPTION_KEY=your_32_chars_min_key \
 APP_PUBLIC_URL=http://your-server-ip:3000 \
 FRONTEND_URL=http://your-server-ip:3001 \
+BACKEND_PORT=3000 \
+FRONTEND_PORT=3001 \
 docker compose up -d
 ```
 
@@ -301,10 +305,11 @@ flowmuse/
 | Variable | Description |
 | --- | --- |
 | `MYSQL_ROOT_PASSWORD` | MySQL root password |
-| `MYSQL_DATABASE` | MySQL database name, default `flowmuse` |
-| `MYSQL_USER` / `MYSQL_PASSWORD` | MySQL app user and password |
+| `MYSQL_DATABASE` | MySQL database name, default `flowmuse`, internal only |
+| `MYSQL_USER` / `MYSQL_PASSWORD` | MySQL app user and password, internal only |
 | `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | JWT signing secrets |
 | `APP_ENCRYPTION_KEY` | Sensitive data encryption key, at least 32 chars |
+| `BACKEND_PORT` / `FRONTEND_PORT` | Host ports exposed for backend and frontend only |
 | `APP_PUBLIC_URL` / `FRONTEND_URL` | Public backend and frontend URLs |
 | `STORAGE_DRIVER` | `local` or `cos` |
 | `COS_*` | Tencent Cloud COS configuration |
@@ -315,7 +320,7 @@ flowmuse/
 
 - Do not commit `.env`, `frontend/.env.local` or real secrets.
 - Replace default database passwords, JWT secrets, encryption key and default admin password in production.
-- Do not expose MySQL and Redis publicly unless you know what you are doing.
+- MySQL and Redis are intentionally not exposed to the host; keep them internal unless you know what you are doing.
 - Prefer HTTPS reverse proxy in front of the frontend service.
 - Use least-privilege credentials for COS, SMTP and payment integrations.
 
