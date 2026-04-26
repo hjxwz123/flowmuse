@@ -3818,6 +3818,18 @@ export class ChatService {
     );
   }
 
+  private isSeedance20VideoModel(model: {
+    provider: string;
+    modelKey?: string | null;
+  }) {
+    const providerKey = normalizeProviderKey(model.provider);
+    const remoteModel = String(model.modelKey ?? '').trim().toLowerCase();
+    return (
+      (providerKey.includes('doubao') || providerKey.includes('bytedance') || providerKey.includes('ark'))
+      && remoteModel.includes('seedance-2-0')
+    );
+  }
+
   private buildWanxR2vContextVideoParameters(input: {
     currentImages: string[];
     currentVideos: string[];
@@ -3968,6 +3980,7 @@ export class ChatService {
   }) {
     const mediaLabel = input.targetModel.type === AiModelType.video ? 'video' : 'image';
     const isVideoTarget = input.targetModel.type === AiModelType.video;
+    const isSeedance20VideoTarget = isVideoTarget && this.isSeedance20VideoModel(input.targetModel);
     const submissionHint = input.autoCreate
       ? `- When the request is specific enough, mark the result as ready so the system can create the ${mediaLabel} task immediately after your response.`
       : input.hasConversationGeneratedMedia
@@ -4013,6 +4026,9 @@ export class ChatService {
           '- Preserve and fold the style words and the base action description into the final prompt instead of dropping them.',
           '- Explicitly stress coherent motion, physical plausibility, and avoiding frame skipping or deformation.',
           '- If reference images, reference videos, or reference audio are attached, use them semantically to preserve identity, appearance, motion, rhythm, framing, or atmosphere. Do not invent numbered labels, fake placeholders, filenames, or any system-internal identifiers inside optimizedPrompt.',
+          isSeedance20VideoTarget
+            ? '- For Seedance 2.0, a previous/reference video should be used as style and consistency context only. Do not write first-frame or hard continuation wording such as “以...为首帧”, “接着...继续生成”, or “从上一段末尾继续” in optimizedPrompt; describe the new shot as an independent shot that references the previous video style, lighting, character appearance, and rhythm.'
+            : '',
           '- If the user is editing or revising an existing result, preserve subject identity, motion direction, framing logic, and scene continuity unless the user explicitly asks to change them.',
           '- Keep one dominant camera movement per shot or beat. Remove conflicting instructions such as push-in plus pan-left plus pull-back unless one clear movement remains.',
           '- You may express temporal progression naturally with phrases like "开场", "中段", and "结尾". A rigid title format is optional, but the 3-beat execution logic is required. If manual duration is already locked, use that duration as the basis of the 3-beat plan.',
@@ -4106,6 +4122,27 @@ export class ChatService {
 
   private isLikelyChineseText(value: string) {
     return /[\u4e00-\u9fff]/.test(value);
+  }
+
+  private sanitizeSeedance20MediaAgentPrompt(prompt: string | null) {
+    const normalized = (prompt ?? '').trim();
+    if (!normalized) return prompt;
+
+    const forbiddenSentencePattern = /(首帧|接着.{0,30}继续生成|从上一.{0,20}末尾|上一段末尾|同一镜头续拍)/;
+    const parts = normalized
+      .split(/(?<=[。！？!?])|\n+/)
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
+    const kept = parts.filter((part) => !forbiddenSentencePattern.test(part));
+
+    if (kept.length > 0 && kept.length < parts.length) {
+      return kept.join('\n').trim();
+    }
+
+    return normalized
+      .replace(/请?以[^，。；;]{0,40}为首帧[，,。；;]?/g, '')
+      .replace(/接着[^，。；;]{0,40}继续生成[，,。；;]?/g, '')
+      .trim();
   }
 
   private needsChinesePromptRewrite(value: string | null | undefined) {
@@ -4375,7 +4412,13 @@ export class ChatService {
             negativePrompt: parsed.negativePrompt ?? null,
           })
         : null;
-    const finalOptimizedPrompt = localizedPromptPair?.prompt || parsed.optimizedPrompt;
+    const rawFinalOptimizedPrompt = localizedPromptPair?.prompt || parsed.optimizedPrompt;
+    const finalOptimizedPrompt =
+      targetModel.type === AiModelType.video &&
+      this.isSeedance20VideoModel(targetModel) &&
+      (params.mediaAgent.referenceVideos.length > 0 || existingGeneratedMedia.length > 0)
+        ? this.sanitizeSeedance20MediaAgentPrompt(rawFinalOptimizedPrompt)
+        : rawFinalOptimizedPrompt;
     const finalNegativePrompt =
       targetModel.type === AiModelType.image
         ? localizedPromptPair?.negativePrompt ?? parsed.negativePrompt

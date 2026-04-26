@@ -437,22 +437,30 @@ export class StorageService {
     videoUrl: string;
     objectKey?: string | null;
     taskNo: string;
+    durationSeconds?: number | null;
   }): Promise<StoredObject> {
     if (this.driver !== 'cos') {
       throw new Error('Video last-frame extraction is only supported when STORAGE_DRIVER=cos');
     }
 
-    const avinfoUrl = await this.buildCosProcessingUrl({
-      videoUrl: input.videoUrl,
-      objectKey: input.objectKey ?? null,
-      query: {
-        'ci-process': 'avinfo',
-      },
-    });
-    const avinfo = await this.fetchUrlToJson<CosAvinfoResponse>(avinfoUrl, 120_000);
-    const durationSeconds = this.extractVideoDurationFromAvinfo(avinfo);
+    let durationSeconds: number | null = null;
+    try {
+      const avinfoUrl = await this.buildCosProcessingUrl({
+        videoUrl: input.videoUrl,
+        objectKey: input.objectKey ?? null,
+        query: {
+          'ci-process': 'avinfo',
+        },
+      });
+      const avinfo = await this.fetchUrlToJson<CosAvinfoResponse>(avinfoUrl, 120_000);
+      durationSeconds = this.extractVideoDurationFromAvinfo(avinfo);
+    } catch {
+      durationSeconds = null;
+    }
+
+    durationSeconds = durationSeconds ?? this.toPositiveNumber(input.durationSeconds);
     if (durationSeconds === null) {
-      throw new Error('Failed to resolve video duration from COS avinfo');
+      throw new Error('Failed to resolve video duration from COS avinfo or task duration');
     }
 
     let lastErr: unknown = null;

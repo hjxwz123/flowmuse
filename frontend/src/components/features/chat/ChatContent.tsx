@@ -1046,6 +1046,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
   const streamReasoningFlushTimerRef = useRef<number | null>(null)
   const researchPollingTimerRef = useRef<number | null>(null)
   const bootstrappedTaskIdsRef = useRef(new Set<string>())
+  const failedTaskToastKeysRef = useRef(new Set<string>())
   const refreshingTaskIdsRef = useRef(new Set<string>())
   const refreshingStoryboardProjectIdsRef = useRef(new Set<string>())
   const storyboardPollingTimerRef = useRef<number | null>(null)
@@ -2451,6 +2452,29 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
     }
   }, [])
 
+  const notifyTaskFailureIfNew = useCallback((task: ApiTask) => {
+    if (task.status !== 'failed') return
+    if (task.errorMessage === 'CANCELED') return
+
+    const toastKey = `${task.type}:${task.id}`
+    if (failedTaskToastKeysRef.current.has(toastKey)) return
+
+    const previousTaskRef = messagesRef.current
+      .flatMap((message) => message.taskRefs)
+      .find((taskRef) => taskRef.kind === task.type && taskRef.taskId === task.id)
+    if (!previousTaskRef) return
+
+    failedTaskToastKeysRef.current.add(toastKey)
+    if (previousTaskRef.status === 'failed') return
+
+    const label =
+      task.type === 'video'
+        ? isZh ? '视频任务失败' : 'Video task failed'
+        : isZh ? '图片任务失败' : 'Image task failed'
+    const errorText = (task.errorMessage ?? '').trim()
+    toast.error(errorText ? `${label}: ${errorText}` : label)
+  }, [isZh])
+
   const refreshTask = useCallback(async (kind: ChatTaskRef['kind'], taskId: string) => {
     const refreshKey = `${kind}:${taskId}`
     if (!taskId || refreshingTaskIdsRef.current.has(refreshKey)) return
@@ -2458,13 +2482,14 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
     refreshingTaskIdsRef.current.add(refreshKey)
     try {
       const task = kind === 'video' ? await videoService.getTask(taskId) : await imageService.getTask(taskId)
+      notifyTaskFailureIfNew(task)
       mergeTaskIntoMessages(task)
     } catch (error) {
       console.error(`[ChatContent] Failed to refresh ${kind} task:`, taskId, error)
     } finally {
       refreshingTaskIdsRef.current.delete(refreshKey)
     }
-  }, [mergeTaskIntoMessages])
+  }, [mergeTaskIntoMessages, notifyTaskFailureIfNew])
 
   const handleCancelVideoTask = useCallback(async (taskRef: ChatTaskRef) => {
     if (taskRef.kind !== 'video') return
@@ -2919,6 +2944,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
       )
       if (!existsInCurrentMessages) return
 
+      notifyTaskFailureIfNew(task)
       mergeTaskIntoMessages(task)
 
       if (task.type === 'video' && task.projectId) {
@@ -3317,6 +3343,21 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
               setWebSearchStatusText(event.message.trim())
             }
           },
+          onError: (event) => {
+            const errorText = (event.message || t('errors.send')).trim()
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === optimisticAssistantId
+                  ? {
+                      ...msg,
+                      content: errorText,
+                      reasoning: '',
+                    }
+                  : msg
+              )
+            )
+            setWebSearchStatusText('')
+          },
           onDone: (event) => {
             clearStreamFlushTimer()
             clearStreamReasoningFlushTimer()
@@ -3420,6 +3461,9 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
       }
       setStreamingAssistantId(null)
       setWebSearchStatusText('')
+      if (!override && (useImageAgent || useAutoMode)) {
+        setComposer(text)
+      }
       if (!keptPartialMessage) {
         if (!override) {
           setComposer(text)

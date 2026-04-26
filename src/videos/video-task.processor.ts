@@ -36,6 +36,33 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function toPositiveNumber(value: unknown) {
+  const numeric =
+    typeof value === 'number'
+      ? value
+      : typeof value === 'string'
+        ? Number.parseFloat(value)
+        : Number.NaN;
+  return Number.isFinite(numeric) && numeric > 0 ? numeric : null;
+}
+
+function findDurationSeconds(source: unknown): number | null {
+  if (!source || typeof source !== 'object' || Array.isArray(source)) return null;
+
+  const record = source as Record<string, unknown>;
+  const direct =
+    toPositiveNumber(record.duration)
+    ?? toPositiveNumber(record.durationSeconds)
+    ?? toPositiveNumber(record.videoDuration)
+    ?? toPositiveNumber(record.seconds);
+  if (direct !== null) return direct;
+
+  return findDurationSeconds(record.output)
+    ?? findDurationSeconds(record.content)
+    ?? findDurationSeconds(record.parameters)
+    ?? findDurationSeconds(record.providerData);
+}
+
 @Injectable()
 @Processor(VIDEO_GENERATION_QUEUE, {
   limiter: {
@@ -131,7 +158,17 @@ export class VideoTaskProcessor extends WorkerHost {
           }
 
           const saved = await this.storage.saveVideoResult(output, task.taskNo);
-          const thumbnailUrl = await this.resolveThumbnailUrl(status.providerData, saved.url, saved.ossKey, task.taskNo);
+          const thumbnailDurationSeconds =
+            findDurationSeconds(status.providerData)
+            ?? findDurationSeconds(providerData)
+            ?? findDurationSeconds(task.parameters);
+          const thumbnailUrl = await this.resolveThumbnailUrl(
+            status.providerData,
+            saved.url,
+            saved.ossKey,
+            task.taskNo,
+            thumbnailDurationSeconds,
+          );
           await this.markCompleted(task, taskId, saved.url, thumbnailUrl, saved.ossKey, providerData);
           return;
         }
@@ -262,6 +299,7 @@ export class VideoTaskProcessor extends WorkerHost {
     savedVideoUrl: string,
     savedOssKey: string,
     taskNo: string,
+    durationSeconds: number | null,
   ) {
     let thumbnailUrl: string | null = null;
     const providerThumbnail =
@@ -287,6 +325,7 @@ export class VideoTaskProcessor extends WorkerHost {
         videoUrl: savedVideoUrl,
         objectKey: savedOssKey,
         taskNo,
+        durationSeconds,
       });
       return thumbnail.url;
     } catch {
