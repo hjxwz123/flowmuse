@@ -138,7 +138,7 @@ export const DEFAULT_PUBLIC_SETTINGS: PublicSystemSettings = {
   inviteRegisterInviterCredits: 0,
   inviteRegisterInviteeCredits: 0,
   invitePaymentCreditsPerYuan: 1,
-  siteTitle: '研小伴',
+  siteTitle: 'FlowMuse',
   siteIcon: '',
   siteFooter: '',
   homeTopMarqueeText: '',

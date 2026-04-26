@@ -1,7 +1,7 @@
 {
   "name": "AI 创作平台",
-  "short_name": "研小伴",
-  "description": "研小伴支持图像生成、视频生成与 AI 对话的一体化创作体验",
+  "short_name": "FlowMuse",
+  "description": "FlowMuse支持图像生成、视频生成与 AI 对话的一体化创作体验",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -26,9 +26,9 @@ async function main() {
   const defaults: Array<{ key: string; value: string; description: string }> = [
     { key: 'site.registrationEnabled', value: 'true', description: 'Enable registration' },
     { key: 'site.initialRegisterCredits', value: '0', description: 'Initial permanent credits for new users' },
-    { key: 'site.title', value: '研小伴', description: 'Site title' },
+    { key: 'site.title', value: 'FlowMuse', description: 'Site title' },
     { key: 'site.icon', value: '', description: 'Site icon URL' },
-    { key: 'site.footer', value: '© 2026 研小伴', description: 'Site footer text' },
+    { key: 'site.footer', value: '© 2026 FlowMuse', description: 'Site footer text' },
   ];
 
   for (const item of defaults) {
