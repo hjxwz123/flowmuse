@@ -13,6 +13,7 @@ import { ImagesService } from '../images/images.service';
 import { buildModelCapabilities } from '../models/model-capabilities';
 import { PrismaService } from '../prisma/prisma.service';
 import { normalizeProviderKey } from '../common/utils/provider.util';
+import { isWanxProvider, resolveWanxSiblingVideoModelKey, resolveWanxVideoModelKind } from '../common/utils/wanx-model.util';
 import { VideosService } from '../videos/videos.service';
 import {
   getAutoProjectImageOptionCatalog,
@@ -221,8 +222,8 @@ export class AutoProjectWorkflowService {
     if (normalizeProviderKey(videoModel.provider).includes('wanx') && !this.isWanxR2vVideoModel(videoModel)) {
       throw new BadRequestException(
         preferChinese
-          ? '聊天页全自动模式下，万相当前仅支持 wan2.7-r2v 模型。'
-          : 'Chat auto mode currently supports only Wanx wan2.7-r2v models.',
+          ? '聊天页全自动模式下，万相当前仅支持 r2v 系列模型。'
+          : 'Chat auto mode currently supports only Wanx r2v series models.',
       );
     }
 
@@ -4138,7 +4139,10 @@ export class AutoProjectWorkflowService {
         const explicitReferenceAssets = referenceAssetIds
           .map((assetId) => assetMap.get(assetId) ?? null)
           .filter((asset): asset is AutoProjectAssetSnapshot => Boolean(asset));
-        const firstFrameImage = this.isWanxR2vVideoModel(params.videoModel)
+        const isWanxR2v = this.isWanxR2vVideoModel(params.videoModel);
+        const isFirstWorkflowShot =
+          (params.workflow.shots[0]?.id ?? params.shots[0]?.id ?? null) === shot.id;
+        const firstFrameImage = isWanxR2v
           ? (
               params.continuityReferences.find((asset) => this.isAutoProjectContinuityThumbnailAsset(asset))?.url
               ?? null
@@ -4150,9 +4154,10 @@ export class AutoProjectWorkflowService {
           autoCharacterReferenceAssets,
           explicitReferenceAssets,
         });
+        let wanxT2vModelOverride: string | null = null;
 
         if (
-          this.isWanxR2vVideoModel(params.videoModel) &&
+          isWanxR2v &&
           !firstFrameImage &&
           !referenceAssets.some((asset) => asset.kind === 'image')
         ) {
@@ -4163,18 +4168,28 @@ export class AutoProjectWorkflowService {
             selectedAssets: referenceAssets,
           });
 
-          if (!fallbackReferenceImage) {
+          if (fallbackReferenceImage) {
+            referenceAssets = this.buildAutoProjectOrderedReferenceAssetsFromAssets([
+              ...referenceAssets,
+              fallbackReferenceImage,
+            ]);
+          } else if (isFirstWorkflowShot) {
+            wanxT2vModelOverride = this.resolveWanxT2vVideoModelOverride(params.videoModel);
+            if (!wanxT2vModelOverride) {
+              throw new BadRequestException(
+                params.preferChinese
+                  ? '万相第一镜头没有可用参考图，且无法解析同系列 t2v 模型。'
+                  : 'Wanx first shot has no usable reference image, and the sibling t2v model could not be resolved.',
+              );
+            }
+            referenceAssets = [];
+          } else {
             throw new BadRequestException(
               params.preferChinese
-                ? '万相第一镜头必须传入至少一张参考图片，请先生成或选择角色参考图后再生成视频。'
-                : 'Wanx first shot requires at least one reference image. Generate or select a role reference image before creating video.',
+                ? '万相 r2v 镜头必须传入至少一张参考图片，请先生成或选择角色参考图后再生成视频。'
+                : 'Wanx r2v shots require at least one reference image. Generate or select a role reference image before creating video.',
             );
           }
-
-          referenceAssets = this.buildAutoProjectOrderedReferenceAssetsFromAssets([
-            ...referenceAssets,
-            fallbackReferenceImage,
-          ]);
         }
 
         const currentImages = referenceAssets
@@ -4210,6 +4225,7 @@ export class AutoProjectWorkflowService {
           preferredResolution: params.autoProjectAgent.preferredResolution ?? shot.preferredResolution,
           preferredDuration: shot.duration,
           firstFrameImage,
+          modelOverride: wanxT2vModelOverride,
         });
 
         await this.attachAutoProjectAssetMetadataToTask({
@@ -5464,6 +5480,7 @@ export class AutoProjectWorkflowService {
     preferredResolution?: string | null;
     preferredDuration?: string | null;
     firstFrameImage?: string | null;
+    modelOverride?: string | null;
   }) {
     const videoModelId = this.parseBigInt(params.videoModelIdRaw, 'modelId');
     const videoModel = await this.prisma.aiModel.findFirst({
@@ -5503,6 +5520,7 @@ export class AutoProjectWorkflowService {
         preferredResolution: params.preferredResolution ?? null,
         preferredDuration: params.preferredDuration ?? null,
       }),
+      ...(params.modelOverride ? { model: params.modelOverride } : {}),
     };
     const maxInputImages = Math.max(1, videoModelCapabilities.limits.maxInputImages ?? 1);
     const maxInputVideos = Math.max(1, videoModelCapabilities.limits.maxInputVideos ?? 1);
@@ -5566,13 +5584,15 @@ export class AutoProjectWorkflowService {
     provider: string;
     modelKey?: string | null;
   }) {
-    const providerKey = normalizeProviderKey(model.provider);
-    const remoteModel = String(model.modelKey ?? '').trim().toLowerCase();
-    return (
-      (providerKey.includes('wanx') || providerKey.includes('wanxiang'))
-      && remoteModel.includes('wan2.7')
-      && remoteModel.includes('-r2v')
-    );
+    return isWanxProvider(model.provider) && resolveWanxVideoModelKind(model.modelKey) === 'r2v';
+  }
+
+  private resolveWanxT2vVideoModelOverride(model: {
+    provider: string;
+    modelKey?: string | null;
+  }) {
+    if (!this.isWanxR2vVideoModel(model)) return null;
+    return resolveWanxSiblingVideoModelKey(model.modelKey, 't2v');
   }
 
   private isSeedance20VideoModel(model: {

@@ -88,7 +88,7 @@ export interface VideoCreateWorkspaceProps {
   selectedModel: ModelWithCapabilities | null
   isWanxVideo: boolean
   isWanxMergedVideo: boolean
-  isWanx27Video: boolean
+  isWanxSeriesVideo: boolean
   wanxResolvedModelKind: 't2v' | 'i2v' | 'r2v' | null
   wanxSupportsAudioInput: boolean
   wanxCanCustomizeRatio: boolean
@@ -215,7 +215,7 @@ export function VideoCreateWorkspace({
   selectedModel,
   isWanxVideo,
   isWanxMergedVideo,
-  isWanx27Video,
+  isWanxSeriesVideo,
   wanxResolvedModelKind,
   wanxSupportsAudioInput,
   wanxCanCustomizeRatio,
@@ -978,7 +978,7 @@ export function VideoCreateWorkspace({
                     </div>
                   ) : null}
 
-                  {isWanx27Video && (supportsImageInput || isWanxMergedVideo) ? (
+                  {isWanxSeriesVideo && (supportsImageInput || isWanxMergedVideo) ? (
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-3">
                         <label className="text-sm font-medium">
@@ -1000,7 +1000,7 @@ export function VideoCreateWorkspace({
                     </div>
                   ) : null}
 
-                  {(isWanxMergedVideo || isWanxI2v) && isWanx27Video ? (
+                  {(isWanxMergedVideo || isWanxI2v) && isWanxSeriesVideo ? (
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-3">
                         <label className="text-sm font-medium">

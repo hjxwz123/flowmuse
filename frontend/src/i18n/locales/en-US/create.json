@@ -171,7 +171,7 @@
       "hintDoubaoReferenceVideos20": "Optional: Upload 1-3 reference videos.",
       "hintDoubaoReferenceAudios20": "Optional: Upload 1-3 reference audio clips. Audio cannot be used alone and must be paired with at least one reference image or reference video.",
       "hintDoubaoFrames20": "Optional: Upload 1-2 images. The first image becomes the first frame, and the second image becomes the last frame.",
-      "hintWanxUpload": "Wanx supports mixed image, video, and audio references. Reference images plus reference videos can total up to 5 items, and wan2.7 can also take 1 first-frame image at the same time. If any reference video is included, duration must stay between 2 and 10 seconds; otherwise it can be 2 to 15 seconds.",
+      "hintWanxUpload": "Wanx supports mixed image, video, and audio references. Reference images plus reference videos can total up to 5 items, and the sibling r2v model can also take 1 first-frame image at the same time. If any reference video is included, duration must stay between 2 and 10 seconds; otherwise it can be 2 to 15 seconds.",
       "hintWanxReferenceImages": "Optional: Upload reference images. They work together with reference videos for subject and scene control, with a combined visual limit of 5.",
       "hintWanxReferenceVideos": "Optional: Upload reference videos. Once a reference video is present, the video duration must stay within 2-10 seconds.",
       "hintWanxReferenceAudios": "Optional: Upload reference audio clips to define the voice timbre for the matched subject. Audio count cannot exceed the total number of reference images and reference videos.",

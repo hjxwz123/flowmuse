@@ -1,5 +1,6 @@
 import { AiModel, AiModelType, ModelProvider } from '@prisma/client';
 import { isQwenProvider, normalizeProviderKey } from '../common/utils/provider.util';
+import { isWanxProvider, resolveWanxVideoModelKind } from '../common/utils/wanx-model.util';
 
 export type ModelExecution = 'sync' | 'async';
 
@@ -57,22 +58,6 @@ function asBoolean(value: unknown): boolean | null {
   return typeof value === 'boolean' ? value : null;
 }
 
-function isWanxProvider(provider: string): boolean {
-  const normalizedProvider = normalizeProviderKey(provider);
-  return normalizedProvider.includes('wanx') || normalizedProvider.includes('wanxiang');
-}
-
-type Wanx27ModelKind = 't2v' | 'i2v' | 'r2v' | null;
-
-function resolveWanx27ModelKind(remoteModel: string | null): Wanx27ModelKind {
-  const normalizedRemoteModel = (remoteModel ?? '').toLowerCase();
-  if (!normalizedRemoteModel.startsWith('wan2.7')) return null;
-  if (normalizedRemoteModel.includes('-t2v')) return 't2v';
-  if (normalizedRemoteModel.includes('-i2v')) return 'i2v';
-  if (normalizedRemoteModel.includes('-r2v')) return 'r2v';
-  return null;
-}
-
 function inferImageInputFromProvider(
   type: 'image' | 'video' | 'chat',
   provider: string,
@@ -83,7 +68,7 @@ function inferImageInputFromProvider(
   if (type === 'image') return imageToImage || isNanoBananaFamily(provider) || isQwenProvider(provider);
 
   if (isWanxProvider(provider)) {
-    const wanxKind = resolveWanx27ModelKind(remoteModel);
+    const wanxKind = resolveWanxVideoModelKind(remoteModel);
     if (wanxKind === 't2v') return false;
     if (wanxKind === 'i2v' || wanxKind === 'r2v') return true;
   }
@@ -111,7 +96,7 @@ function inferVideoInputFromProvider(
   const normalizedRemoteModel = (remoteModel ?? '').toLowerCase();
 
   if (isWanxProvider(provider)) {
-    const wanxKind = resolveWanx27ModelKind(remoteModel);
+    const wanxKind = resolveWanxVideoModelKind(remoteModel);
     if (wanxKind === 't2v') return false;
     if (wanxKind === 'i2v' || wanxKind === 'r2v') return true;
   }
@@ -138,7 +123,7 @@ function inferAudioInputFromProvider(
   if (type !== 'video') return false;
 
   if (isWanxProvider(provider)) {
-    return resolveWanx27ModelKind(remoteModel) !== null;
+    return resolveWanxVideoModelKind(remoteModel) !== null;
   }
 
   const normalizedProvider = normalizeProviderKey(provider);
@@ -148,9 +133,6 @@ function inferAudioInputFromProvider(
       normalizedProvider.includes('bytedance') ||
       normalizedProvider.includes('ark')) &&
     normalizedRemoteModel.includes('seedance-2-0')
-  ) || (
-    (normalizedProvider.includes('wanx') || normalizedProvider.includes('wanxiang')) &&
-    normalizedRemoteModel.includes('wan2.7')
   );
 }
 
@@ -170,7 +152,7 @@ function inferContextualEditSupport(
   const normalizedProvider = normalizeProviderKey(provider);
 
   if (type === 'video' && isWanxProvider(provider)) {
-    const wanxKind = resolveWanx27ModelKind(remoteModel);
+    const wanxKind = resolveWanxVideoModelKind(remoteModel);
     if (wanxKind === 't2v') return false;
     if (wanxKind === 'i2v' || wanxKind === 'r2v') return true;
   }
@@ -355,21 +337,20 @@ export function buildModelCapabilities(model: AiModel, providerConfig?: ModelPro
       return withAdminOverrides(caps, model, remoteModel);
     }
 
-    if (providerKey === 'wanx') {
+    if (isWanxProvider(provider)) {
       const normalizedRemoteModel = (remoteModel ?? '').toLowerCase();
-      const wanx27Kind = resolveWanx27ModelKind(remoteModel);
-      const isWan27 = normalizedRemoteModel.includes('wan2.7');
+      const wanxKind = resolveWanxVideoModelKind(remoteModel);
       const isWan26 = normalizedRemoteModel.includes('wan2.6');
 
       caps.operationParamKey = null;
-      if (wanx27Kind === 't2v') {
+      if (wanxKind === 't2v') {
         caps.supports.multiImageInput = false;
         caps.limits.maxInputAudios = 1;
         caps.operations = [
           {
             key: 'video-synthesis.t2v',
             execution: 'async',
-            description: '万相 wan2.7 文生视频（提交 /services/aigc/video-generation/video-synthesis，轮询 /tasks/{id}）。',
+            description: '万相文生视频（提交 /services/aigc/video-generation/video-synthesis，轮询 /tasks/{id}）。',
             requiredParameters: ['model', 'prompt'],
             optionalParameters: ['negativePrompt', 'audioUrl', 'resolution', 'ratio', 'duration', 'prompt_extend', 'watermark', 'seed'],
           },
@@ -377,7 +358,7 @@ export function buildModelCapabilities(model: AiModel, providerConfig?: ModelPro
         return withAdminOverrides(caps, model, remoteModel);
       }
 
-      if (wanx27Kind === 'i2v') {
+      if (wanxKind === 'i2v') {
         caps.supports.multiImageInput = false;
         caps.limits.maxInputImages = 2;
         caps.limits.maxInputVideos = 1;
@@ -386,7 +367,7 @@ export function buildModelCapabilities(model: AiModel, providerConfig?: ModelPro
           {
             key: 'video-synthesis.i2v',
             execution: 'async',
-            description: '万相 wan2.7 图生视频/视频续写（提交 /services/aigc/video-generation/video-synthesis，轮询 /tasks/{id}）。',
+            description: '万相图生视频/视频续写（提交 /services/aigc/video-generation/video-synthesis，轮询 /tasks/{id}）。',
             requiredParameters: ['model'],
             optionalParameters: ['prompt', 'negativePrompt', 'firstFrame', 'lastFrame', 'firstClip', 'drivingAudio', 'resolution', 'duration', 'prompt_extend', 'watermark', 'seed'],
           },
@@ -394,7 +375,7 @@ export function buildModelCapabilities(model: AiModel, providerConfig?: ModelPro
         return withAdminOverrides(caps, model, remoteModel);
       }
 
-      if (wanx27Kind === 'r2v') {
+      if (wanxKind === 'r2v') {
         caps.supports.multiImageInput = true;
         caps.limits.maxInputImages = 5;
         caps.limits.maxInputVideos = 5;
@@ -403,7 +384,7 @@ export function buildModelCapabilities(model: AiModel, providerConfig?: ModelPro
           {
             key: 'video-synthesis.r2v',
             execution: 'async',
-            description: '万相 wan2.7 参考生视频（提交 /services/aigc/video-generation/video-synthesis，轮询 /tasks/{id}）。',
+            description: '万相参考生视频（提交 /services/aigc/video-generation/video-synthesis，轮询 /tasks/{id}）。',
             requiredParameters: ['model', 'prompt'],
             optionalParameters: ['negativePrompt', 'referenceImages', 'referenceVideos', 'referenceAudios', 'firstFrame', 'resolution', 'ratio', 'duration', 'prompt_extend', 'watermark', 'seed'],
           },
@@ -414,14 +395,14 @@ export function buildModelCapabilities(model: AiModel, providerConfig?: ModelPro
       caps.supports.multiImageInput = true;
       caps.limits.maxInputImages = 5;
       caps.limits.maxInputVideos = isWan26 ? 3 : 5;
-      caps.limits.maxInputAudios = isWan27 ? 5 : undefined;
+      caps.limits.maxInputAudios = undefined;
       caps.operations = [
         {
           key: isWan26 ? 'video-synthesis.legacy' : 'video-synthesis',
           execution: 'async',
           description: isWan26
             ? '万相 wan2.6 参考生视频（提交 /services/aigc/video-generation/video-synthesis，轮询 /tasks/{id}）。'
-            : '万相 wan2.7 视频生成（提交 /services/aigc/video-generation/video-synthesis，轮询 /tasks/{id}）。',
+            : '万相视频生成（提交 /services/aigc/video-generation/video-synthesis，轮询 /tasks/{id}）。',
           requiredParameters: ['model', 'prompt'],
           optionalParameters: isWan26
             ? ['referenceUrls', 'size', 'duration', 'shot_type', 'audio', 'watermark', 'seed']

@@ -218,7 +218,7 @@ export function buildChatVideoTaskParameters(model: AiModel, input: ChatVideoTas
     parameters.resolution = preferences.preferredResolution ?? '720P';
     parameters.duration = Number.parseInt(preferences.preferredDuration ?? '5', 10) || 5;
     parameters.watermark = false;
-    if (remoteModel?.includes('-r2v') || remoteModel?.includes('-t2v')) {
+    if (remoteModel && (/-r2v$/i.test(remoteModel) || /-t2v$/i.test(remoteModel))) {
       parameters.ratio = preferences.preferredAspectRatio ?? '16:9';
     } else {
       parameters.ratio = null;

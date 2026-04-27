@@ -1,5 +1,6 @@
 import { BaseVideoAdapter, VideoGenerateParams } from '../base/base-video.adapter';
 import { TaskStatusResponse, ValidationResult } from '../base/base-image.adapter';
+import { resolveWanxVideoModelKind } from '../../common/utils/wanx-model.util';
 
 type WanxTaskStatus =
   | 'PENDING'
@@ -13,7 +14,6 @@ type WanxI2vMediaType = 'first_frame' | 'last_frame' | 'driving_audio' | 'first_
 type WanxR2vMediaType = 'reference_image' | 'reference_video' | 'first_frame';
 type WanxMediaType = WanxI2vMediaType | WanxR2vMediaType;
 type WanxModelKind = 't2v' | 'i2v' | 'r2v' | 'unknown';
-type WanxGeneration = 'wan2.7' | 'wan2.6' | 'unknown';
 
 type WanxMediaItem = {
   type: WanxMediaType;
@@ -136,19 +136,8 @@ function resolveWanxModel(params: Record<string, unknown>) {
   return asString(params.model) ?? asString(params.wanxModel) ?? asString(params.remoteModel);
 }
 
-function resolveWanxGeneration(model: string | undefined): WanxGeneration {
-  const normalized = (model ?? '').toLowerCase();
-  if (normalized.startsWith('wan2.7')) return 'wan2.7';
-  if (normalized.startsWith('wan2.6')) return 'wan2.6';
-  return 'unknown';
-}
-
 function resolveWanxModelKind(model: string | undefined): WanxModelKind {
-  const normalized = (model ?? '').toLowerCase();
-  if (normalized.includes('-t2v')) return 't2v';
-  if (normalized.includes('-i2v')) return 'i2v';
-  if (normalized.includes('-r2v')) return 'r2v';
-  return 'unknown';
+  return resolveWanxVideoModelKind(model) ?? 'unknown';
 }
 
 function mapWanxStatus(state: string | undefined): TaskStatusResponse['status'] {
@@ -354,7 +343,7 @@ function buildWanxR2vInput(params: Record<string, unknown>): WanxStructuredMedia
   return { media, errors };
 }
 
-function validateCommonWanx27Params(params: Record<string, unknown>, errors: string[]) {
+function validateCommonWanxVideoParams(params: Record<string, unknown>, errors: string[]) {
   const prompt = asString(params.prompt);
   const negativePrompt = asString(params.negativePrompt ?? params.negative_prompt);
 
@@ -396,7 +385,7 @@ function validateCommonWanx27Params(params: Record<string, unknown>, errors: str
   }
 }
 
-function buildWanx27Body(params: Record<string, unknown>, kind: WanxModelKind) {
+function buildWanxVideoSynthesisBody(params: Record<string, unknown>, kind: WanxModelKind) {
   if (kind === 't2v') {
     const prepared = buildWanxT2vInput(params);
     const body: Record<string, unknown> = {
@@ -614,23 +603,17 @@ export class WanxVideoAdapter extends BaseVideoAdapter {
     const errors: string[] = [];
 
     const model = resolveWanxModel(raw);
-    const generation = resolveWanxGeneration(model);
     const kind = resolveWanxModelKind(model);
     const prompt = asString(raw.prompt);
 
     if (!model) errors.push('model is required (model/wanxModel/remoteModel)');
-
-    if (generation !== 'wan2.7') {
-      errors.push('wan adapter only supports wan2.7 models');
-      return { valid: false, errors };
-    }
 
     if (kind === 'unknown') {
       errors.push('model must end with -t2v, -i2v, or -r2v');
       return { valid: false, errors };
     }
 
-    validateCommonWanx27Params(raw, errors);
+    validateCommonWanxVideoParams(raw, errors);
 
     if (kind === 't2v') {
       if (!prompt) errors.push('prompt is required');
@@ -705,10 +688,9 @@ export class WanxVideoAdapter extends BaseVideoAdapter {
   transformParams(params: VideoGenerateParams): unknown {
     const raw = (params ?? {}) as Record<string, unknown>;
     const model = resolveWanxModel(raw);
-    const generation = resolveWanxGeneration(model);
     const kind = resolveWanxModelKind(model);
 
-    if (generation !== 'wan2.7' || kind === 'unknown') {
+    if (kind === 'unknown') {
       return {
         model,
         input: {
@@ -717,6 +699,6 @@ export class WanxVideoAdapter extends BaseVideoAdapter {
       };
     }
 
-    return buildWanx27Body(raw, kind);
+    return buildWanxVideoSynthesisBody(raw, kind);
   }
 }

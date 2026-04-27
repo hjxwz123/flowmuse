@@ -25,6 +25,7 @@ import {
 } from '../common/utils/task-provider-data.util';
 import { normalizeProviderKey } from '../common/utils/provider.util';
 import { canCancelVideoTask, supportsVideoTaskCancel } from '../common/utils/video-task-cancel.util';
+import { isWanxProvider, resolveWanxSiblingVideoModelKey, resolveWanxVideoModelKind } from '../common/utils/wanx-model.util';
 import { buildModelCapabilities } from '../models/model-capabilities';
 import { ChatFileParserService } from './chat-file-parser.service';
 import {
@@ -3802,20 +3803,35 @@ export class ChatService {
     model: AiModel,
     capabilities: ReturnType<typeof buildModelCapabilities>,
   ) {
-    return model.type === AiModelType.video && capabilities.supports.contextualEdit;
+    if (model.type !== AiModelType.video) return false;
+    if (isWanxProvider(model.provider)) {
+      return this.isWanxR2vVideoModel(model) && capabilities.supports.contextualEdit;
+    }
+    return capabilities.supports.contextualEdit;
   }
 
   private isWanxR2vVideoModel(model: {
     provider: string;
     modelKey?: string | null;
   }) {
-    const providerKey = normalizeProviderKey(model.provider);
-    const remoteModel = String(model.modelKey ?? '').trim().toLowerCase();
-    return (
-      (providerKey.includes('wanx') || providerKey.includes('wanxiang'))
-      && remoteModel.includes('wan2.7')
-      && remoteModel.includes('-r2v')
-    );
+    return isWanxProvider(model.provider) && resolveWanxVideoModelKind(model.modelKey) === 'r2v';
+  }
+
+  private resolveWanxT2vVideoModelOverride(model: {
+    provider: string;
+    modelKey?: string | null;
+  }) {
+    if (!this.isWanxR2vVideoModel(model)) return null;
+    return resolveWanxSiblingVideoModelKey(model.modelKey, 't2v');
+  }
+
+  private hasAnyNonEmptyMediaInput(input: {
+    currentImages: string[];
+    currentVideos: string[];
+    currentAudios: string[];
+  }) {
+    return [...input.currentImages, ...input.currentVideos, ...input.currentAudios]
+      .some((item) => typeof item === 'string' && item.trim().length > 0);
   }
 
   private isSeedance20VideoModel(model: {
@@ -4889,6 +4905,11 @@ export class ChatService {
       throw new BadRequestException('Current video model does not support audio references');
     }
 
+    const wanxTextOnlyModelOverride =
+      !params.useConversationContextEdit && !this.hasAnyNonEmptyMediaInput(params)
+        ? this.resolveWanxT2vVideoModelOverride(videoModel)
+        : null;
+
     const mergedParameters = {
       ...buildChatVideoTaskParameters(videoModel, {
         preferredAspectRatio: params.preferredAspectRatio ?? null,
@@ -4896,6 +4917,7 @@ export class ChatService {
         preferredDuration: params.preferredDuration ?? null,
       }),
       ...(params.parameters ? { ...params.parameters } : {}),
+      ...(wanxTextOnlyModelOverride ? { model: wanxTextOnlyModelOverride } : {}),
     };
     const maxInputImages = Math.max(1, videoModelCapabilities.limits.maxInputImages ?? 1);
     const maxInputVideos = Math.max(1, videoModelCapabilities.limits.maxInputVideos ?? 1);

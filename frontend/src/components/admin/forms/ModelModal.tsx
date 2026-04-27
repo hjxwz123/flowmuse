@@ -36,13 +36,13 @@ function isProviderMatch(left: string, right: string) {
   return normalizeProviderFamily(left) === normalizeProviderFamily(right)
 }
 
-function resolveWanx27VideoKind(providerValue: string, keyOrModel?: string | null) {
+function resolveWanxVideoKind(providerValue: string, keyOrModel?: string | null) {
   const provider = normalizeProviderFamily(providerValue)
   const normalizedKey = String(keyOrModel || '').trim().toLowerCase()
-  if (!provider.includes('wanx') || !normalizedKey.startsWith('wan2.7')) return null
-  if (normalizedKey.includes('-t2v')) return 't2v'
-  if (normalizedKey.includes('-i2v')) return 'i2v'
-  if (normalizedKey.includes('-r2v')) return 'r2v'
+  if (!provider.includes('wanx')) return null
+  if (/-t2v$/.test(normalizedKey)) return 't2v'
+  if (/-i2v$/.test(normalizedKey)) return 'i2v'
+  if (/-r2v$/.test(normalizedKey)) return 'r2v'
   return null
 }
 
@@ -81,7 +81,7 @@ function inferDefaultImageInput(providerValue: string, modelType: ModelType, key
     )
   }
 
-  const wanxKind = resolveWanx27VideoKind(providerValue, keyOrModel)
+  const wanxKind = resolveWanxVideoKind(providerValue, keyOrModel)
   if (wanxKind === 't2v') return false
   if (wanxKind === 'i2v' || wanxKind === 'r2v') return true
 
@@ -147,6 +147,7 @@ function inferDefaultAutoMode(providerValue: string, modelType: ModelType) {
     normalized.includes('doubao') ||
     normalized.includes('bytedance') ||
     normalized.includes('ark') ||
+    normalized.includes('wanx') ||
     normalized.includes('minimax') ||
     normalized.includes('hailuo')
   )
@@ -199,17 +200,18 @@ export function ModelModal({
   const allowResolutionAndSizeToggle = type === 'image' && isNanoBananaOrGeminiProvider
   const showSpecialCredits = type !== 'chat'
   const showModeToggleSection = type !== 'chat'
-  const wanx27VideoKind = resolveWanx27VideoKind(provider, modelKey)
-  const isWanxAutoModeLocked = type === 'video' && (wanx27VideoKind === 't2v' || wanx27VideoKind === 'i2v')
+  const wanxVideoKind = resolveWanxVideoKind(provider, modelKey)
+  const isWanxAgentAutoModeLocked = type === 'video' && (wanxVideoKind === 't2v' || wanxVideoKind === 'i2v')
 
   useEffect(() => {
-    if (!isWanxAutoModeLocked) return
+    if (!isWanxAgentAutoModeLocked) return
+    setSupportsAgentMode(false)
     setSupportsAutoMode(false)
-  }, [isWanxAutoModeLocked])
+  }, [isWanxAgentAutoModeLocked])
 
   useEffect(() => {
     if (type !== 'video') return
-    const nextWanxKind = resolveWanx27VideoKind(provider, modelKey)
+    const nextWanxKind = resolveWanxVideoKind(provider, modelKey)
     if (nextWanxKind === 't2v') {
       setSupportsImageInput(false)
       return
@@ -451,8 +453,8 @@ export function ModelModal({
           supportsResolutionSelect: allowResolutionAndSizeToggle ? supportsResolutionSelect : false,
           supportsSizeSelect: allowResolutionAndSizeToggle ? supportsSizeSelect : false,
           supportsQuickMode: type === 'chat' ? null : supportsQuickMode,
-          supportsAgentMode: type === 'chat' ? null : supportsAgentMode,
-          supportsAutoMode: type === 'chat' ? null : isWanxAutoModeLocked ? false : supportsAutoMode,
+          supportsAgentMode: type === 'chat' ? null : isWanxAgentAutoModeLocked ? false : supportsAgentMode,
+          supportsAutoMode: type === 'chat' ? null : isWanxAgentAutoModeLocked ? false : supportsAutoMode,
           freeUserDailyQuestionLimit: type === 'chat' ? parsedFreeUserDailyQuestionLimit : null,
           memberDailyQuestionLimit: type === 'chat' ? parsedMemberDailyQuestionLimit : null,
           maxContextRounds: type === 'chat' ? parsedMaxContextRounds : null,
@@ -476,8 +478,8 @@ export function ModelModal({
           supportsResolutionSelect: allowResolutionAndSizeToggle ? supportsResolutionSelect : false,
           supportsSizeSelect: allowResolutionAndSizeToggle ? supportsSizeSelect : false,
           supportsQuickMode: type === 'chat' ? null : supportsQuickMode,
-          supportsAgentMode: type === 'chat' ? null : supportsAgentMode,
-          supportsAutoMode: type === 'chat' ? null : isWanxAutoModeLocked ? false : supportsAutoMode,
+          supportsAgentMode: type === 'chat' ? null : isWanxAgentAutoModeLocked ? false : supportsAgentMode,
+          supportsAutoMode: type === 'chat' ? null : isWanxAgentAutoModeLocked ? false : supportsAutoMode,
           freeUserDailyQuestionLimit: type === 'chat' ? parsedFreeUserDailyQuestionLimit : null,
           memberDailyQuestionLimit: type === 'chat' ? parsedMemberDailyQuestionLimit : null,
           maxContextRounds: type === 'chat' ? parsedMaxContextRounds : null,
@@ -1003,38 +1005,43 @@ export function ModelModal({
 
               <button
                 type="button"
-                onClick={() => setSupportsAgentMode(!supportsAgentMode)}
+                onClick={() => {
+                  if (isWanxAgentAutoModeLocked) return
+                  setSupportsAgentMode(!supportsAgentMode)
+                }}
                 className={cn(
                   'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all text-left',
+                  isWanxAgentAutoModeLocked && 'cursor-not-allowed opacity-60',
                   supportsAgentMode
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
                     : 'border-stone-300 bg-stone-50 text-stone-600'
                 )}
+                disabled={isWanxAgentAutoModeLocked}
               >
                 支持 Agent 模式
                 <span className="mt-1 block text-xs font-normal text-stone-500">
-                  控制聊天页 Agent 模式是否显示该模型
+                  {isWanxAgentAutoModeLocked ? '万相 t2v / i2v 不支持' : '控制聊天页 Agent 模式是否显示该模型'}
                 </span>
               </button>
 
               <button
                 type="button"
                 onClick={() => {
-                  if (isWanxAutoModeLocked) return
+                  if (isWanxAgentAutoModeLocked) return
                   setSupportsAutoMode(!supportsAutoMode)
                 }}
                 className={cn(
                   'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all text-left',
-                  isWanxAutoModeLocked && 'cursor-not-allowed opacity-60',
+                  isWanxAgentAutoModeLocked && 'cursor-not-allowed opacity-60',
                   supportsAutoMode
                     ? 'border-purple-500 bg-purple-50 text-purple-700'
                     : 'border-stone-300 bg-stone-50 text-stone-600'
                 )}
-                disabled={isWanxAutoModeLocked}
+                disabled={isWanxAgentAutoModeLocked}
               >
                 支持全自动模式
                 <span className="mt-1 block text-xs font-normal text-stone-500">
-                  {isWanxAutoModeLocked ? 'wan2.7-t2v / wan2.7-i2v 不支持' : '控制聊天页全自动模式是否显示该模型'}
+                  {isWanxAgentAutoModeLocked ? '万相 t2v / i2v 不支持' : '控制聊天页全自动模式是否显示该模型'}
                 </span>
               </button>
             </div>

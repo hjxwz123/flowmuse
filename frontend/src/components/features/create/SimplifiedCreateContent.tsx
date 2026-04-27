@@ -216,15 +216,15 @@ function resolveWanxModelName(model?: Pick<ModelWithCapabilities, 'modelKey' | '
 
 function resolveWanxGeneration(modelName?: string | null) {
   const normalized = String(modelName || '').trim().toLowerCase()
-  if (normalized.startsWith('wan2.7')) return 'wan2.7'
-  return null
+  const match = normalized.match(/^(.+)-(t2v|i2v|r2v)$/)
+  return match?.[1] ?? null
 }
 
 function resolveWanxModelKind(modelName?: string | null): WanxModelKind | null {
   const normalized = String(modelName || '').trim().toLowerCase()
-  if (normalized.includes('-t2v')) return 't2v'
-  if (normalized.includes('-i2v')) return 'i2v'
-  if (normalized.includes('-r2v')) return 'r2v'
+  if (/-t2v$/.test(normalized)) return 't2v'
+  if (/-i2v$/.test(normalized)) return 'i2v'
+  if (/-r2v$/.test(normalized)) return 'r2v'
   return null
 }
 
@@ -236,7 +236,10 @@ function buildCreateSelectableModels(
     return sourceModels
   }
 
-  const wanxCandidates = new Map<string, Partial<Record<WanxModelKind, ModelWithCapabilities>>>()
+  const wanxCandidates = new Map<string, {
+    generation: string
+    variants: Partial<Record<WanxModelKind, ModelWithCapabilities>>
+  }>()
 
   sourceModels.forEach((model) => {
     const provider = normalizeProviderFamily(model.provider)
@@ -245,23 +248,24 @@ function buildCreateSelectableModels(
     const modelName = resolveWanxModelName(model)
     const generation = resolveWanxGeneration(modelName)
     const kind = resolveWanxModelKind(modelName)
-    if (generation !== 'wan2.7' || !kind) return
+    if (!generation || !kind) return
 
-    const current = wanxCandidates.get(generation) ?? {}
-    if (!current[kind]) {
-      current[kind] = model
-      wanxCandidates.set(generation, current)
+    const groupKey = `${provider}:${model.channelId}:${generation}`
+    const current = wanxCandidates.get(groupKey) ?? { generation, variants: {} }
+    if (!current.variants[kind]) {
+      current.variants[kind] = model
+      wanxCandidates.set(groupKey, current)
     }
   })
 
-  const mergedGenerations = new Set<string>()
-  wanxCandidates.forEach((bundle, generation) => {
-    if (bundle.t2v && bundle.i2v && bundle.r2v) {
-      mergedGenerations.add(generation)
+  const mergedGroups = new Set<string>()
+  wanxCandidates.forEach((bundle, groupKey) => {
+    if (bundle.variants.t2v && bundle.variants.i2v && bundle.variants.r2v) {
+      mergedGroups.add(groupKey)
     }
   })
 
-  const emittedGenerations = new Set<string>()
+  const emittedGroups = new Set<string>()
   const result: CreateSelectableModel[] = []
 
   sourceModels.forEach((model) => {
@@ -269,30 +273,31 @@ function buildCreateSelectableModels(
     const modelName = resolveWanxModelName(model)
     const generation = provider.includes('wanx') ? resolveWanxGeneration(modelName) : null
     const kind = provider.includes('wanx') ? resolveWanxModelKind(modelName) : null
+    const groupKey = generation ? `${provider}:${model.channelId}:${generation}` : null
 
-    if (!generation || !kind || !mergedGenerations.has(generation)) {
+    if (!generation || !kind || !groupKey || !mergedGroups.has(groupKey)) {
       result.push(model)
       return
     }
 
-    if (emittedGenerations.has(generation)) {
+    if (emittedGroups.has(groupKey)) {
       return
     }
 
-    const bundle = wanxCandidates.get(generation)
-    if (!bundle?.t2v || !bundle?.i2v || !bundle?.r2v) {
+    const bundle = wanxCandidates.get(groupKey)
+    if (!bundle?.variants.t2v || !bundle?.variants.i2v || !bundle?.variants.r2v) {
       result.push(model)
       return
     }
 
-    emittedGenerations.add(generation)
+    emittedGroups.add(groupKey)
     result.push({
-      ...bundle.r2v,
+      ...bundle.variants.r2v,
       wanxMergedBundle: {
-        generation,
-        t2v: bundle.t2v,
-        i2v: bundle.i2v,
-        r2v: bundle.r2v,
+        generation: bundle.generation,
+        t2v: bundle.variants.t2v,
+        i2v: bundle.variants.i2v,
+        r2v: bundle.variants.r2v,
       },
     })
   })
@@ -763,8 +768,8 @@ export function SimplifiedCreateContent() {
     return activeTab === 'video' && provider.includes('wanx')
   }, [selectedModel, activeTab])
 
-  const isWanx27Video = useMemo(() => {
-    return isWanxVideo && resolveWanxGeneration(resolveWanxModelName(selectedModel)) === 'wan2.7'
+  const isWanxSeriesVideo = useMemo(() => {
+    return isWanxVideo && Boolean(resolveWanxGeneration(resolveWanxModelName(selectedModel)))
   }, [selectedModel, isWanxVideo])
 
   const isWanxMergedVideo = useMemo(
@@ -874,8 +879,8 @@ export function SimplifiedCreateContent() {
   ])
 
   const wanxSupportsAudioInput = useMemo(
-    () => isWanx27Video,
-    [isWanx27Video]
+    () => isWanxSeriesVideo,
+    [isWanxSeriesVideo]
   )
 
   const wanxCanCustomizeRatio = useMemo(
@@ -1220,15 +1225,15 @@ export function SimplifiedCreateContent() {
         : prev
     })
     setWanxFirstFrameImages((prev) => {
-      if (!isWanx27Video) return []
+      if (!isWanxSeriesVideo) return []
       return prev.slice(0, 1)
     })
     setWanxLastFrameImages((prev) => {
-      if (!isWanx27Video) return []
+      if (!isWanxSeriesVideo) return []
       return prev.slice(0, 1)
     })
   }, [
-    isWanx27Video,
+    isWanxSeriesVideo,
     isWanxVideo,
     selectedModelId,
     wanxReferenceAudioUploadMaxFiles,
@@ -3021,7 +3026,7 @@ export function SimplifiedCreateContent() {
                 selectedModel={selectedModel}
                 isWanxVideo={isWanxVideo}
                 isWanxMergedVideo={isWanxMergedVideo}
-                isWanx27Video={isWanx27Video}
+                isWanxSeriesVideo={isWanxSeriesVideo}
                 wanxResolvedModelKind={wanxResolvedModelKind}
                 wanxSupportsAudioInput={wanxSupportsAudioInput}
                 wanxCanCustomizeRatio={wanxCanCustomizeRatio}

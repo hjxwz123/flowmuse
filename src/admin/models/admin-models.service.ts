@@ -1,28 +1,20 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { AiModelType, TaskStatus } from '@prisma/client';
-import { Prisma } from '@prisma/client';
+import { AiModel, AiModelType, Prisma, TaskStatus } from '@prisma/client';
 
 import { CreditsService } from '../../credits/credits.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import {
+  buildWanxVideoModelKey,
+  isWanxProvider,
+  parseWanxVideoModelKey,
+  resolveWanxVideoBaseModelKey,
+  resolveWanxVideoModelKind,
+  WANX_VIDEO_MODEL_KINDS,
+  type WanxVideoModelKind,
+} from '../../common/utils/wanx-model.util';
 import { CreateModelDto } from './dto/create-model.dto';
 import { ReorderModelsDto } from './dto/reorder-models.dto';
 import { UpdateModelDto } from './dto/update-model.dto';
-
-function normalizeProviderFamily(providerValue: string | null | undefined) {
-  const normalized = String(providerValue ?? '').trim().toLowerCase();
-  if (normalized === 'wanxiang') return 'wanx';
-  return normalized;
-}
-
-function resolveWanx27ModelKind(providerValue: string | null | undefined, modelKey: string | null | undefined) {
-  const provider = normalizeProviderFamily(providerValue);
-  const normalizedModelKey = String(modelKey ?? '').trim().toLowerCase();
-  if (!provider.includes('wanx') || !normalizedModelKey.startsWith('wan2.7')) return null;
-  if (normalizedModelKey.includes('-t2v')) return 't2v';
-  if (normalizedModelKey.includes('-i2v')) return 'i2v';
-  if (normalizedModelKey.includes('-r2v')) return 'r2v';
-  return null;
-}
 
 @Injectable()
 export class AdminModelsService {
@@ -34,23 +26,121 @@ export class AdminModelsService {
   ) {}
 
   private normalizeModeFlags(
-    dto: Pick<CreateModelDto, 'provider' | 'modelKey' | 'type' | 'supportsAutoMode'>,
+    dto: {
+      provider: string;
+      modelKey: string;
+      type: CreateModelDto['type'];
+      supportsAgentMode?: boolean | null;
+      supportsAutoMode?: boolean | null;
+    },
   ) {
-    const wanxKind = dto.type === 'video'
-      ? resolveWanx27ModelKind(dto.provider, dto.modelKey)
+    const wanxKind = dto.type === 'video' && isWanxProvider(dto.provider)
+      ? resolveWanxVideoModelKind(dto.modelKey)
       : null;
 
     if (wanxKind === 't2v' || wanxKind === 'i2v') {
       return {
+        isAgentModeForcedOff: true,
         isAutoModeForcedOff: true,
+        supportsAgentMode: false,
         supportsAutoMode: false,
       };
     }
 
     return {
+      isAgentModeForcedOff: false,
       isAutoModeForcedOff: false,
+      supportsAgentMode: dto.supportsAgentMode ?? null,
       supportsAutoMode: dto.supportsAutoMode ?? null,
     };
+  }
+
+  private parseChannelId(rawChannelId: string) {
+    try {
+      return BigInt(rawChannelId);
+    } catch {
+      throw new BadRequestException('Invalid channelId');
+    }
+  }
+
+  private shouldExpandWanxVideoCreate(dto: CreateModelDto) {
+    if (dto.type !== 'video') return false;
+    if (!isWanxProvider(dto.provider)) return false;
+    return !parseWanxVideoModelKey(dto.modelKey);
+  }
+
+  private buildCreateData(
+    dto: CreateModelDto,
+    channelId: bigint,
+    overrides?: {
+      modelKey?: string;
+      supportsImageInput?: boolean | null;
+      supportsAgentMode?: boolean | null;
+      supportsAutoMode?: boolean | null;
+      sortOrder?: number;
+    },
+  ): Prisma.AiModelUncheckedCreateInput {
+    const modelKey = overrides?.modelKey ?? dto.modelKey;
+    const supportsAgentMode = overrides?.supportsAgentMode ?? dto.supportsAgentMode ?? null;
+    const supportsAutoMode = overrides?.supportsAutoMode ?? dto.supportsAutoMode ?? null;
+    const normalizedModeFlags = this.normalizeModeFlags({
+      provider: dto.provider,
+      modelKey,
+      type: dto.type,
+      supportsAgentMode,
+      supportsAutoMode,
+    });
+
+    return {
+      name: dto.name,
+      modelKey,
+      icon: typeof dto.icon === 'string' ? dto.icon.trim() || null : null,
+      type: dto.type as AiModelType,
+      provider: dto.provider,
+      channelId,
+      creditsPerUse: dto.creditsPerUse,
+      specialCreditsPerUse: dto.specialCreditsPerUse ?? null,
+      extraCreditsConfig: dto.extraCreditsConfig as Prisma.InputJsonValue,
+      defaultParams: dto.defaultParams as Prisma.InputJsonValue,
+      paramConstraints: dto.paramConstraints as Prisma.InputJsonValue,
+      isActive: dto.isActive ?? true,
+      sortOrder: overrides?.sortOrder ?? dto.sortOrder ?? 0,
+      description: dto.description,
+      supportsImageInput: overrides?.supportsImageInput ?? dto.supportsImageInput ?? null,
+      supportsResolutionSelect: dto.supportsResolutionSelect ?? null,
+      supportsSizeSelect: dto.supportsSizeSelect ?? null,
+      supportsQuickMode: dto.supportsQuickMode ?? null,
+      supportsAgentMode: normalizedModeFlags.isAgentModeForcedOff
+        ? false
+        : normalizedModeFlags.supportsAgentMode,
+      supportsAutoMode: normalizedModeFlags.isAutoModeForcedOff
+        ? false
+        : normalizedModeFlags.supportsAutoMode,
+      freeUserDailyQuestionLimit: dto.freeUserDailyQuestionLimit ?? null,
+      memberDailyQuestionLimit: dto.memberDailyQuestionLimit ?? null,
+      maxContextRounds: dto.maxContextRounds ?? null,
+    };
+  }
+
+  private buildWanxVideoCreateOverrides(dto: CreateModelDto): Array<{
+    kind: WanxVideoModelKind;
+    modelKey: string;
+    supportsImageInput: boolean;
+    supportsAgentMode: boolean | null;
+    supportsAutoMode: boolean | null;
+    sortOrder: number;
+  }> {
+    const baseModelKey = resolveWanxVideoBaseModelKey(dto.modelKey);
+    const baseSortOrder = dto.sortOrder ?? 0;
+
+    return WANX_VIDEO_MODEL_KINDS.map((kind, index) => ({
+      kind,
+      modelKey: buildWanxVideoModelKey(baseModelKey, kind),
+      supportsImageInput: kind !== 't2v',
+      supportsAgentMode: kind === 'r2v' ? dto.supportsAgentMode ?? null : false,
+      supportsAutoMode: kind === 'r2v' ? dto.supportsAutoMode ?? null : false,
+      sortOrder: baseSortOrder + index,
+    }));
   }
 
   list() {
@@ -63,45 +153,33 @@ export class AdminModelsService {
     });
   }
 
-  create(dto: CreateModelDto) {
-    const channelId = (() => {
-      try {
-        return BigInt(dto.channelId);
-      } catch {
-        throw new BadRequestException('Invalid channelId');
-      }
-    })();
+  async create(dto: CreateModelDto) {
+    const channelId = this.parseChannelId(dto.channelId);
 
-    const normalizedModeFlags = this.normalizeModeFlags(dto);
+    if (this.shouldExpandWanxVideoCreate(dto)) {
+      const variants = this.buildWanxVideoCreateOverrides(dto);
+      return this.prisma.$transaction(async (tx) => {
+        let r2vModel: AiModel | null = null;
+
+        for (const variant of variants) {
+          const created = await tx.aiModel.create({
+            data: this.buildCreateData(dto, channelId, variant),
+          });
+          if (variant.kind === 'r2v') {
+            r2vModel = created;
+          }
+        }
+
+        if (!r2vModel) {
+          throw new BadRequestException('Failed to create Wanx r2v model');
+        }
+
+        return r2vModel;
+      });
+    }
 
     return this.prisma.aiModel.create({
-      data: {
-        name: dto.name,
-        modelKey: dto.modelKey,
-        icon: typeof dto.icon === 'string' ? dto.icon.trim() || null : null,
-        type: dto.type as AiModelType,
-        provider: dto.provider,
-        channelId,
-        creditsPerUse: dto.creditsPerUse,
-        specialCreditsPerUse: dto.specialCreditsPerUse ?? null,
-        extraCreditsConfig: dto.extraCreditsConfig as Prisma.InputJsonValue,
-        defaultParams: dto.defaultParams as Prisma.InputJsonValue,
-        paramConstraints: dto.paramConstraints as Prisma.InputJsonValue,
-        isActive: dto.isActive ?? true,
-        sortOrder: dto.sortOrder ?? 0,
-        description: dto.description,
-        supportsImageInput: dto.supportsImageInput ?? null,
-        supportsResolutionSelect: dto.supportsResolutionSelect ?? null,
-        supportsSizeSelect: dto.supportsSizeSelect ?? null,
-        supportsQuickMode: dto.supportsQuickMode ?? null,
-        supportsAgentMode: dto.supportsAgentMode ?? null,
-        supportsAutoMode: normalizedModeFlags.isAutoModeForcedOff
-          ? false
-          : normalizedModeFlags.supportsAutoMode,
-        freeUserDailyQuestionLimit: dto.freeUserDailyQuestionLimit ?? null,
-        memberDailyQuestionLimit: dto.memberDailyQuestionLimit ?? null,
-        maxContextRounds: dto.maxContextRounds ?? null,
-      },
+      data: this.buildCreateData(dto, channelId),
     });
   }
 
@@ -169,6 +247,7 @@ export class AdminModelsService {
       provider: dto.provider ?? current.provider,
       modelKey: dto.modelKey ?? current.modelKey,
       type: (dto.type ?? current.type) as CreateModelDto['type'],
+      supportsAgentMode: dto.supportsAgentMode,
       supportsAutoMode: dto.supportsAutoMode,
     });
 
@@ -193,7 +272,11 @@ export class AdminModelsService {
         supportsResolutionSelect: dto.supportsResolutionSelect,
         supportsSizeSelect: dto.supportsSizeSelect,
         supportsQuickMode: dto.supportsQuickMode,
-        supportsAgentMode: dto.supportsAgentMode,
+        supportsAgentMode: normalizedModeFlags.isAgentModeForcedOff
+          ? false
+          : dto.supportsAgentMode === undefined
+            ? undefined
+            : normalizedModeFlags.supportsAgentMode,
         supportsAutoMode: normalizedModeFlags.isAutoModeForcedOff
           ? false
           : dto.supportsAutoMode === undefined

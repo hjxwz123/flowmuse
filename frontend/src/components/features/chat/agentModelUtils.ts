@@ -63,9 +63,13 @@ export function isWanxR2vChatAgentVideoModel(model: ModelWithCapabilities | null
   const remoteModel = String(model.capabilities?.remoteModel ?? model.modelKey ?? '').trim().toLowerCase()
   return (
     provider.includes('wanx') &&
-    remoteModel.includes('wan2.7') &&
-    remoteModel.includes('-r2v')
+    /-r2v$/.test(remoteModel)
   )
+}
+
+function isWanxChatAgentVideoModel(model: ModelWithCapabilities | null) {
+  if (!model || model.type !== 'video') return false
+  return normalizeProviderFamily(model.provider).includes('wanx')
 }
 
 function legacySupportsChatAutoImageModel(model: ModelWithCapabilities | null) {
@@ -103,6 +107,7 @@ export function supportsChatAgentImageModel(model: ModelWithCapabilities | null)
 
 export function supportsChatAgentVideoModel(model: ModelWithCapabilities | null) {
   if (!model || model.type !== 'video') return false
+  if (isWanxChatAgentVideoModel(model) && !isWanxR2vChatAgentVideoModel(model)) return false
   return typeof model.supportsAgentMode === 'boolean'
     ? model.supportsAgentMode
     : legacySupportsChatAgentVideoModel(model)
@@ -117,6 +122,7 @@ export function supportsChatAutoImageModel(model: ModelWithCapabilities | null) 
 
 export function supportsChatAutoVideoModel(model: ModelWithCapabilities | null) {
   if (!model || model.type !== 'video') return false
+  if (isWanxChatAgentVideoModel(model) && !isWanxR2vChatAgentVideoModel(model)) return false
   return typeof model.supportsAutoMode === 'boolean'
     ? model.supportsAutoMode
     : legacySupportsChatAutoVideoModel(model)
