@@ -25,7 +25,7 @@ import { GenerateProjectDescriptionDto } from './dto/generate-project-descriptio
 import { GenerateProjectInspirationPromptDto } from './dto/generate-project-inspiration-prompt.dto';
 import { ImportProjectAssetsDto } from './dto/import-project-assets.dto';
 import { ListImportableWorksDto } from './dto/list-importable-works.dto';
-import { MergeProjectStoryboardDto } from './dto/merge-project-storyboard.dto';
+import { MergeProjectStoryboardDto, type ProjectStoryboardTransitionType } from './dto/merge-project-storyboard.dto';
 import { UpdateProjectAssetDto } from './dto/update-project-asset.dto';
 import { UpdateProjectInspirationDto } from './dto/update-project-inspiration.dto';
 import { UpdateProjectPromptDto } from './dto/update-project-prompt.dto';
@@ -69,6 +69,22 @@ const AUTO_PROJECT_MERGED_STORYBOARD_SENTINEL = '__auto_project_storyboard_merge
 const STORYBOARD_MERGE_WIDTH = 1280;
 const STORYBOARD_MERGE_HEIGHT = 720;
 const STORYBOARD_MERGE_FPS = 24;
+const STORYBOARD_TRANSITION_DEFAULT_DURATION: Record<ProjectStoryboardTransitionType, number> = {
+  cut: 0,
+  crossfade: 0.45,
+  glitch: 0.35,
+  zoom: 0.45,
+  lightleak: 0.4,
+  blur: 0.45,
+};
+const STORYBOARD_TRANSITION_FFMPEG: Record<ProjectStoryboardTransitionType, string | null> = {
+  cut: null,
+  crossfade: 'dissolve',
+  glitch: 'pixelize',
+  zoom: 'zoomin',
+  lightleak: 'fadewhite',
+  blur: 'hblur',
+};
 
 type CompletedStoryboardVideo = {
   shotId: string;
@@ -87,6 +103,14 @@ type StoryboardTaskSnapshot = {
   resultUrl: string | null;
   thumbnailUrl: string | null;
   errorMessage: string | null;
+};
+
+type NormalizedStoryboardTransition = {
+  fromShotId: string;
+  toShotId: string;
+  type: ProjectStoryboardTransitionType;
+  duration: number;
+  ffmpegTransition: string | null;
 };
 
 type StoryboardTaskHint = {
@@ -1082,6 +1106,23 @@ export class ProjectsService {
     }
   }
 
+  private async probeStoryboardClipDuration(inputPath: string) {
+    const stdout = await this.runFfprobe([
+      '-v',
+      'error',
+      '-show_entries',
+      'format=duration',
+      '-of',
+      'default=noprint_wrappers=1:nokey=1',
+      inputPath,
+    ]);
+    const duration = Number.parseFloat(stdout.trim());
+    if (!Number.isFinite(duration) || duration <= 0) {
+      throw new BadRequestException('Failed to inspect storyboard video duration');
+    }
+    return duration;
+  }
+
   private async normalizeStoryboardClip(input: {
     inputPath: string;
     outputPath: string;
@@ -1166,6 +1207,46 @@ export class ProjectsService {
     ]);
   }
 
+  private normalizeStoryboardTransitions(
+    orderedShotIds: string[],
+    dtoTransitions: MergeProjectStoryboardDto['transitions'],
+  ): NormalizedStoryboardTransition[] {
+    if (orderedShotIds.length <= 1) return [];
+
+    const transitionByPair = new Map<string, NonNullable<MergeProjectStoryboardDto['transitions']>[number]>();
+    for (const transition of dtoTransitions ?? []) {
+      const fromShotId = trimText(transition.fromShotId);
+      const toShotId = trimText(transition.toShotId);
+      if (!fromShotId || !toShotId) continue;
+      transitionByPair.set(`${fromShotId}→${toShotId}`, transition);
+    }
+
+    return orderedShotIds.slice(0, -1).map((fromShotId, index) => {
+      const toShotId = orderedShotIds[index + 1];
+      const transition = transitionByPair.get(`${fromShotId}→${toShotId}`);
+      const type = transition?.type && Object.prototype.hasOwnProperty.call(STORYBOARD_TRANSITION_FFMPEG, transition.type)
+        ? transition.type
+        : 'cut';
+      const defaultDuration = STORYBOARD_TRANSITION_DEFAULT_DURATION[type];
+      const rawDuration = typeof transition?.duration === 'number' ? transition.duration : defaultDuration;
+      const duration = type === 'cut'
+        ? 0
+        : Math.min(1.5, Math.max(0.15, Number.isFinite(rawDuration) ? rawDuration : defaultDuration));
+
+      return {
+        fromShotId,
+        toShotId,
+        type,
+        duration,
+        ffmpegTransition: STORYBOARD_TRANSITION_FFMPEG[type],
+      };
+    });
+  }
+
+  private hasStoryboardVisualTransitions(transitions: NormalizedStoryboardTransition[]) {
+    return transitions.some((transition) => transition.ffmpegTransition && transition.duration > 0);
+  }
+
   private async concatNormalizedStoryboardClips(inputPaths: string[], outputPath: string, hasAudio: boolean) {
     if (inputPaths.length === 1) {
       await copyFile(inputPaths[0], outputPath);
@@ -1191,6 +1272,110 @@ export class ProjectsService {
         '[outa]',
       );
     }
+    args.push(
+      '-c:v',
+      'libx264',
+      '-preset',
+      'veryfast',
+      '-crf',
+      '23',
+      '-pix_fmt',
+      'yuv420p',
+    );
+    if (hasAudio) {
+      args.push(
+        '-c:a',
+        'aac',
+        '-ar',
+        '48000',
+        '-ac',
+        '2',
+        '-b:a',
+        '192k',
+      );
+    }
+    args.push(
+      '-movflags',
+      '+faststart',
+      outputPath,
+    );
+
+    await this.runFfmpeg(args);
+  }
+
+  private async renderNormalizedStoryboardClipsWithTransitions(input: {
+    inputPaths: string[];
+    outputPath: string;
+    hasAudio: boolean;
+    transitions: NormalizedStoryboardTransition[];
+    durations: number[];
+  }) {
+    const { inputPaths, outputPath, hasAudio, transitions, durations } = input;
+    if (inputPaths.length === 1) {
+      await copyFile(inputPaths[0], outputPath);
+      return;
+    }
+
+    const args = ['-y'];
+    for (const inputPath of inputPaths) {
+      args.push('-i', inputPath);
+    }
+
+    const label = (value: string) => `[${value}]`;
+    const filters: string[] = [];
+    let currentVideo = '0:v';
+    let currentAudio = hasAudio ? '0:a' : null;
+    let currentDuration = durations[0] ?? 0;
+
+    for (let index = 1; index < inputPaths.length; index += 1) {
+      const transition = transitions[index - 1] ?? {
+        fromShotId: '',
+        toShotId: '',
+        type: 'cut' as ProjectStoryboardTransitionType,
+        duration: 0,
+        ffmpegTransition: null,
+      };
+      const nextVideo = `${index}:v`;
+      const nextAudio = hasAudio ? `${index}:a` : null;
+      const outputVideo = `v${index}`;
+      const outputAudio = `a${index}`;
+      const nextDuration = durations[index] ?? 0;
+
+      const maxTransitionDuration = Math.max(0, Math.min(currentDuration, nextDuration) - 0.1);
+      const duration = Math.min(transition.duration, maxTransitionDuration);
+
+      if (!transition.ffmpegTransition || duration < 0.12) {
+        filters.push(`${label(currentVideo)}${label(nextVideo)}concat=n=2:v=1:a=0${label(outputVideo)}`);
+        if (hasAudio && currentAudio && nextAudio) {
+          filters.push(`${label(currentAudio)}${label(nextAudio)}concat=n=2:v=0:a=1${label(outputAudio)}`);
+          currentAudio = outputAudio;
+        }
+        currentDuration += nextDuration;
+      } else {
+        const offset = Math.max(0, currentDuration - duration);
+        filters.push(
+          `${label(currentVideo)}${label(nextVideo)}xfade=transition=${transition.ffmpegTransition}:duration=${duration.toFixed(3)}:offset=${offset.toFixed(3)}${label(outputVideo)}`,
+        );
+        if (hasAudio && currentAudio && nextAudio) {
+          filters.push(`${label(currentAudio)}${label(nextAudio)}acrossfade=d=${duration.toFixed(3)}:c1=tri:c2=tri${label(outputAudio)}`);
+          currentAudio = outputAudio;
+        }
+        currentDuration += nextDuration - duration;
+      }
+
+      currentVideo = outputVideo;
+    }
+
+    args.push(
+      '-filter_complex',
+      filters.join(';'),
+      '-map',
+      label(currentVideo),
+    );
+    if (hasAudio && currentAudio) {
+      args.push('-map', label(currentAudio));
+    }
+
     args.push(
       '-c:v',
       'libx264',
@@ -2413,6 +2598,9 @@ export class ProjectsService {
     const storyboardInputs = orderedShotIds
       .map((shotId) => latestStoryboardByShotId.get(shotId) ?? null)
       .filter((item): item is NonNullable<typeof item> => Boolean(item));
+    const transitions = this.normalizeStoryboardTransitions(orderedShotIds, dto?.transitions);
+    const hasVisualTransitions = this.hasStoryboardVisualTransitions(transitions);
+    const muteExport = dto?.mute === true;
 
     const tempDir = await mkdtemp(join(tmpdir(), 'auto-project-merge-'));
 
@@ -2440,18 +2628,33 @@ export class ProjectsService {
       }
 
       const normalizedPaths: string[] = [];
+      const normalizedDurations: number[] = [];
+      const preserveAudio = hasAnyAudio && !muteExport;
       for (const input of preparedInputs) {
         await this.normalizeStoryboardClip({
           inputPath: input.inputPath,
           outputPath: input.normalizedPath,
-          preserveAudio: hasAnyAudio,
+          preserveAudio,
           sourceHasAudio: input.sourceHasAudio,
         });
         normalizedPaths.push(input.normalizedPath);
+        if (hasVisualTransitions) {
+          normalizedDurations.push(await this.probeStoryboardClipDuration(input.normalizedPath));
+        }
       }
 
       const mergedOutputPath = join(tempDir, 'merged-storyboard.mp4');
-      await this.concatNormalizedStoryboardClips(normalizedPaths, mergedOutputPath, hasAnyAudio);
+      if (hasVisualTransitions) {
+        await this.renderNormalizedStoryboardClipsWithTransitions({
+          inputPaths: normalizedPaths,
+          outputPath: mergedOutputPath,
+          hasAudio: preserveAudio,
+          transitions,
+          durations: normalizedDurations,
+        });
+      } else {
+        await this.concatNormalizedStoryboardClips(normalizedPaths, mergedOutputPath, preserveAudio);
+      }
 
       const mergedBuffer = await readFile(mergedOutputPath);
       const fileName = normalizeUploadedFileName(
@@ -2460,7 +2663,7 @@ export class ProjectsService {
       const stored = await this.storage.saveProjectVideoUpload(mergedBuffer, fileName, 'video/mp4');
 
       const title = this.buildMergedStoryboardTitle(project.name);
-      const description = this.buildMergedStoryboardDescription(storyboardInputs.length, hasAnyAudio);
+      const description = this.buildMergedStoryboardDescription(storyboardInputs.length, preserveAudio);
       const sourcePrompt = this.buildMergedStoryboardSourcePrompt(orderedShotIds);
 
       const asset = await this.prisma.$transaction(async (tx) => {

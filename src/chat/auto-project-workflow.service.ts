@@ -138,7 +138,7 @@ type AutoProjectOrderedMediaInput = {
 type AutoProjectShotExecutionTarget = {
   shot: AutoProjectShotPlanItem;
   shotIndex: number;
-  continuityReferences: AutoProjectOrderedReferenceAsset[];
+  previousVideoStyleReferences: AutoProjectOrderedReferenceAsset[];
 };
 
 type AutoProjectSetupImageTaskEntry = {
@@ -1043,7 +1043,7 @@ export class AutoProjectWorkflowService {
       preferChinese: params.preferChinese,
       onStatus: params.onStatus,
       workflow: previousWorkflow,
-      continuityReferences: target.value.continuityReferences,
+      previousVideoStyleReferences: target.value.previousVideoStyleReferences,
     });
 
     if (executed.taskRefs.length === 0 && executed.failures.length > 0) {
@@ -2505,6 +2505,7 @@ export class AutoProjectWorkflowService {
       '当某个 preference 字段没有可选值时，请返回 null。',
       '使用参考素材时，必须保留系统给出的方括号编号，例如 [图1]/[视频1]/[音频1]，并严格遵循上传顺序。数组索引 0 对应 [图1]/[视频1]/[音频1]。',
       'referenceAssetIds 与输入数组的映射顺序必须保持一致。',
+      '分镜视频生成阶段不要把已生成的最终分镜视频、上一镜成片或尾帧当作 referenceAssetIds；优先使用角色/主体参考图、道具图和场景图。',
       '禁止编造 referenceAssetIds。',
       'schema 字段名保持不变。characters[] 和 referenceCharacterIds 是通用主体锚点，既可以表示人物，也可以表示非人核心主体。',
       '必须根据用户主题与视频类型来选择核心主体，而不是强行设成人类角色。例如：纪录片可以聚焦动物或物种，广告片可以聚焦产品或包装，宇宙题材可以聚焦星球、恒星、飞船或其他天体。',
@@ -2513,7 +2514,7 @@ export class AutoProjectWorkflowService {
       'shots[].prompt 不要求固定标题格式，但最终内容本身必须明确覆盖这些信息：镜头设定（景别、机位、单一主运镜、总时长）、剧情目标（主体是谁、做什么动作、保持什么情绪）、总时长拆成 3 段的执行逻辑（开场进入 / 中段主动作 / 结尾收束）、台词同步要求或无台词时的呼吸眼神肢体表达、可衔接下一镜头的结束姿态、一致性约束、风格补充、质量约束。',
       '每条 shots[].prompt 都必须把该镜总时长拆成 3 段来描述：开场进入、中段主动作、结尾收束。',
       '当 shots[].prompt 存在对白、口播或台词表演时，必须明确要求口型与停顿同步；当没有台词时，也要明确要求靠呼吸、眼神、肢体动作来表达情绪。',
-      '当 shot 使用了参考图片、角色参考图或首帧参考图时，shots[].prompt 必须明确要求服装、场景、道具和主体造型保持稳定，不要漂移。',
+      '当 shot 使用参考图片、角色参考图、道具图或场景图时，shots[].prompt 必须明确要求服装、场景、道具和主体造型保持稳定，不要漂移。',
       '风格词和基础动作描述不能丢，必须自然融入 shots[].prompt 的正文。',
       '质量约束必须明确强调动作连贯、物理合理、避免跳帧、避免面部或肢体变形。',
       '当 shots[].prompt 使用参考编号时，必须把编号绑定到明确主体描述上，例如“灰瓦[图1]”、“[图2]中的女孩”或“木纹香水瓶[图3]”。禁止把裸编号直接当主体。',
@@ -3193,16 +3194,13 @@ export class AutoProjectWorkflowService {
       };
     }
 
-    let continuityReferences: AutoProjectOrderedReferenceAsset[] = [];
+    let previousVideoStyleReferences: AutoProjectOrderedReferenceAsset[] = [];
     if (nextPending.index > 0) {
       const previousShot = input.workflow.shots[nextPending.index - 1];
       const previousShotSkipped = input.workflow.skippedShotIds.includes(previousShot.id);
-      const previousShotGenerated = input.workflow.generatedShotIds.includes(previousShot.id);
-      if (!previousShotSkipped) {
-        const videoCapabilities = buildModelCapabilities(input.videoModel as AiModel, null);
-        const supportsVideoReference = videoCapabilities.supports.videoInput;
-        const useVideoStyleContinuityOnly = this.isSeedance20VideoModel(input.videoModel);
+      const videoCapabilities = buildModelCapabilities(input.videoModel as AiModel, null);
 
+      if (!previousShotSkipped && videoCapabilities.supports.videoInput) {
         const previousReference = await this.loadLatestCompletedShotVideoReference({
           userId: input.userId,
           projectId: input.projectId,
@@ -3211,70 +3209,34 @@ export class AutoProjectWorkflowService {
         });
 
         if (!previousReference) {
-          if (!previousShotGenerated) {
-            return {
-              kind: 'blocked',
-              progressLabel: this.getWorkflowProgressLabel('shot_generation', input.preferChinese),
-              message: input.preferChinese
-                ? `第 ${nextPending.index + 1} 镜必须等待上一镜完成后才能生成。`
-                : `Shot #${nextPending.index + 1} must wait until the previous shot finishes.`,
-            };
-          }
-
           return {
             kind: 'blocked',
             progressLabel: this.getWorkflowProgressLabel('shot_generation', input.preferChinese),
             message: input.preferChinese
-              ? `第 ${nextPending.index + 1} 镜需要引用上一镜成片，但上一镜尚未生成完成。`
-              : `Shot #${nextPending.index + 1} requires the previous generated shot as continuity reference, but it is not ready yet.`,
+              ? `第 ${nextPending.index + 1} 镜需要上一镜视频作为风格参考，但上一镜视频尚未就绪。`
+              : `Shot #${nextPending.index + 1} needs the previous shot video as a style reference, but it is not ready yet.`,
           };
         }
 
-        const continuityThumbnailReference = useVideoStyleContinuityOnly
-          ? null
-          : this.createAutoProjectContinuityThumbnailReference({
-              previousReference,
-              preferChinese: input.preferChinese,
-            });
-
-        if (!useVideoStyleContinuityOnly && !continuityThumbnailReference) {
-          return {
-            kind: 'blocked',
-            progressLabel: this.getWorkflowProgressLabel('shot_generation', input.preferChinese),
-            message: input.preferChinese
-              ? `第 ${nextPending.index + 1} 镜需要引用上一镜尾帧，但上一镜尾帧尚未就绪。`
-              : `Shot #${nextPending.index + 1} needs the previous shot last frame, but it is not ready yet.`,
-          };
-        }
-
-        const continuityVideoReference: AutoProjectOrderedReferenceAsset | null = supportsVideoReference
-          ? {
-              id: `continuity:${previousReference.shotId}`,
-              kind: 'video',
-              title: previousReference.title,
-              description: useVideoStyleContinuityOnly
-                ? input.preferChinese
-                  ? '上一镜风格参考视频'
-                  : 'Previous shot style reference video'
-                : input.preferChinese
-                  ? '上一条已生成分镜视频'
-                  : 'Previous generated storyboard video',
-              sourcePrompt: previousReference.sourcePrompt,
-              url: previousReference.resultUrl,
-              thumbnailUrl: previousReference.thumbnailUrl,
-              createdAt: new Date(0),
-              referenceCharacterIds: [],
-              workflowStage: 'shot_review',
-              shotId: previousReference.shotId,
-              finalStoryboard: true,
-              ordinal: 0,
-              mentionLabel: '',
-            }
-          : null;
-
-        continuityReferences = [
-          ...(continuityThumbnailReference ? [continuityThumbnailReference] : []),
-          ...(continuityVideoReference ? [continuityVideoReference] : []),
+        previousVideoStyleReferences = [
+          {
+            id: `continuity:${previousReference.shotId}`,
+            kind: 'video',
+            title: previousReference.title,
+            description: input.preferChinese
+              ? '上一镜风格参考视频'
+              : 'Previous shot style reference video',
+            sourcePrompt: previousReference.sourcePrompt,
+            url: previousReference.resultUrl,
+            thumbnailUrl: previousReference.thumbnailUrl,
+            createdAt: new Date(0),
+            referenceCharacterIds: [],
+            workflowStage: 'shot_review',
+            shotId: previousReference.shotId,
+            finalStoryboard: true,
+            ordinal: 0,
+            mentionLabel: '',
+          },
         ];
       }
     }
@@ -3284,7 +3246,7 @@ export class AutoProjectWorkflowService {
       value: {
         shot: nextPending.shot,
         shotIndex: nextPending.index,
-        continuityReferences,
+        previousVideoStyleReferences,
       },
     };
   }
@@ -4108,7 +4070,7 @@ export class AutoProjectWorkflowService {
     preferChinese: boolean;
     onStatus?: (message: string) => void;
     workflow: AutoProjectWorkflow;
-    continuityReferences: AutoProjectOrderedReferenceAsset[];
+    previousVideoStyleReferences: AutoProjectOrderedReferenceAsset[];
   }) {
     const videoCapabilities = buildModelCapabilities(params.videoModel as AiModel, null);
     const assetMap = new Map(params.projectSnapshot.assets.map((asset) => [asset.id, asset] as const));
@@ -4127,6 +4089,7 @@ export class AutoProjectWorkflowService {
         const referenceAssetIds = shot.referenceAssetIds.filter((assetId) => {
           const asset = assetMap.get(assetId);
           if (!asset) return false;
+          if (asset.finalStoryboard) return false;
           if (asset.kind === 'image') return videoCapabilities.supports.imageInput;
           return videoCapabilities.supports.videoInput;
         });
@@ -4140,25 +4103,16 @@ export class AutoProjectWorkflowService {
           .map((assetId) => assetMap.get(assetId) ?? null)
           .filter((asset): asset is AutoProjectAssetSnapshot => Boolean(asset));
         const isWanxR2v = this.isWanxR2vVideoModel(params.videoModel);
-        const isFirstWorkflowShot =
-          (params.workflow.shots[0]?.id ?? params.shots[0]?.id ?? null) === shot.id;
-        const firstFrameImage = isWanxR2v
-          ? (
-              params.continuityReferences.find((asset) => this.isAutoProjectContinuityThumbnailAsset(asset))?.url
-              ?? null
-            )
-          : null;
         let referenceAssets = this.prepareAutoProjectShotExecutionReferences({
           videoModel: params.videoModel,
-          continuityReferences: params.continuityReferences,
           autoCharacterReferenceAssets,
           explicitReferenceAssets,
+          previousVideoStyleReferences: params.previousVideoStyleReferences,
         });
         let wanxT2vModelOverride: string | null = null;
 
         if (
           isWanxR2v &&
-          !firstFrameImage &&
           !referenceAssets.some((asset) => asset.kind === 'image')
         ) {
           const fallbackReferenceImage = this.resolveWanxFirstFrameReferenceImageAsset({
@@ -4173,22 +4127,16 @@ export class AutoProjectWorkflowService {
               ...referenceAssets,
               fallbackReferenceImage,
             ]);
-          } else if (isFirstWorkflowShot) {
+          } else {
             wanxT2vModelOverride = this.resolveWanxT2vVideoModelOverride(params.videoModel);
             if (!wanxT2vModelOverride) {
               throw new BadRequestException(
                 params.preferChinese
-                  ? '万相第一镜头没有可用参考图，且无法解析同系列 t2v 模型。'
-                  : 'Wanx first shot has no usable reference image, and the sibling t2v model could not be resolved.',
+                  ? '万相镜头没有可用参考图，且无法解析同系列 t2v 模型。'
+                  : 'Wanx shot has no usable reference image, and the sibling t2v model could not be resolved.',
               );
             }
             referenceAssets = [];
-          } else {
-            throw new BadRequestException(
-              params.preferChinese
-                ? '万相 r2v 镜头必须传入至少一张参考图片，请先生成或选择角色参考图后再生成视频。'
-                : 'Wanx r2v shots require at least one reference image. Generate or select a role reference image before creating video.',
-            );
           }
         }
 
@@ -4224,7 +4172,6 @@ export class AutoProjectWorkflowService {
           preferredAspectRatio: shot.preferredAspectRatio,
           preferredResolution: params.autoProjectAgent.preferredResolution ?? shot.preferredResolution,
           preferredDuration: shot.duration,
-          firstFrameImage,
           modelOverride: wanxT2vModelOverride,
         });
 
@@ -4457,27 +4404,15 @@ export class AutoProjectWorkflowService {
 
   private prepareAutoProjectShotExecutionReferences(input: {
     videoModel: AiModel;
-    continuityReferences: AutoProjectOrderedReferenceAsset[];
     autoCharacterReferenceAssets: AutoProjectAssetSnapshot[];
     explicitReferenceAssets: AutoProjectAssetSnapshot[];
+    previousVideoStyleReferences: AutoProjectOrderedReferenceAsset[];
   }) {
     const videoCapabilities = buildModelCapabilities(input.videoModel as AiModel, null);
-    const remoteModel = String((input.videoModel as any).modelKey ?? '').trim().toLowerCase();
-    const isSeedance15Pro = remoteModel.includes('seedance-1-5-pro');
-    const isSeedance20 = this.isSeedance20VideoModel(input.videoModel);
     const isWanxR2v = this.isWanxR2vVideoModel(input.videoModel);
     const maxInputImages = Math.max(1, videoCapabilities.limits.maxInputImages ?? 1);
     const maxInputVideos = Math.max(1, videoCapabilities.limits.maxInputVideos ?? 1);
 
-    const continuityThumbnail = input.continuityReferences.find((asset) =>
-      this.isAutoProjectContinuityThumbnailAsset(asset),
-    );
-    const continuityVideos = input.continuityReferences.filter((asset) =>
-      this.isAutoProjectContinuityVideoAsset(asset),
-    );
-    const otherContinuityAssets = input.continuityReferences.filter((asset) =>
-      !this.isAutoProjectContinuityThumbnailAsset(asset) && !this.isAutoProjectContinuityVideoAsset(asset),
-    );
     const explicitCharacterReferenceAssets = input.explicitReferenceAssets.filter((asset) =>
       asset.kind === 'image' && asset.referenceCharacterIds.length > 0,
     );
@@ -4485,44 +4420,16 @@ export class AutoProjectWorkflowService {
       !(asset.kind === 'image' && asset.referenceCharacterIds.length > 0),
     );
 
-    // Seedance 1.5 Pro stays in reference-image mode:
-    // only pass the previous-shot last frame plus the current shot's necessary character sheets.
-    const prioritizedAssets: AutoProjectAssetSnapshot[] = isWanxR2v
-      ? [
-          ...continuityVideos,
-          ...input.autoCharacterReferenceAssets,
-          ...explicitCharacterReferenceAssets,
-          ...otherExplicitReferenceAssets,
-          ...otherContinuityAssets,
-        ]
-      : isSeedance15Pro
-      ? [
-          ...(continuityThumbnail ? [continuityThumbnail] : []),
-          ...input.autoCharacterReferenceAssets,
-          ...explicitCharacterReferenceAssets,
-        ]
-      : isSeedance20
-      ? [
-          ...input.autoCharacterReferenceAssets,
-          ...explicitCharacterReferenceAssets,
-          ...continuityVideos,
-          ...otherContinuityAssets,
-          ...otherExplicitReferenceAssets,
-        ]
-      : [
-          ...input.autoCharacterReferenceAssets,
-          ...explicitCharacterReferenceAssets,
-          ...(continuityThumbnail ? [continuityThumbnail] : []),
-          ...continuityVideos,
-          ...otherContinuityAssets,
-          ...otherExplicitReferenceAssets,
-        ];
+    const prioritizedAssets: AutoProjectAssetSnapshot[] = [
+      ...input.autoCharacterReferenceAssets,
+      ...explicitCharacterReferenceAssets,
+      ...input.previousVideoStyleReferences,
+      ...otherExplicitReferenceAssets,
+    ];
 
     const selectedAssets: AutoProjectAssetSnapshot[] = [];
     const seenAssetIds = new Set<string>();
-    const maxVisualAssetCount = isWanxR2v
-      ? Math.max(0, 5 - (continuityThumbnail?.url?.trim() ? 1 : 0))
-      : Number.MAX_SAFE_INTEGER;
+    const maxVisualAssetCount = isWanxR2v ? 5 : Number.MAX_SAFE_INTEGER;
     let imageCount = 0;
     let videoCount = 0;
 
@@ -4745,13 +4652,10 @@ export class AutoProjectWorkflowService {
     });
   }
 
-  private buildAutoProjectShotExecutionPlannerSystemPrompt(input: {
+  private buildAutoProjectShotExecutionPlannerSystemPrompt(_input: {
     preferChinese: boolean;
     videoModel: AiModel;
   }) {
-    const isWanxR2v = this.isWanxR2vVideoModel(input.videoModel);
-    const isSeedance20 = this.isSeedance20VideoModel(input.videoModel);
-
     return [
       '你是一个逐镜视频提示词规划助手，只负责生成当前这一镜最终提交给视频模型的提示词。',
       '你必须根据当前镜头剧本、项目剧情、主体设定和本次实际会上传的参考素材编号，生成工程化、高可执行、低歧义的最终提示词。',
@@ -4761,28 +4665,13 @@ export class AutoProjectWorkflowService {
       '如果某个主体参考图被使用，必须把编号和明确主体绑定在一起，例如“灰瓦[图1]”或“[图1]中的灰瓦”。',
       '只要正文里出现某个已引用主体名，这个主体名的每一次出现都必须保持同一个编号绑定，不能只标第一次。',
       '禁止把编号当成裸主体使用，例如不要写“[图1]冲向镜头”。必须写成“灰瓦[图1]冲向镜头”或“[图1]中的主体冲向镜头”。',
-      isSeedance20
-        ? '如果当前镜头不是第一镜且系统提供了上一镜视频参考，这个视频只作为视觉风格、角色造型、光影质感、运动节奏和声音气质参考；当前镜头本身是独立镜头，不是上一镜的同一镜头续拍。'
-        : isWanxR2v
-        ? '如果系统单独提供了上一镜尾帧作为 firstFrame 参数，不要在正文里额外写“请严格以[图n]作为首帧”或“接着[视频n]继续生成”之类句式；首帧续镜由系统参数处理，正文只需围绕当前镜头内容、角色绑定和一致性约束来写。'
-        : '如果存在上一镜尾帧图片，这是一条硬约束：你必须把这张尾帧图当作当前镜头唯一的首帧基准，并在提示词正文里明确写出“请严格以[图3]作为首帧开始生成，并自然延续上一镜主体状态、动作方向与镜头运动”这一类表述。',
-      isSeedance20
-        ? 'Seedance 2.0 第二镜及以后不要写“以[图n]作为首帧”“请以[图n]为首帧”“接着[视频n]继续生成”“从上一镜末尾继续”等硬续接句式；只写参考上一镜视频的风格、一致性、镜头语言和节奏。'
-        : isWanxR2v
-        ? '如果系统单独提供了上一镜尾帧作为 firstFrame 参数，第二镜及以后仍然要自然延续上一镜主体状态、动作方向、速度节奏与镜头运动，但不要在正文里重复声明该系统级首帧约束。'
-        : '第二镜及以后一旦提供了上一镜尾帧图片，就禁止重新设计开场构图、机位、景别、主体姿态、主体朝向、站位关系或光线关系，必须从该尾帧自然续接。',
-      isSeedance20
-        ? 'Seedance 2.0 可以在“开场进入”里承接上一镜结尾事件或画面结果，但表达方式必须是镜头叙事连续，例如“池塘涟漪扩散后，镜头转向...”，不要写成系统参数层面的首帧或同视频续生成。'
-        : '',
-      isSeedance20
-        ? '如果上一镜视频有编号，可以写“参考[视频n]的视觉风格、光影质感、角色造型和运动节奏”，但不要把[视频n]描述成需要继续生成的同一段视频。'
-        : isWanxR2v
-        ? '如果系统参数没有把上一镜视频作为参考输入，就不要在正文里主动补写“接着[视频n]继续生成”之类句式。'
-        : '如果同时存在上一镜成片视频，也必须在正文里继续明确写出“接着[视频1]继续生成，声音也要与[视频1]末尾连续”这一类表述，延续主体状态、动作方向、速度节奏、镜头运动与声音音效。',
+      '当前镜头必须按本镜剧本独立构图和独立运镜，可以自然切换机位、视角、景别和开场画面；镜头之间通过剪辑成立，不追求上一镜尾帧到本镜首帧的无缝衔接。',
+      '禁止写“以上一镜尾帧作为首帧”“请以[图n]为首帧”“接着[视频n]继续生成”“从上一镜末尾继续”“同一镜头续拍”等硬续接句式。',
+      '第二镜及以后只保持角色造型、服装、道具、场景风格、情绪和叙事目标连续；不要限制重新设计开场构图、机位、景别、主体姿态或主体站位。',
       '提示词不要求固定标题格式，但正文内容必须明确覆盖这些要求：镜头设定要写清景别、机位、单一主运镜、总时长；剧情目标要写清主体是谁、做什么动作、保持什么情绪；总时长必须拆成 3 段执行：开场进入、中段主动作、结尾收束。',
-      '当前镜头不是第一镜且输入提供了上一镜结尾参考时，当前镜头的“开场进入”必须先承接上一镜“结尾收束”的具体画面、动作、状态或声音，再自然进入本镜的新动作；例如上一镜结尾是“水滴滴入池塘”，下一镜开场必须先从水滴入水后的涟漪、声响或池塘反应开始，而不是直接跳到无关新画面。',
+      '当前镜头不是第一镜且输入提供了上一镜剧情衔接参考时，可以在“开场进入”里通过画面结果、声音、情绪或动作后果自然呼应上一镜，再进入本镜的新动作；这种呼应只能服务剪辑连贯，不能写成首帧对齐或同视频续生成。',
       '如果有对白、口播或台词表演，必须明确要求口型与停顿同步；如果没有台词，必须明确要求依靠呼吸、眼神、肢体动作表达情绪。',
-      '结尾必须明确要求形成可接下一镜头的结束姿态。',
+      '结尾必须给下一镜留下清晰剪辑点，例如动作完成、眼神落点、环境反应、声音收束或情绪停顿。',
       '如果本镜使用了参考图片，必须明确要求服装、场景、道具和主体造型保持稳定，不要漂移。',
       '风格词和基础动作描述不能丢，必须自然塞进最终提示词里。',
       '质量约束必须明确强调动作连贯、物理合理、避免跳帧、避免面部或肢体变形。',
@@ -4832,20 +4721,6 @@ export class AutoProjectWorkflowService {
     references: AutoProjectOrderedReferenceAsset[];
     preferChinese: boolean;
   }) {
-    const isWanxR2v = this.isWanxR2vVideoModel(input.videoModel);
-    const isSeedance20 = this.isSeedance20VideoModel(input.videoModel);
-    const continuityThumbnail = input.references.find((asset) =>
-      this.isAutoProjectContinuityThumbnailAsset(asset),
-    ) ?? null;
-    const continuityVideo = input.references.find((asset) =>
-      this.isAutoProjectContinuityVideoAsset(asset),
-    ) ?? null;
-    const continuityThumbnailLabel = continuityThumbnail
-      ? this.buildAutoProjectPromptReferenceTag(continuityThumbnail.mentionLabel)
-      : '';
-    const continuityVideoLabel = continuityVideo
-      ? this.buildAutoProjectPromptReferenceTag(continuityVideo.mentionLabel)
-      : '';
     const hasImageReferences = input.references.some((asset) => asset.kind === 'image');
 
     const outlineText = input.workflow.outline.length > 0
@@ -4887,10 +4762,10 @@ export class AutoProjectWorkflowService {
             const label = asset.mentionLabel.replace(/^@/, '');
             const extraNotes: string[] = [];
             if (this.isAutoProjectContinuityThumbnailAsset(asset)) {
-              extraNotes.push('上一镜尾帧');
+              extraNotes.push('上一镜参考图，仅可用于风格与一致性，不可作为首帧');
             }
             if (this.isAutoProjectContinuityVideoAsset(asset)) {
-              extraNotes.push('上一镜成片');
+              extraNotes.push('上一镜参考视频，仅可用于视频风格参考，不可续拍');
             }
             if (asset.referenceCharacterIds.length > 0) {
               const names = asset.referenceCharacterIds
@@ -4917,9 +4792,7 @@ export class AutoProjectWorkflowService {
     const currentShotIndex = input.workflow.shots.findIndex((shot) => shot.id === input.shot.id);
     const previousShot = currentShotIndex > 0 ? input.workflow.shots[currentShotIndex - 1] : null;
     const previousEndingReference = this.extractAutoProjectEndingReference(
-      continuityVideo?.sourcePrompt
-        ?? continuityThumbnail?.sourcePrompt
-        ?? previousShot?.prompt
+      previousShot?.prompt
         ?? previousShot?.script
         ?? previousShot?.summary
         ?? '',
@@ -4935,41 +4808,29 @@ export class AutoProjectWorkflowService {
       `项目全部素材：\n${projectAssetText}`,
       `当前目标分镜：\n标题：${input.shot.title}\n画面：${input.shot.summary}\n剧本：${input.shot.script}\n时长：${input.shot.duration}\n草稿提示词：${input.shot.prompt}`,
       previousEndingReference
-        ? `上一镜结尾参考（当前镜头“开场进入”必须先承接这段内容）：\n${previousEndingReference}`
-        : '上一镜结尾参考：无',
+        ? `上一镜剧情衔接参考（只用于剪辑连贯，不作为首帧或尾帧约束）：\n${previousEndingReference}`
+        : '上一镜剧情衔接参考：无',
       `本次实际上传的参考素材及最终编号（只能使用这些编号）：\n${executionReferenceText}`,
       `主体名与参考编号映射：\n${this.buildAutoProjectInlineCharacterLabelSummary(input.references, input.workflow, input.preferChinese)}`,
       '请返回当前这一镜最终提交给视频模型的中文提示词，不要返回说明文字。',
       '要求：提示词要工程化，避免空泛形容词堆砌，不强制固定标题格式，但正文里必须自然写清景别、机位、单一主运镜、总时长、主体、动作、情绪、风格、画质与防崩约束。',
       `请把当前镜头总时长 ${input.shot.duration} 拆成 3 段来写：开场进入、中段主动作、结尾收束。`,
       previousEndingReference
-        ? `当前镜头的“开场进入”必须先承接上一镜结尾参考中的具体画面、动作、状态或声音，然后再推进到本镜剧本；不要直接跳过这个连接点。`
-        : '如果这是第一镜或没有上一镜结尾参考，则按本镜剧本正常设计“开场进入”。',
+        ? `当前镜头的“开场进入”可以通过画面结果、声音、情绪或动作后果自然呼应上一镜剧情衔接参考，然后进入本镜剧本；必须保持独立构图、独立机位和独立景别，不要写成尾帧首帧无缝续接。`
+        : '如果这是第一镜或没有上一镜剧情衔接参考，则按本镜剧本正常设计“开场进入”。',
       '如果有对白、口播或台词表演，提示词里必须要求口型与停顿同步；如果没有台词，也必须要求通过呼吸、眼神、肢体动作表达情绪。',
-      '结尾必须形成可接下一镜头的结束姿态。',
+      '结尾必须形成清晰剪辑点，例如动作完成、眼神落点、环境反应、声音收束或情绪停顿。',
       hasImageReferences
         ? '由于本镜实际会上传参考图片，提示词里必须明确要求服装、场景、道具和主体造型不要漂移。'
         : '如本镜依赖参考图片，请在提示词里明确要求服装、场景、道具和主体造型不要漂移。',
       '把草稿中的风格词和基础动作描述自然融入最终提示词，不要丢失。',
       '质量约束里必须强调动作连贯、物理合理、避免跳帧和变形。',
-      continuityThumbnailLabel && !isWanxR2v
-        ? `续镜硬约束：当前镜头不是第一镜，必须严格以${continuityThumbnailLabel}作为本镜头首帧开始生成，不得重写开场构图、机位、景别、主体姿态、主体朝向、站位关系或光线关系。`
-        : continuityVideoLabel && isSeedance20
-          ? `上一镜视频参考：${continuityVideoLabel}只用于参考视觉风格、角色造型、光影质感、声音气质和运动节奏；当前镜头按本镜剧本独立展开，不要写成同一镜头续拍。`
-        : continuityVideoLabel && isWanxR2v
-          ? `上一镜视频参考：${continuityVideoLabel}会作为万相 reference_video 传入，必须参考其中的主体状态、运动节奏、画面风格和声音气质。`
-        : '提示词正文必须直接包含系统给出的参考编号，不得遗漏、替换或自造编号。',
-      continuityThumbnailLabel && !isWanxR2v
-        ? continuityVideoLabel
-          ? `正文里必须明确写出类似“请严格以${continuityThumbnailLabel}作为首帧开始生成，接着${continuityVideoLabel}继续生成”的句式，体现上一镜尾帧首帧对齐和上一镜视频续接。`
-          : `正文里必须明确写出类似“请严格以${continuityThumbnailLabel}作为首帧开始生成，并自然延续上一镜主体状态、动作方向与镜头运动”的句式，把上一镜尾帧图作为唯一首帧基准。`
-        : continuityVideoLabel && isSeedance20
-          ? `正文里可以写“参考${continuityVideoLabel}的视觉风格、光影质感、角色造型和运动节奏”，但禁止写“以图片为首帧”“接着${continuityVideoLabel}继续生成”或从上一镜末尾硬续接。`
-        : continuityVideoLabel && isWanxR2v
-          ? `正文里可以写“参考${continuityVideoLabel}的主体状态、动作节奏和镜头风格”，但如果系统通过 firstFrame 单独传入上一镜尾帧，不要再写“请严格以[图n]作为首帧”。`
-        : isWanxR2v
-          ? '如果系统通过 firstFrame 单独传入上一镜尾帧，不要在正文里再写“请严格以[图n]作为首帧”或“接着[视频n]继续生成”的句式；正文只需要自然描述当前镜头并保持角色与造型一致。'
-          : '如果有续镜尾帧和上一镜视频，必须明确写出首帧对齐和续接生成关系。',
+      input.references.length > 0
+        ? '提示词正文必须直接包含系统给出的参考编号，不得遗漏、替换或自造编号。'
+        : '本镜没有实际上传参考编号时，不要编造图片、视频或音频编号。',
+      '当前镜头按本镜剧本独立构图、独立机位、独立景别展开；镜头之间通过剪辑成立，不要求上一镜尾帧与本镜首帧无缝相接。',
+      '禁止在正文里写“以上一镜尾帧作为首帧”“请以[图n]为首帧”“接着[视频n]继续生成”“从上一镜末尾继续”“同一镜头续拍”等硬续接句式。',
+      '只保留角色、服装、道具、场景风格、情绪和叙事目标的一致性；可以根据本镜需要重新设计开场构图、机位、景别、主体姿态和站位。',
       '如果正文里出现主体名，则该主体名每次出现都必须和同一个参考编号绑定。',
       '镜头内可用“开场进入 / 中段主动作 / 结尾收束”或自然等价表达来组织时序。',
       '多人或多主体正面动态场景请加入左右站位、服装/身份/造型锚点，优先使用固定机位或单一运镜。',
@@ -4991,96 +4852,38 @@ export class AutoProjectWorkflowService {
     const basePrompt = (input.prompt || '').trim();
     if (!basePrompt) return basePrompt;
 
-    const continuityThumbnail = input.references.find((asset) =>
-      this.isAutoProjectContinuityThumbnailAsset(asset),
-    ) ?? null;
-    const continuityVideo = input.references.find((asset) =>
-      this.isAutoProjectContinuityVideoAsset(asset),
-    ) ?? null;
-
-    const prefixLines: string[] = [];
-    const continuityThumbnailLabel = continuityThumbnail
-      ? this.buildAutoProjectPromptReferenceTag(continuityThumbnail.mentionLabel)
-      : '';
-    const continuityVideoLabel = continuityVideo
-      ? this.buildAutoProjectPromptReferenceTag(continuityVideo.mentionLabel)
-      : '';
-
-    if (this.isSeedance20VideoModel(input.videoModel)) {
-      return this.sanitizeSeedance20ContinuityPrompt(basePrompt, continuityVideoLabel);
-    }
-
-    if (this.isWanxR2vVideoModel(input.videoModel)) {
-      return basePrompt;
-    }
-
-    if (continuityThumbnailLabel && !this.hasAutoProjectFirstFrameConstraint(basePrompt, continuityThumbnailLabel)) {
-      prefixLines.push(
-        `请严格以${continuityThumbnailLabel}作为首帧开始生成，并自然延续上一镜主体状态、动作方向、速度节奏与镜头运动，不得重写开场构图、机位、景别、主体姿态、主体朝向、站位关系或光线关系。`,
-      );
-    }
-
-    if (continuityVideoLabel && !this.hasAutoProjectVideoContinuationConstraint(basePrompt, continuityVideoLabel)) {
-      prefixLines.push(
-        `接着${continuityVideoLabel}继续生成，严格延续上一镜主体状态、动作方向、速度节奏与镜头运动。`,
-      );
-    }
-
-    if (prefixLines.length === 0) {
-      return basePrompt;
-    }
-
-    return [...prefixLines, basePrompt].join('\n');
+    return this.sanitizeAutoProjectCutContinuityPrompt(basePrompt);
   }
 
-  private sanitizeSeedance20ContinuityPrompt(prompt: string, continuityVideoLabel: string) {
-    if (!continuityVideoLabel) return prompt;
-
-    const forbiddenPattern = /(首帧|接着|继续生成|续接|从上一镜|延续上一镜|上一镜末尾|末尾连续|末尾延续|同一镜头续拍)/;
-    let insertedStyleReference = false;
-    const styleReferenceLine =
-      `参考${continuityVideoLabel}的视觉风格、角色造型、光影质感、声音气质和运动节奏，当前镜头按本镜剧本独立展开。`;
+  private sanitizeAutoProjectCutContinuityPrompt(prompt: string) {
+    const cutContinuityLine =
+      '当前镜头按本镜剧本独立构图和运镜，可以自然切换机位、景别和视角；镜头之间通过剪辑成立，只保持角色造型、服装、道具、场景风格和情绪连续。';
+    const hardContinuityPattern =
+      /(上一镜尾帧|尾帧图|作为(?:当前镜头)?(?:唯一的)?首帧|以[^。！？\n]{0,30}为首帧|首帧开始生成|接着[^。！？\n]{0,30}继续生成|从上一镜末尾|上一镜末尾|末尾连续|末尾延续|无缝续接|同一镜头续拍)/;
+    let insertedCutContinuity = false;
 
     const lines = prompt
       .split('\n')
       .map((line) => line.trim())
       .filter((line) => line.length > 0)
       .map((line) => {
-        if (line.includes(continuityVideoLabel) && forbiddenPattern.test(line)) {
-          if (insertedStyleReference) return '';
-          insertedStyleReference = true;
-          return styleReferenceLine;
+        if (hardContinuityPattern.test(line)) {
+          if (insertedCutContinuity) return '';
+          insertedCutContinuity = true;
+          return cutContinuityLine;
         }
         return line;
       })
       .filter((line) => line.length > 0);
 
     const nextPrompt = lines.join('\n').trim();
-    if (insertedStyleReference || nextPrompt.includes(continuityVideoLabel)) {
+    if (!nextPrompt) return cutContinuityLine;
+
+    if (/(独立构图|镜头独立|通过剪辑|剪辑点)/.test(nextPrompt)) {
       return nextPrompt;
     }
 
-    return [styleReferenceLine, nextPrompt].filter((line) => line.trim().length > 0).join('\n');
-  }
-
-  private hasAutoProjectFirstFrameConstraint(prompt: string, referenceTag: string) {
-    const escapedTag = referenceTag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const nearbyPattern = new RegExp(
-      `${escapedTag}[^\\n。！？]{0,40}(?:首帧|开始生成)|(?:首帧|开始生成)[^\\n。！？]{0,40}${escapedTag}`,
-      'i',
-    );
-
-    return nearbyPattern.test(prompt);
-  }
-
-  private hasAutoProjectVideoContinuationConstraint(prompt: string, referenceTag: string) {
-    const escapedTag = referenceTag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const nearbyPattern = new RegExp(
-      `${escapedTag}[^\\n。！？]{0,40}(?:继续生成|续接|延续)|(?:继续生成|续接|延续)[^\\n。！？]{0,40}${escapedTag}`,
-      'i',
-    );
-
-    return nearbyPattern.test(prompt);
+    return [cutContinuityLine, nextPrompt].join('\n');
   }
 
   private buildAutoProjectInlineCharacterLabels(input: {
@@ -5218,10 +5021,10 @@ export class AutoProjectWorkflowService {
       const orderedMappings = references.map((asset) => {
         const promptLabel = normalizeLabel(asset);
         if (this.isAutoProjectContinuityThumbnailAsset(asset)) {
-          return `${promptLabel}=上一镜尾帧`;
+          return `${promptLabel}=上一镜参考图`;
         }
         if (this.isAutoProjectContinuityVideoAsset(asset)) {
-          return `${promptLabel}=上一镜成片`;
+          return `${promptLabel}=上一镜参考视频`;
         }
 
         const title = this.truncateAutoProjectText(asset.title, 24);
@@ -5231,12 +5034,12 @@ export class AutoProjectWorkflowService {
       const usageInstructions: string[] = [];
       if (continuityThumbnail) {
         usageInstructions.push(
-          `使用${normalizeLabel(continuityThumbnail)}作为首帧。`,
+          `${normalizeLabel(continuityThumbnail)}只用于角色、服装、道具和场景风格一致性参考，不作为首帧。`,
         );
       }
       if (continuityVideo) {
         usageInstructions.push(
-          `${continuityThumbnail ? `请以${normalizeLabel(continuityThumbnail)}为首帧，` : ''}接着${normalizeLabel(continuityVideo)}继续生成，延续主体状态、动作方向与镜头运动。`,
+          `${normalizeLabel(continuityVideo)}只用于上一镜视频风格参考，当前镜头独立构图、独立机位、独立景别，不作为首帧或续拍依据。`,
         );
       }
       if (roleImages.length > 0) {
@@ -5258,7 +5061,7 @@ export class AutoProjectWorkflowService {
       return title ? `${promptLabel}（${title}）` : promptLabel;
     });
 
-    return `参考${labels.join('、')}，保持对应主体特征、动作与构图信息一致。`;
+    return `参考${labels.join('、')}，保持对应主体特征、服装、道具和场景风格一致；当前镜头仍按本镜剧本独立构图和运镜。`;
   }
 
   private buildAutoProjectShotPrompt(shot: AutoProjectShotPlanItem, _preferChinese: boolean) {
@@ -5282,30 +5085,6 @@ export class AutoProjectWorkflowService {
     }
 
     return parts.join('\n');
-  }
-
-  private createAutoProjectContinuityThumbnailReference(input: {
-    previousReference: AutoProjectStoredShotVideoReference;
-    preferChinese: boolean;
-  }): AutoProjectOrderedReferenceAsset | null {
-    if (!input.previousReference.thumbnailUrl) return null;
-
-    return {
-      id: `continuity-thumb:${input.previousReference.shotId}`,
-      kind: 'image',
-      title: '上一镜尾帧',
-      description: '上一条已生成分镜尾帧',
-      sourcePrompt: input.previousReference.sourcePrompt,
-      url: input.previousReference.thumbnailUrl,
-      thumbnailUrl: input.previousReference.thumbnailUrl,
-      createdAt: new Date(0),
-      referenceCharacterIds: [],
-      workflowStage: 'shot_review',
-      shotId: input.previousReference.shotId,
-      finalStoryboard: true,
-      ordinal: 0,
-      mentionLabel: '',
-    };
   }
 
   private buildAutoProjectImageExecutionPrompt(
@@ -5479,7 +5258,6 @@ export class AutoProjectWorkflowService {
     preferredAspectRatio?: string | null;
     preferredResolution?: string | null;
     preferredDuration?: string | null;
-    firstFrameImage?: string | null;
     modelOverride?: string | null;
   }) {
     const videoModelId = this.parseBigInt(params.videoModelIdRaw, 'modelId');
@@ -5546,7 +5324,6 @@ export class AutoProjectWorkflowService {
         currentVideos,
         currentAudios,
         orderedReferences: params.orderedReferences ?? [],
-        firstFrameImage: params.firstFrameImage ?? null,
         latestContextAsset: null,
       }),
     );
@@ -5611,22 +5388,16 @@ export class AutoProjectWorkflowService {
     currentImages: string[];
     currentVideos: string[];
     currentAudios: string[];
-    firstFrameImage?: string | null;
   }) {
     const parameters: Record<string, unknown> = {};
-    const firstFrame = input.firstFrameImage?.trim() || null;
-    const totalVisualBudget = Math.max(0, 5 - (firstFrame ? 1 : 0));
+    const totalVisualBudget = 5;
 
-    let referenceImages = input.currentImages
+    const referenceImages = input.currentImages
       .map((item) => item.trim())
       .filter((item) => Boolean(item));
-    let referenceVideos = input.currentVideos
+    const referenceVideos = input.currentVideos
       .map((item) => item.trim())
       .filter((item) => Boolean(item));
-
-    if (referenceImages.length === 0 && referenceVideos.length === 0 && firstFrame) {
-      referenceImages = [firstFrame];
-    }
 
     const cappedImages = referenceImages.slice(0, totalVisualBudget);
     const remainingVisualBudget = Math.max(0, totalVisualBudget - cappedImages.length);
@@ -5637,9 +5408,6 @@ export class AutoProjectWorkflowService {
       .filter((item) => Boolean(item))
       .slice(0, visualCount);
 
-    if (firstFrame) {
-      parameters.firstFrame = firstFrame;
-    }
     if (cappedImages.length > 0) {
       parameters.referenceImages = cappedImages;
     }
@@ -5660,7 +5428,6 @@ export class AutoProjectWorkflowService {
       currentVideos: string[];
       currentAudios: string[];
       orderedReferences?: AutoProjectOrderedMediaInput[];
-      firstFrameImage?: string | null;
       latestContextAsset?: {
         resultUrl: string | null;
         thumbnailUrl: string | null;
@@ -5679,7 +5446,6 @@ export class AutoProjectWorkflowService {
         currentImages: input.currentImages,
         currentVideos: input.currentVideos,
         currentAudios: input.currentAudios,
-        firstFrameImage: input.firstFrameImage ?? fallbackImage,
       });
     }
 

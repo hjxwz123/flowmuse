@@ -176,8 +176,25 @@ export interface UploadProjectAssetsResponse {
   assets: ProjectAsset[]
 }
 
+export type ProjectStoryboardTransitionType =
+  | 'cut'
+  | 'crossfade'
+  | 'glitch'
+  | 'zoom'
+  | 'lightleak'
+  | 'blur'
+
+export interface MergeProjectStoryboardTransition {
+  fromShotId: string
+  toShotId: string
+  type: ProjectStoryboardTransitionType
+  duration?: number
+}
+
 export interface MergeProjectStoryboardDto {
   shotIds?: string[]
+  transitions?: MergeProjectStoryboardTransition[]
+  mute?: boolean
 }
 
 export interface ListImportableWorksParams extends PaginationParams {

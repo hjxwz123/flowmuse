@@ -1,14 +1,24 @@
+import { useState } from 'react'
 import {
   Check,
   Clapperboard,
+  Download,
+  Droplets,
+  Edit3,
   Film,
   ImageIcon,
+  Search,
   Play,
+  Sun,
+  VolumeX,
+  X,
+  Zap,
   UserRound,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 import type { ChatAutoProjectAgentMetadata, ChatTaskRef } from '@/lib/api/types/chat'
-import type { ProjectStoryboardStatus } from '@/lib/api/types/projects'
+import type { MergeProjectStoryboardTransition, ProjectStoryboardStatus, ProjectStoryboardTransitionType } from '@/lib/api/types/projects'
 import { cn } from '@/lib/utils/cn'
 
 import styles from './ChatContent.module.css'
@@ -21,9 +31,36 @@ type AutoProjectWorkflowCardProps = {
   storyboardStatusByShotId?: Record<string, ProjectStoryboardStatus>
   disabled?: boolean
   onAction: (content: string, metadata: ChatAutoProjectAgentMetadata) => void
-  onMergeStoryboard?: (metadata: ChatAutoProjectAgentMetadata) => void
+  onMergeStoryboard?: (metadata: ChatAutoProjectAgentMetadata, options?: {
+    shotIds?: string[]
+    transitions?: MergeProjectStoryboardTransition[]
+    mute?: boolean
+  }) => void
   isMergingStoryboard?: boolean
 }
+
+type StoryboardEditorClip = {
+  shotId: string
+  title: string
+  label: string
+  thumbnailUrl: string | null
+}
+
+type TransitionPreset = {
+  type: ProjectStoryboardTransitionType
+  labelZh: string
+  labelEn: string
+  duration: number
+  Icon: LucideIcon
+}
+
+const STORYBOARD_TRANSITION_PRESETS: TransitionPreset[] = [
+  { type: 'crossfade', labelZh: '交叉溶解', labelEn: 'Cross Dissolve', duration: 0.45, Icon: Film },
+  { type: 'glitch', labelZh: '故障干扰', labelEn: 'Glitch', duration: 0.35, Icon: Zap },
+  { type: 'zoom', labelZh: '镜头冲击', labelEn: 'Impact Zoom', duration: 0.45, Icon: Search },
+  { type: 'lightleak', labelZh: '漏光胶片', labelEn: 'Light Leak', duration: 0.4, Icon: Sun },
+  { type: 'blur', labelZh: '动感模糊', labelEn: 'Motion Blur', duration: 0.45, Icon: Droplets },
+]
 
 function buildStageLabel(stage: ChatAutoProjectAgentMetadata['stage'], isZh: boolean) {
   if (stage === 'project_plan_review') return isZh ? '方案' : 'Plan'
@@ -45,6 +82,10 @@ export function AutoProjectWorkflowCard({
   onMergeStoryboard,
   isMergingStoryboard = false,
 }: AutoProjectWorkflowCardProps) {
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
+  const [transitionSlots, setTransitionSlots] = useState<Array<TransitionPreset | null>>([])
+  const [dragOverSlot, setDragOverSlot] = useState<number | null>(null)
+  const [muteExport, setMuteExport] = useState(false)
   const workflow = metadata.workflow
   if (!workflow) return null
 
@@ -149,6 +190,18 @@ export function AutoProjectWorkflowCard({
   const completedGeneratedShotCount = generatedStoryboardStates.filter((item) => item.isCompleted).length
   const failedGeneratedShots = generatedStoryboardStates.filter((item) => item.isFailed)
   const pendingGeneratedShots = generatedStoryboardStates.filter((item) => item.isPending)
+  const editorClips: StoryboardEditorClip[] = generatedStoryboardStates
+    .filter((item) => item.isCompleted)
+    .map((item) => {
+      const taskRef = latestStoryboardTaskByShotId.get(item.shot.id)
+      const storyboardStatus = storyboardStatusByShotId[item.shot.id]
+      return {
+        shotId: item.shot.id,
+        title: item.shot.title,
+        label: `${isZh ? '镜头' : 'Scene'}_${String(Math.max(0, item.shotIndex) + 1).padStart(2, '0')}.mp4`,
+        thumbnailUrl: storyboardStatus?.thumbnailUrl ?? taskRef?.thumbnailUrl ?? null,
+      }
+    })
   const canShowMergeStoryboard =
     workflow.stage === 'shot_review' &&
     Boolean(metadata.projectId) &&
@@ -188,6 +241,57 @@ export function AutoProjectWorkflowCard({
     mergeStoryboardWaiting: isZh ? '等待全部完成后合并' : 'Waiting for completion',
     mergeStoryboardBlocked: isZh ? '处理失败分镜后合并' : 'Resolve failed shots first',
     mergingStoryboard: isZh ? '合并全片中...' : 'Merging...',
+    editVideo: isZh ? '编辑视频' : 'Edit Video',
+    editorTitle: isZh ? '全息转场编辑器' : 'Holographic Transition Editor',
+    transitionLibrary: isZh ? '转场库 (拖拽至下方轨道)' : 'Transition Library (drag to the track)',
+    videoTrack: isZh ? '视频轨道' : 'Video Track',
+    muteExport: isZh ? '静音导出' : 'Mute Export',
+    exportVideo: isZh ? '导出视频' : 'Export Video',
+  }
+  const openStoryboardEditor = () => {
+    setTransitionSlots(Array.from({ length: Math.max(0, editorClips.length - 1) }, () => null))
+    setMuteExport(false)
+    setDragOverSlot(null)
+    setIsEditorOpen(true)
+  }
+  const applyTransitionToSlot = (slotIndex: number, transitionType: string) => {
+    const preset = STORYBOARD_TRANSITION_PRESETS.find((item) => item.type === transitionType)
+    if (!preset) return
+    setTransitionSlots((prev) => {
+      const next = [...prev]
+      next[slotIndex] = preset
+      return next
+    })
+  }
+  const removeTransitionFromSlot = (slotIndex: number) => {
+    setTransitionSlots((prev) => {
+      const next = [...prev]
+      next[slotIndex] = null
+      return next
+    })
+  }
+  const exportEditedStoryboard = () => {
+    if (!onMergeStoryboard || editorClips.length === 0) return
+    const transitions = transitionSlots
+      .map((preset, index): MergeProjectStoryboardTransition | null => {
+        const fromClip = editorClips[index]
+        const toClip = editorClips[index + 1]
+        if (!preset || !fromClip || !toClip) return null
+        return {
+          fromShotId: fromClip.shotId,
+          toShotId: toClip.shotId,
+          type: preset.type,
+          duration: preset.duration,
+        }
+      })
+      .filter((item): item is MergeProjectStoryboardTransition => Boolean(item))
+
+    onMergeStoryboard(metadata, {
+      shotIds: editorClips.map((clip) => clip.shotId),
+      transitions,
+      mute: muteExport,
+    })
+    setIsEditorOpen(false)
   }
 
   return (
@@ -474,28 +578,170 @@ export function AutoProjectWorkflowCard({
         ) : null}
 
         {canShowMergeStoryboard && onMergeStoryboard ? (
-          <button
-            type="button"
-            disabled={disabled || isMergingStoryboard || !canMergeStoryboard}
-            className={cn(styles.autoWorkflowActionBtn, styles.autoWorkflowActionBtnPrimary)}
-            onClick={() => onMergeStoryboard(metadata)}
-          >
-            <Clapperboard className="h-3.5 w-3.5" />
-            <span>
-              {isMergingStoryboard
-                ? actionLabels.mergingStoryboard
-                : !canMergeStoryboard
-                  ? failedGeneratedShots.length > 0
-                    ? actionLabels.mergeStoryboardBlocked
-                    : actionLabels.mergeStoryboardWaiting
-                  : actionLabels.mergeStoryboard}
-            </span>
-          </button>
+          <>
+            <button
+              type="button"
+              disabled={disabled || isMergingStoryboard || !canMergeStoryboard}
+              className={cn(styles.autoWorkflowActionBtn, styles.autoWorkflowActionBtnPrimary)}
+              onClick={() => onMergeStoryboard(metadata)}
+            >
+              <Clapperboard className="h-3.5 w-3.5" />
+              <span>
+                {isMergingStoryboard
+                  ? actionLabels.mergingStoryboard
+                  : !canMergeStoryboard
+                    ? failedGeneratedShots.length > 0
+                      ? actionLabels.mergeStoryboardBlocked
+                      : actionLabels.mergeStoryboardWaiting
+                    : actionLabels.mergeStoryboard}
+              </span>
+            </button>
+            <button
+              type="button"
+              disabled={disabled || isMergingStoryboard || !canMergeStoryboard}
+              className={styles.autoWorkflowActionBtn}
+              onClick={openStoryboardEditor}
+            >
+              <Edit3 className="h-3.5 w-3.5" />
+              <span>{actionLabels.editVideo}</span>
+            </button>
+          </>
         ) : null}
       </div>
 
       {canShowMergeStoryboard && mergeStoryboardHint ? (
         <div className={styles.autoWorkflowActionHint}>{mergeStoryboardHint}</div>
+      ) : null}
+
+      {isEditorOpen ? (
+        <div className={styles.videoEditorOverlay} role="dialog" aria-modal="true">
+          <div className={styles.videoEditorModal}>
+            <header className={styles.videoEditorHeader}>
+              <div className={styles.videoEditorTitle}>
+                <Film className="h-5 w-5" />
+                <span>{actionLabels.editorTitle}</span>
+              </div>
+              <button
+                type="button"
+                className={styles.videoEditorCloseBtn}
+                onClick={() => setIsEditorOpen(false)}
+                aria-label={isZh ? '关闭' : 'Close'}
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </header>
+
+            <div className={styles.videoEditorBody}>
+              <section>
+                <div className={styles.videoEditorSectionLabel}>{actionLabels.transitionLibrary}</div>
+                <div className={styles.videoTransitionLibrary}>
+                  {STORYBOARD_TRANSITION_PRESETS.map((preset) => {
+                    const Icon = preset.Icon
+                    return (
+                      <div
+                        key={preset.type}
+                        className={styles.videoTransitionItem}
+                        draggable
+                        onDragStart={(event) => {
+                          event.dataTransfer.setData('text/plain', preset.type)
+                          event.dataTransfer.effectAllowed = 'copy'
+                        }}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{isZh ? preset.labelZh : preset.labelEn}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </section>
+
+              <section>
+                <div className={styles.videoEditorSectionLabel}>{actionLabels.videoTrack}</div>
+                <div className={styles.videoTimelineWrapper}>
+                  <div className={styles.videoTrack}>
+                    {editorClips.map((clip, index) => {
+                      const slot = transitionSlots[index] ?? null
+                      const SlotIcon = slot?.Icon
+                      return (
+                        <div key={clip.shotId} className={styles.videoTrackGroup}>
+                          <div className={styles.videoClip}>
+                            {clip.thumbnailUrl ? (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={clip.thumbnailUrl} alt={clip.title} />
+                            ) : (
+                              <div className={styles.videoClipFallback}>
+                                <Film className="h-6 w-6" />
+                              </div>
+                            )}
+                            <div className={styles.videoClipLabel}>{clip.label}</div>
+                          </div>
+
+                          {index < editorClips.length - 1 ? (
+                            <button
+                              type="button"
+                              className={cn(
+                                styles.videoDropZone,
+                                dragOverSlot === index && !slot && styles.videoDropZoneDragOver,
+                                slot && styles.videoDropZoneFilled,
+                              )}
+                              onDragOver={(event) => {
+                                event.preventDefault()
+                                if (!slot) setDragOverSlot(index)
+                              }}
+                              onDragLeave={() => setDragOverSlot((current) => (current === index ? null : current))}
+                              onDrop={(event) => {
+                                event.preventDefault()
+                                setDragOverSlot(null)
+                                if (slot) return
+                                applyTransitionToSlot(index, event.dataTransfer.getData('text/plain'))
+                              }}
+                              onClick={() => {
+                                if (slot) removeTransitionFromSlot(index)
+                              }}
+                              title={
+                                slot
+                                  ? (isZh ? '点击移除' : 'Click to remove')
+                                  : (isZh ? '拖入转场' : 'Drop transition')
+                              }
+                              data-remove-label={slot ? (isZh ? '点击移除' : 'Click to remove') : undefined}
+                            >
+                              {SlotIcon ? <SlotIcon className="h-4 w-4" /> : null}
+                            </button>
+                          ) : null}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <footer className={styles.videoEditorFooter}>
+              <label className={styles.videoMuteToggle}>
+                <input
+                  type="checkbox"
+                  checked={muteExport}
+                  onChange={(event) => setMuteExport(event.target.checked)}
+                />
+                <span className={styles.videoToggleSwitch} />
+                <span className={styles.videoToggleLabel}>
+                  <VolumeX className="h-4 w-4" />
+                  {actionLabels.muteExport}
+                </span>
+              </label>
+
+              <button
+                type="button"
+                className={styles.videoEditorExportBtn}
+                disabled={isMergingStoryboard}
+                onClick={exportEditedStoryboard}
+              >
+                <Download className="h-4 w-4" />
+                <span>{isMergingStoryboard ? actionLabels.mergingStoryboard : actionLabels.exportVideo}</span>
+              </button>
+            </footer>
+          </div>
+        </div>
       ) : null}
     </div>
   )

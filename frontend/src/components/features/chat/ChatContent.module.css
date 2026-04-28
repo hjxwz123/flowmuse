@@ -4600,6 +4600,466 @@
   color: rgba(212, 212, 216, 0.78);
 }
 
+.videoEditorOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(244, 244, 245, 0.72);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  animation: videoEditorOverlayIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+:global(.dark) .videoEditorOverlay {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(30, 27, 75, 0.5), transparent 60%),
+    rgba(0, 0, 0, 0.72);
+}
+
+.videoEditorModal {
+  width: min(1000px, 90vw);
+  max-height: min(760px, 88vh);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(24, 24, 27, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 40px 100px rgba(24, 24, 27, 0.22),
+    inset 0 1px 1px rgba(255, 255, 255, 0.62);
+  animation: videoEditorModalIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+:global(.dark) .videoEditorModal {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(20, 20, 25, 0.65);
+  box-shadow:
+    0 40px 100px rgba(0, 0, 0, 0.8),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.videoEditorHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(24, 24, 27, 0.08);
+}
+
+:global(.dark) .videoEditorHeader {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.videoEditorTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: rgba(24, 24, 27, 0.94);
+}
+
+.videoEditorTitle svg {
+  color: #3b82f6;
+}
+
+:global(.dark) .videoEditorTitle {
+  color: #fff;
+}
+
+.videoEditorCloseBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  color: rgba(82, 82, 91, 0.82);
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.videoEditorCloseBtn:hover {
+  color: rgba(24, 24, 27, 0.96);
+  background: rgba(24, 24, 27, 0.06);
+}
+
+:global(.dark) .videoEditorCloseBtn {
+  color: rgba(212, 212, 216, 0.72);
+}
+
+:global(.dark) .videoEditorCloseBtn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.videoEditorBody {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 32px 24px;
+  overflow-y: auto;
+}
+
+.videoEditorSectionLabel {
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  color: rgba(82, 82, 91, 0.72);
+  text-transform: uppercase;
+}
+
+:global(.dark) .videoEditorSectionLabel {
+  color: rgba(212, 212, 216, 0.62);
+}
+
+.videoTransitionLibrary {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.videoTransitionLibrary::-webkit-scrollbar {
+  height: 4px;
+}
+
+.videoTransitionLibrary::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  background: rgba(24, 24, 27, 0.14);
+}
+
+:global(.dark) .videoTransitionLibrary::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.videoTransitionItem {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px dashed rgba(24, 24, 27, 0.16);
+  background: rgba(255, 255, 255, 0.48);
+  color: rgba(39, 39, 42, 0.86);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: grab;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.videoTransitionItem:hover {
+  transform: translateY(-2px);
+  border-color: rgba(24, 24, 27, 0.28);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.videoTransitionItem:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.videoTransitionItem svg {
+  color: #8b5cf6;
+}
+
+:global(.dark) .videoTransitionItem {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+  color: #ddd;
+}
+
+:global(.dark) .videoTransitionItem:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.videoTimelineWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: auto;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(24, 24, 27, 0.06);
+  background: rgba(24, 24, 27, 0.05);
+  box-shadow: inset 0 10px 30px rgba(24, 24, 27, 0.06);
+}
+
+:global(.dark) .videoTimelineWrapper {
+  border-color: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.videoTrack {
+  display: flex;
+  align-items: center;
+  min-width: max-content;
+}
+
+.videoTrackGroup {
+  display: flex;
+  align-items: center;
+}
+
+.videoClip {
+  position: relative;
+  flex-shrink: 0;
+  width: 160px;
+  height: 90px;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgba(24, 24, 27, 0.12);
+  background: rgba(24, 24, 27, 0.1);
+  box-shadow: 0 10px 20px rgba(24, 24, 27, 0.16);
+}
+
+.videoClip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.82);
+}
+
+.videoClipFallback {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  color: rgba(82, 82, 91, 0.72);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(139, 92, 246, 0.12));
+}
+
+.videoClipLabel {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  max-width: calc(100% - 16px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 4px;
+  padding: 2px 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+}
+
+:global(.dark) .videoClip {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.videoDropZone {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 60px;
+  margin: 0 -8px;
+  border-radius: 8px;
+  border: 1px dashed rgba(24, 24, 27, 0.14);
+  background: rgba(24, 24, 27, 0.05);
+  color: #fff;
+  cursor: copy;
+  transition: width 0.3s ease, transform 0.3s ease, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+:global(.dark) .videoDropZone {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.videoDropZoneDragOver {
+  width: 60px;
+  transform: scale(1.1);
+  border: 2px dashed #3b82f6;
+  background: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+.videoDropZoneFilled {
+  width: 40px;
+  height: 40px;
+  margin: 0 -12px;
+  overflow: visible;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+  cursor: pointer;
+}
+
+.videoDropZoneFilled:hover::after {
+  content: attr(data-remove-label);
+  position: absolute;
+  top: -30px;
+  white-space: nowrap;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.videoEditorFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-top: 1px solid rgba(24, 24, 27, 0.08);
+  background: rgba(255, 255, 255, 0.42);
+}
+
+:global(.dark) .videoEditorFooter {
+  border-top-color: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.videoMuteToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.videoMuteToggle input {
+  display: none;
+}
+
+.videoToggleSwitch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(24, 24, 27, 0.08);
+  background: rgba(24, 24, 27, 0.12);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.videoToggleSwitch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.videoMuteToggle input:checked + .videoToggleSwitch {
+  border-color: #3b82f6;
+  background: #3b82f6;
+}
+
+.videoMuteToggle input:checked + .videoToggleSwitch::after {
+  transform: translateX(20px);
+}
+
+.videoToggleLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(82, 82, 91, 0.82);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+:global(.dark) .videoToggleLabel {
+  color: #bbb;
+}
+
+.videoMuteToggle input:checked ~ .videoToggleLabel {
+  color: rgba(24, 24, 27, 0.92);
+}
+
+:global(.dark) .videoMuteToggle input:checked ~ .videoToggleLabel {
+  color: #fff;
+}
+
+.videoEditorExportBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 20px;
+  padding: 0 28px;
+  background: rgba(24, 24, 27, 0.96);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(24, 24, 27, 0.12);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, opacity 0.2s ease;
+}
+
+.videoEditorExportBtn:hover:not(:disabled) {
+  transform: scale(1.05);
+  background: #000;
+  box-shadow: 0 0 30px rgba(24, 24, 27, 0.24);
+}
+
+.videoEditorExportBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@keyframes videoEditorOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes videoEditorModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+:global(.dark) .videoEditorExportBtn {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark) .videoEditorExportBtn:hover:not(:disabled) {
+  background: #f0f0f0;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+}
+
 @media (max-width: 720px) {
   .autoWorkflowGrid {
     grid-template-columns: 1fr;
@@ -4610,5 +5070,27 @@
   .autoWorkflowPanelHead {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .videoEditorOverlay {
+    padding: 12px;
+  }
+
+  .videoEditorModal {
+    width: 100%;
+    max-height: 92vh;
+  }
+
+  .videoEditorBody {
+    padding: 24px 16px;
+  }
+
+  .videoEditorFooter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .videoEditorExportBtn {
+    width: 100%;
   }
 }

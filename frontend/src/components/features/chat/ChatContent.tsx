@@ -57,7 +57,7 @@ import type {
   ChatProjectPromptSuggestion,
   ChatTaskRef,
 } from '@/lib/api/types/chat'
-import type { ProjectStoryboardStatus, ProjectSummary } from '@/lib/api/types/projects'
+import type { MergeProjectStoryboardDto, ProjectStoryboardStatus, ProjectSummary } from '@/lib/api/types/projects'
 import type { ApiResearchTask } from '@/lib/api/types/research'
 import { cn } from '@/lib/utils/cn'
 import { exportResearchReportToWord } from '@/lib/utils/exportResearchWord'
@@ -4103,6 +4103,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
 
   const handleMergeAutoProjectStoryboard = useCallback(async (
     metadata: ChatAutoProjectAgentMetadata,
+    options?: Pick<MergeProjectStoryboardDto, 'shotIds' | 'transitions' | 'mute'>,
   ) => {
     const projectId = metadata.projectId?.trim() || ''
     const workflow = metadata.workflow
@@ -4144,7 +4145,11 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
         generatedShotIdSet.add(shotId)
       }
 
-      const generatedShots = workflow.shots.filter((shot) => generatedShotIdSet.has(shot.id))
+      const generatedShots = workflow.shots.filter((shot) =>
+        options?.shotIds?.length
+          ? options.shotIds.includes(shot.id)
+          : generatedShotIdSet.has(shot.id)
+      )
       const failedShotIdSet = new Set(
         liveStoryboardStatuses
           .filter((item) => item.status === 'failed' && !skippedShotIdSet.has(item.shotId))
@@ -4162,11 +4167,17 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
           const shotIndex = workflow.shots.findIndex((item) => item.id === shot.id)
           return isZh ? `第 ${shotIndex + 1} 镜｜${shot.title}` : `Shot #${shotIndex + 1} | ${shot.title}`
         })
-      const shotIds = generatedShots
-        .filter((shot) => completedShotIdSet.has(shot.id))
-        .map((shot) => shot.id)
+      const shotIds = (options?.shotIds?.length ? options.shotIds : generatedShots.map((shot) => shot.id))
+        .filter((shotId) => generatedShots.some((shot) => shot.id === shotId))
+      const completedShotIds = shotIds
+        .filter((shotId) => completedShotIdSet.has(shotId))
+      const mergePayload: MergeProjectStoryboardDto = {
+        shotIds: completedShotIds,
+        ...(options?.transitions ? { transitions: options.transitions } : {}),
+        ...(typeof options?.mute === 'boolean' ? { mute: options.mute } : {}),
+      }
 
-      if (shotIds.length === 0) {
+      if (completedShotIds.length === 0) {
         toast.error(isZh ? '暂无可合并的已生成分镜' : 'No generated storyboard shots are available to merge')
         return
       }
@@ -4189,7 +4200,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
         return
       }
 
-      await projectsService.mergeProjectStoryboard(projectId, { shotIds })
+      await projectsService.mergeProjectStoryboard(projectId, mergePayload)
       toast.success(
         isZh
           ? '最终成片已生成并保存到项目素材，可前往项目中下载'
@@ -5478,8 +5489,8 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
                             onAction={(content, metadata) => {
                               void handleSendAutoProjectAction(content, metadata)
                             }}
-                            onMergeStoryboard={(metadata) => {
-                              void handleMergeAutoProjectStoryboard(metadata)
+                            onMergeStoryboard={(metadata, options) => {
+                              void handleMergeAutoProjectStoryboard(metadata, options)
                             }}
                             isMergingStoryboard={mergingStoryboardProjectId === autoProjectMetadata.projectId}
                           />
