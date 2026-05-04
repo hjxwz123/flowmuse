@@ -7,6 +7,7 @@ import { ImageGenerateDto } from './dto/image-generate.dto';
 import { MidjourneyActionDto } from './dto/midjourney-action.dto';
 import { MidjourneyModalDto } from './dto/midjourney-modal.dto';
 import { MidjourneyEditsDto } from './dto/midjourney-edits.dto';
+import { RegenerateImageTaskDto } from './dto/regenerate-image-task.dto';
 import { SetPublicDto } from './dto/set-public.dto';
 import { ImagesService } from './images.service';
 
@@ -43,6 +44,11 @@ export class ImagesController {
   @Post('tasks/:id/retry')
   retry(@CurrentUser('id') userId: bigint, @Param('id') id: string) {
     return this.imagesService.retry(userId, BigInt(id));
+  }
+
+  @Post('tasks/:id/regenerate')
+  regenerate(@CurrentUser('id') userId: bigint, @Param('id') id: string, @Body() dto: RegenerateImageTaskDto) {
+    return this.imagesService.regenerate(userId, BigInt(id), dto);
   }
 
   @Post('tasks/:id/midjourney/action')

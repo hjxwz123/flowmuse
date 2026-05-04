@@ -8,6 +8,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useRouter } from 'next/navigation'
+import { RefreshCw } from 'lucide-react'
 import { Button, Card } from '@/components/ui'
 import { imageService, videoService } from '@/lib/api/services'
 import type { ApiTask } from '@/lib/api/types/task'
@@ -17,6 +18,7 @@ import { PromptEditModal } from './PromptEditModal'
 import { resolvePurchaseGuideReason, type PurchaseGuideReason } from '@/lib/utils/purchaseGuide'
 import { PurchaseGuideModal } from '@/components/shared/PurchaseGuideModal'
 import { toast } from 'sonner'
+import { ImageRegenerateModal } from './ImageRegenerateModal'
 
 interface TaskCardProps {
   task: ApiTask
@@ -32,6 +34,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const [showMaskEditor, setShowMaskEditor] = useState(false)
   const [showPromptEdit, setShowPromptEdit] = useState(false) // 显示prompt编辑弹窗（nanobanana）
+  const [showRegenerateModal, setShowRegenerateModal] = useState(false)
   const [varyRegionCustomId, setVaryRegionCustomId] = useState<string | null>(null)
   const [pendingMjActionId, setPendingMjActionId] = useState<string | null>(null)
   const [isGptImageEdit, setIsGptImageEdit] = useState(false) // 标记是否为GPT Image编辑
@@ -57,6 +60,8 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
   const shouldShowPublicModerationCard =
     task.status === 'completed' && task.publicModerationStatus === 'pending'
   const isMjActionPending = pendingMjActionId !== null
+  const canRegenerateImageTask =
+    task.type === 'image' && (task.status === 'completed' || task.status === 'failed')
 
   useEffect(() => {
     return () => {
@@ -800,8 +805,22 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
               </Button>
             )}
 
+            {/* 图片重新生成按钮 */}
+            {canRegenerateImageTask && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setShowRegenerateModal(true)}
+                disabled={isActionLoading}
+                className="flex-1 min-w-[100px]"
+              >
+                <RefreshCw className="w-4 h-4 mr-1" />
+                {t('actions.regenerate')}
+              </Button>
+            )}
+
             {/* 重试按钮 */}
-            {task.status === 'failed' && (
+            {task.status === 'failed' && task.type !== 'image' && (
               <Button
                 size="sm"
                 variant="secondary"
@@ -914,6 +933,16 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
         submitText="开始重绘"
         onClose={() => setShowPromptEdit(false)}
         onSubmit={handleNanobananaPromptSubmit}
+      />
+    )}
+
+    {showRegenerateModal && (
+      <ImageRegenerateModal
+        isOpen={showRegenerateModal}
+        task={task}
+        onClose={() => setShowRegenerateModal(false)}
+        onCreated={onUpdate}
+        onPurchaseRequired={tryShowPurchaseGuide}
       />
     )}
 

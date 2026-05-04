@@ -40,7 +40,25 @@
     "requestPublic": "申请公开",
     "cancelPublicRequest": "取消公开申请",
     "download": "下载",
-    "share": "分享"
+    "share": "分享",
+    "regenerate": "重新生成"
+  },
+  "regenerate": {
+    "title": "重新生成图片",
+    "sourceTask": "源任务",
+    "targetModel": "选择图片模型",
+    "selectModel": "选择模型",
+    "loadingModels": "加载模型中...",
+    "loadModelsFailed": "加载图片模型失败",
+    "provider": "服务商",
+    "cost": "消耗",
+    "credits": "{count} 点",
+    "hint": "会创建一个新任务，并按目标模型重新整理比例、尺寸、参考图等参数。",
+    "cancel": "取消",
+    "submit": "重新生成",
+    "submitting": "提交中...",
+    "success": "已提交新的图片任务",
+    "failed": "重新生成失败"
   },
   "midjourney": {
     "actions": "操作",

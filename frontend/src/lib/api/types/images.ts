@@ -63,6 +63,11 @@ export interface GenerateImageDto {
   skipProjectPromptTransform?: boolean
 }
 
+// 图片任务重新生成请求 DTO
+export interface RegenerateImageTaskDto {
+  modelId: string
+}
+
 // Midjourney 操作请求 DTO
 export interface MidjourneyActionDto {
   customId: string

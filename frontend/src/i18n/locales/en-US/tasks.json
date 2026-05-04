@@ -40,7 +40,25 @@
     "requestPublic": "Request Public",
     "cancelPublicRequest": "Cancel Request",
     "download": "Download",
-    "share": "Share"
+    "share": "Share",
+    "regenerate": "Regenerate"
+  },
+  "regenerate": {
+    "title": "Regenerate Image",
+    "sourceTask": "Source Task",
+    "targetModel": "Image Model",
+    "selectModel": "Select a model",
+    "loadingModels": "Loading models...",
+    "loadModelsFailed": "Failed to load image models",
+    "provider": "Provider",
+    "cost": "Cost",
+    "credits": "{count} credits",
+    "hint": "A new task will be created with ratio, size, and reference inputs remapped for the selected model.",
+    "cancel": "Cancel",
+    "submit": "Regenerate",
+    "submitting": "Submitting...",
+    "success": "New image task submitted",
+    "failed": "Failed to regenerate image"
   },
   "midjourney": {
     "actions": "Actions",

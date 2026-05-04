@@ -53,6 +53,12 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const pathSegments = pathname?.split('/').filter(Boolean) ?? []
   const isAuthRoute = !isAdminRoute && pathSegments[1] === 'auth'
   const isLandingRoute = !isAdminRoute && pathSegments.length === 1
+  const isGalleryDetailRoute =
+    !isAdminRoute &&
+    pathSegments[1] === 'gallery' &&
+    (pathSegments[2] === 'image' || pathSegments[2] === 'video') &&
+    Boolean(pathSegments[3])
+  const isFixedViewportRoute = isChatRoute || isGalleryDetailRoute
   const useSideNav = !isAdminRoute && !isLandingRoute && !isAuthRoute
   const [siteReady, setSiteReady] = useState(false)
   const [showStartupPopup, setShowStartupPopup] = useState(false)
@@ -111,6 +117,7 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
     !isAuthRoute &&
     !isLandingRoute &&
     !isChatRoute &&
+    !isGalleryDetailRoute &&
     !isCanvasRoute &&
     topNoticeText.length > 0 &&
     showTopNotice
@@ -248,22 +255,22 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
   }
 
   return (
-    <div className={isChatRoute ? 'flex min-w-0 h-[100dvh] min-h-[100dvh] flex-col overflow-hidden bg-canvas dark:bg-canvas-dark' : 'flex min-w-0 min-h-screen flex-col overflow-x-clip bg-canvas dark:bg-canvas-dark'}>
+    <div className={isFixedViewportRoute ? 'flex min-w-0 h-[100dvh] min-h-[100dvh] flex-col overflow-hidden bg-canvas dark:bg-canvas-dark' : 'flex min-w-0 min-h-screen flex-col overflow-x-clip bg-canvas dark:bg-canvas-dark'}>
       {/* 全局路由加载进度条 */}
       <RouteLoadingBar />
       <ToastProvider />
 
-      <div className={useSideNav ? 'flex min-w-0 flex-1 min-h-0 overflow-x-clip bg-canvas dark:bg-canvas-dark' : 'flex min-w-0 flex-1 min-h-0 flex-col overflow-x-clip bg-canvas dark:bg-canvas-dark'}>
+      <div className={useSideNav ? (isFixedViewportRoute ? 'flex min-w-0 flex-1 min-h-0 overflow-hidden bg-canvas dark:bg-canvas-dark' : 'flex min-w-0 flex-1 min-h-0 overflow-x-clip bg-canvas dark:bg-canvas-dark') : (isFixedViewportRoute ? 'flex min-w-0 flex-1 min-h-0 flex-col overflow-hidden bg-canvas dark:bg-canvas-dark' : 'flex min-w-0 flex-1 min-h-0 flex-col overflow-x-clip bg-canvas dark:bg-canvas-dark')}>
         {!isAdminRoute && useSideNav && <Sidebar forceCollapsed={isChatRoute} />}
         {useSideNav ? (
-          <div className={isChatRoute ? 'flex min-w-0 min-h-0 w-full flex-1 flex-col overflow-hidden' : 'flex min-w-0 min-h-0 w-full flex-1 flex-col overflow-x-clip'}>
+          <div className={isFixedViewportRoute ? 'flex min-w-0 min-h-0 w-full flex-1 flex-col overflow-hidden' : 'flex min-w-0 min-h-0 w-full flex-1 flex-col overflow-x-clip'}>
             {shouldShowTopNotice ? (
               <SiteTopNoticeBar
                 text={topNoticeText}
                 onClose={() => setShowTopNotice(false)}
               />
             ) : null}
-            <main className={isChatRoute ? 'flex min-w-0 min-h-0 w-full flex-1 overflow-hidden' : 'min-w-0 w-full flex-1 min-h-0 overflow-x-clip pb-16 md:pb-0'}>
+            <main className={isFixedViewportRoute ? 'flex min-w-0 min-h-0 w-full flex-1 overflow-hidden' : 'min-w-0 w-full flex-1 min-h-0 overflow-x-clip pb-16 md:pb-0'}>
               {children}
             </main>
           </div>
@@ -279,6 +286,8 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
             className={
               isChatRoute
                 ? 'flex min-w-0 min-h-0 w-full flex-1 overflow-hidden'
+                : isGalleryDetailRoute
+                  ? 'flex min-w-0 min-h-0 w-full flex-1 overflow-hidden'
                 : isAuthRoute
                   ? 'min-w-0 w-full flex-1 min-h-0 overflow-x-clip'
                   : 'min-w-0 w-full flex-1 min-h-0 overflow-x-clip pb-16 md:pb-0'
@@ -290,7 +299,7 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
         )}
       </div>
       {/* 移动端底部导航栏（仅主站页面） */}
-      {!isAdminRoute && !isAuthRoute && !isChatRoute && !isLandingRoute && <MobileTabBar />}
+      {!isAdminRoute && !isAuthRoute && !isChatRoute && !isGalleryDetailRoute && !isLandingRoute && <MobileTabBar />}
 
       {/* 全局公告弹窗（自动弹出未读公告） */}
       {!isAuthRoute && !isLandingRoute && <AnnouncementModal isOpen={showModal} onClose={() => setShowModal(false)} />}

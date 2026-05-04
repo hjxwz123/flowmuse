@@ -12,6 +12,7 @@ import type {
   MidjourneyActionDto,
   MidjourneyModalDto,
   MidjourneyEditsDto,
+  RegenerateImageTaskDto,
   SetPublicDto,
 } from '../types/images'
 
@@ -77,6 +78,14 @@ export const imageService = {
    */
   async retryTask(id: string): Promise<ApiTask> {
     return apiClient.post(`/images/tasks/${id}/retry`)
+  },
+
+  /**
+   * 使用可选图片模型重新生成，创建新图片任务
+   * POST /images/tasks/:id/regenerate
+   */
+  async regenerateTask(id: string, data: RegenerateImageTaskDto): Promise<ApiTask> {
+    return apiClient.post(`/images/tasks/${id}/regenerate`, data)
   },
 
   /**
