@@ -227,7 +227,7 @@ export function ImageDropzone({
                   className={cn(
                     'absolute top-2 right-2',
                     'h-7 w-7 rounded-full sm:h-6 sm:w-6',
-                    'bg-red-500 text-white',
+                    'bg-red-500 text-stone-50',
                     'flex items-center justify-center',
                     'opacity-100 sm:opacity-0 sm:group-hover:opacity-100',
                     'transition-opacity duration-200',
@@ -238,7 +238,7 @@ export function ImageDropzone({
                 </button>
 
                 {/* 文件信息 */}
-                <div className="absolute bottom-0 left-0 right-0 bg-black/60 p-1.5 text-white sm:p-2">
+                <div className="absolute bottom-0 left-0 right-0 bg-stone-950/60 p-1.5 text-stone-50 sm:p-2">
                   <p className="text-xs truncate">{file.name}</p>
                   <p className="text-xs text-stone-300">
                     {(file.size / 1024 / 1024).toFixed(2)} MB

@@ -92,11 +92,11 @@ export default function AdminTemplatesPage() {
             <img
               src={tpl.coverUrl}
               alt={tpl.title}
-              className="w-12 h-12 rounded-lg object-cover border border-stone-200"
+              className="w-12 h-12 rounded-lg object-cover border border-stone-200 dark:border-stone-800"
             />
           ) : (
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-aurora-pink/20 via-aurora-purple/20 to-aurora-blue/20 flex items-center justify-center border border-stone-200">
-              <svg className="w-6 h-6 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-aurora-pink/20 via-aurora-purple/20 to-aurora-blue/20 flex items-center justify-center border border-stone-200 dark:border-stone-800">
+              <svg className="w-6 h-6 text-stone-400 dark:text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
@@ -107,9 +107,9 @@ export default function AdminTemplatesPage() {
         label: t('fields.title'),
         render: (tpl) => (
           <div>
-            <span className="font-medium text-stone-900">{tpl.title}</span>
+            <span className="font-medium text-stone-900 dark:text-stone-100">{tpl.title}</span>
             {tpl.description && (
-              <p className="text-xs text-stone-500 mt-0.5 line-clamp-1">{tpl.description}</p>
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 line-clamp-1">{tpl.description}</p>
             )}
           </div>
         ),
@@ -123,8 +123,8 @@ export default function AdminTemplatesPage() {
             className={cn(
               'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
               tpl.type === 'image'
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-purple-100 text-purple-800'
+                ? 'bg-blue-100 dark:bg-blue-950/40 text-blue-800 dark:text-blue-200'
+                : 'bg-purple-100 dark:bg-purple-950/40 text-purple-800 dark:text-purple-200'
             )}
           >
             {t(`types.${tpl.type}`)}
@@ -136,7 +136,7 @@ export default function AdminTemplatesPage() {
         label: t('fields.category'),
         width: '100px',
         render: (tpl) => (
-          <span className="text-stone-600 text-sm">{tpl.category || '—'}</span>
+          <span className="text-stone-600 dark:text-stone-400 text-sm">{tpl.category || '—'}</span>
         ),
       },
       {
@@ -155,7 +155,7 @@ export default function AdminTemplatesPage() {
         label: t('fields.sortOrder'),
         width: '70px',
         align: 'center',
-        render: (tpl) => <span className="text-stone-600">{tpl.sortOrder}</span>,
+        render: (tpl) => <span className="text-stone-600 dark:text-stone-400">{tpl.sortOrder}</span>,
       },
       {
         key: 'actions',
@@ -179,7 +179,7 @@ export default function AdminTemplatesPage() {
               disabled={deletingId === tpl.id}
               className={cn(
                 'rounded-lg px-3 py-1.5 font-ui text-xs font-medium',
-                'bg-red-100 text-red-700 hover:bg-red-200',
+                'bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50',
                 'disabled:opacity-50 disabled:cursor-not-allowed',
                 'transition-colors duration-300'
               )}
@@ -217,8 +217,8 @@ export default function AdminTemplatesPage() {
                 className={cn(
                   'px-4 py-2 rounded-lg font-ui text-sm font-medium transition-all duration-200',
                   typeFilter === type
-                    ? 'bg-aurora-purple text-white shadow-aurora'
-                    : 'bg-white text-stone-600 border border-stone-200 hover:border-aurora-purple/50'
+                    ? 'bg-aurora-purple text-stone-50 shadow-aurora'
+                    : 'bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:border-aurora-purple/50'
                 )}
               >
                 {type === 'all' ? '全部' : t(`types.${type}`)}

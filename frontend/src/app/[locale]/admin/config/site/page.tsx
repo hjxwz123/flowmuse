@@ -10,17 +10,17 @@ import { adminAiService, type ChatModerationAutoBanRule } from '@/lib/api/servic
 import type { SiteSettings } from '@/lib/api/types/admin/site'
 import { toast } from 'sonner'
 
-const sectionTitleCls = 'mb-4 flex items-center gap-2 text-lg font-semibold text-stone-900'
+const sectionTitleCls = 'mb-4 flex items-center gap-2 text-lg font-semibold text-stone-900 dark:text-stone-100'
 const sectionAccentCls = 'inline-block h-5 w-1 rounded-full bg-aurora-purple'
-const labelCls = 'mb-2 block text-sm font-medium text-stone-700'
-const helpTextCls = 'mt-1 text-xs text-stone-500'
+const labelCls = 'mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300'
+const helpTextCls = 'mt-1 text-xs text-stone-500 dark:text-stone-400'
 const inputCls =
-  'w-full rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm text-stone-900 transition-colors placeholder:text-stone-400 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
+  'w-full rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-4 py-2 text-sm text-stone-900 dark:text-stone-100 transition-colors placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
 const textareaCls = `${inputCls} resize-y`
 const monoTextareaCls = `${textareaCls} font-mono`
 const selectCls =
-  'w-full appearance-none rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm text-stone-900 transition-colors focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
-const switchCardCls = 'flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 p-4'
+  'w-full appearance-none rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-4 py-2 text-sm text-stone-900 dark:text-stone-100 transition-colors focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
+const switchCardCls = 'flex items-center justify-between rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4'
 const DEFAULT_AUTO_BAN_RULE: ChatModerationAutoBanRule = {
   triggerCount: 3,
   banDays: 1,
@@ -256,7 +256,7 @@ export default function AdminSiteSettingsPage() {
       maxWidthClassName="max-w-5xl"
     >
       <form onSubmit={handleSubmit}>
-        <Card className="space-y-6 border border-stone-200 !bg-white p-6 !shadow-sm">
+        <Card className="space-y-6 border border-stone-200 dark:border-stone-800 !bg-stone-50 dark:!bg-stone-900 p-6 !shadow-sm">
           {/* 站点信息 */}
           <div>
             <h2 className={sectionTitleCls}>
@@ -306,13 +306,13 @@ export default function AdminSiteSettingsPage() {
                     type="color"
                     value={formData.themeColor || '#B794F6'}
                     onChange={(e) => setFormData({ ...formData, themeColor: e.target.value })}
-                    className="w-10 h-10 rounded-lg border border-stone-300 cursor-pointer p-0.5"
+                    className="w-10 h-10 rounded-lg border border-stone-300 dark:border-stone-700 cursor-pointer p-0.5"
                   />
                   <input
                     type="text"
                     value={formData.themeColor}
                     onChange={(e) => setFormData({ ...formData, themeColor: e.target.value })}
-                    className="w-36 rounded-lg border border-stone-300 bg-white px-3 py-2 font-mono text-sm text-stone-900 transition-colors placeholder:text-stone-400 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                    className="w-36 rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-3 py-2 font-mono text-sm text-stone-900 dark:text-stone-100 transition-colors placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
                     placeholder="#B794F6"
                     maxLength={7}
                   />
@@ -320,7 +320,7 @@ export default function AdminSiteSettingsPage() {
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, themeColor: '' })}
-                      className="text-xs text-stone-500 hover:text-red-500 transition-colors"
+                      className="text-xs text-stone-500 dark:text-stone-400 hover:text-red-500 transition-colors"
                     >
                       恢复默认
                     </button>
@@ -367,7 +367,7 @@ export default function AdminSiteSettingsPage() {
           </div>
 
           {/* 注册设置 */}
-          <div className="pt-6 border-t border-stone-200">
+          <div className="pt-6 border-t border-stone-200 dark:border-stone-800">
             <h2 className={sectionTitleCls}>
               <span className={sectionAccentCls} />
               注册设置
@@ -381,11 +381,11 @@ export default function AdminSiteSettingsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, registrationEnabled: e.target.checked })
                   }
-                  className="h-4 w-4 rounded border-stone-300 bg-white text-aurora-purple focus:ring-aurora-purple/20"
+                  className="h-4 w-4 rounded border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-aurora-purple focus:ring-aurora-purple/20"
                 />
                 <label
                   htmlFor="registrationEnabled"
-                  className="text-sm font-medium text-stone-700"
+                  className="text-sm font-medium text-stone-700 dark:text-stone-300"
                 >
                   开启用户注册
                 </label>
@@ -480,7 +480,7 @@ export default function AdminSiteSettingsPage() {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-stone-200">
+          <div className="pt-6 border-t border-stone-200 dark:border-stone-800">
             <h2 className={sectionTitleCls}>
               <span className={sectionAccentCls} />
               人机验证（Cloudflare Turnstile）
@@ -488,8 +488,8 @@ export default function AdminSiteSettingsPage() {
             <div className="space-y-4">
               <div className={switchCardCls}>
                 <div>
-                  <p className="font-semibold text-stone-800">启用登录 / 注册人机验证</p>
-                  <p className="text-xs text-stone-500 mt-0.5">
+                  <p className="font-semibold text-stone-800 dark:text-stone-200">启用登录 / 注册人机验证</p>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                     开启后，登录和注册表单会显示 Turnstile，后端也会强制校验 token。
                   </p>
                 </div>
@@ -498,7 +498,7 @@ export default function AdminSiteSettingsPage() {
                   onClick={() => setFormData({ ...formData, turnstileEnabled: !formData.turnstileEnabled })}
                   className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${formData.turnstileEnabled ? 'bg-aurora-purple' : 'bg-stone-300'}`}
                 >
-                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${formData.turnstileEnabled ? 'translate-x-8' : 'translate-x-1'}`} />
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-stone-50 dark:bg-stone-900 shadow transition-transform ${formData.turnstileEnabled ? 'translate-x-8' : 'translate-x-1'}`} />
                 </button>
               </div>
 
@@ -534,14 +534,14 @@ export default function AdminSiteSettingsPage() {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4 text-xs leading-6 text-stone-500">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 text-xs leading-6 text-stone-500 dark:text-stone-400">
                 Turnstile 官方前端脚本会从 Cloudflare 加载。只有在后台开启并且配置了 Site Key / Secret Key 后，登录和注册页面才会真正启用验证。
               </div>
             </div>
           </div>
 
           {/* 积分购买配置 */}
-          <div className="pt-6 border-t border-stone-200">
+          <div className="pt-6 border-t border-stone-200 dark:border-stone-800">
             <h2 className={sectionTitleCls}>
               <span className={sectionAccentCls} />
               积分购买配置
@@ -549,15 +549,15 @@ export default function AdminSiteSettingsPage() {
             <div className="space-y-4">
               <div className={switchCardCls}>
                 <div>
-                  <p className="font-semibold text-stone-800">启用自定义积分购买</p>
-                  <p className="text-xs text-stone-500 mt-0.5">开启后用户可在商城页面自定义购买积分数量</p>
+                  <p className="font-semibold text-stone-800 dark:text-stone-200">启用自定义积分购买</p>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">开启后用户可在商城页面自定义购买积分数量</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, creditBuyEnabled: !formData.creditBuyEnabled })}
                   className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${formData.creditBuyEnabled ? 'bg-aurora-purple' : 'bg-stone-300'}`}
                 >
-                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${formData.creditBuyEnabled ? 'translate-x-8' : 'translate-x-1'}`} />
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-stone-50 dark:bg-stone-900 shadow transition-transform ${formData.creditBuyEnabled ? 'translate-x-8' : 'translate-x-1'}`} />
                 </button>
               </div>
 
@@ -594,19 +594,19 @@ export default function AdminSiteSettingsPage() {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-stone-200">
-            <div className="rounded-xl border border-dashed border-stone-300 bg-stone-50 px-4 py-3 text-sm text-stone-600">
+          <div className="pt-6 border-t border-stone-200 dark:border-stone-800">
+            <div className="rounded-xl border border-dashed border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-4 py-3 text-sm text-stone-600 dark:text-stone-400">
               聊天文件配置与联网搜索配置（SearXNG）已迁移至「AI 能力 → AI 配置」页面统一管理。
             </div>
           </div>
 
-          <div className="pt-6 border-t border-stone-200">
+          <div className="pt-6 border-t border-stone-200 dark:border-stone-800">
             <h2 className={sectionTitleCls}>
               <span className={sectionAccentCls} />
               内容审核配置
             </h2>
             <div className="space-y-4">
-              <label className="flex items-center gap-3 rounded-xl border border-stone-200 bg-stone-50 px-4 py-3">
+              <label className="flex items-center gap-3 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-4 py-3">
                 <input
                   type="checkbox"
                   checked={moderationFormData.chatModerationEnabled}
@@ -615,8 +615,8 @@ export default function AdminSiteSettingsPage() {
                   }
                 />
                 <div>
-                  <p className="text-sm font-medium text-stone-800">启用统一输入审核</p>
-                  <p className="mt-1 text-xs text-stone-500">
+                  <p className="text-sm font-medium text-stone-800 dark:text-stone-200">启用统一输入审核</p>
+                  <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
                     开启后聊天、绘图、提示词润色都会先审核用户输入；关闭后这三处都不审核。
                   </p>
                 </div>
@@ -677,7 +677,7 @@ export default function AdminSiteSettingsPage() {
                 <p className={helpTextCls}>建议明确要求模型只能输出 true / false，不要输出解释。</p>
               </div>
 
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
                 <label className="flex items-center gap-3">
                   <input
                     type="checkbox"
@@ -687,8 +687,8 @@ export default function AdminSiteSettingsPage() {
                     }
                   />
                   <div>
-                    <p className="text-sm font-medium text-stone-800">启用审核触发自动封禁</p>
-                    <p className="mt-1 text-xs text-stone-500">
+                    <p className="text-sm font-medium text-stone-800 dark:text-stone-200">启用审核触发自动封禁</p>
+                    <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
                       当前自动封禁仅作用于聊天消息审核拦截记录。按累计拦截次数匹配最高规则。
                     </p>
                   </div>
@@ -696,17 +696,17 @@ export default function AdminSiteSettingsPage() {
 
                 <div className="mt-4 space-y-3">
                   {moderationFormData.chatModerationAutoBanRules.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-stone-300 bg-white px-4 py-5 text-sm text-stone-500">
+                    <div className="rounded-xl border border-dashed border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-4 py-5 text-sm text-stone-500 dark:text-stone-400">
                       暂无规则。可以添加例如“拦截 3 次封禁 1 天”、“拦截 5 次封禁 7 天”。
                     </div>
                   ) : (
                     moderationFormData.chatModerationAutoBanRules.map((rule, index) => (
                       <div
                         key={`${index}-${rule.triggerCount}-${rule.banDays}`}
-                        className="grid gap-3 rounded-xl border border-stone-200 bg-white p-4 md:grid-cols-[1fr_1fr_auto]"
+                        className="grid gap-3 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 md:grid-cols-[1fr_1fr_auto]"
                       >
                         <div>
-                          <label className="mb-2 block text-xs font-medium text-stone-500">累计拦截次数</label>
+                          <label className="mb-2 block text-xs font-medium text-stone-500 dark:text-stone-400">累计拦截次数</label>
                           <input
                             type="number"
                             min="1"
@@ -718,7 +718,7 @@ export default function AdminSiteSettingsPage() {
                           />
                         </div>
                         <div>
-                          <label className="mb-2 block text-xs font-medium text-stone-500">封禁天数</label>
+                          <label className="mb-2 block text-xs font-medium text-stone-500 dark:text-stone-400">封禁天数</label>
                           <input
                             type="number"
                             min="1"
@@ -733,7 +733,7 @@ export default function AdminSiteSettingsPage() {
                           <button
                             type="button"
                             onClick={() => removeAutoBanRule(index)}
-                            className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                            className="rounded-lg border border-red-200 dark:border-red-900/60 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-300 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30"
                           >
                             删除规则
                           </button>
@@ -746,7 +746,7 @@ export default function AdminSiteSettingsPage() {
                     <button
                       type="button"
                       onClick={addAutoBanRule}
-                      className="rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50"
+                      className="rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors hover:bg-stone-50 dark:hover:bg-stone-800"
                     >
                       添加规则
                     </button>
@@ -757,12 +757,12 @@ export default function AdminSiteSettingsPage() {
           </div>
 
           {/* 页面内容设置 */}
-          <div className="pt-6 border-t border-stone-200">
+          <div className="pt-6 border-t border-stone-200 dark:border-stone-800">
             <h2 className={sectionTitleCls}>
               <span className={sectionAccentCls} />
               页面内容
             </h2>
-            <p className="mb-4 text-sm text-stone-500">
+            <p className="mb-4 text-sm text-stone-500 dark:text-stone-400">
               首页支持顶部滚动消息条，其余页面内容支持 Markdown 格式并显示在对应公开页面中
             </p>
             <div className="space-y-4">
@@ -784,9 +784,9 @@ export default function AdminSiteSettingsPage() {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                <h3 className="text-sm font-semibold text-stone-900">首页背景轮播</h3>
-                <p className="mt-1 text-xs leading-6 text-stone-500">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
+                <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">首页背景轮播</h3>
+                <p className="mt-1 text-xs leading-6 text-stone-500 dark:text-stone-400">
                   用于首页首屏背景。图片 URL 每行一个，也支持英文逗号分隔；留空时使用系统内置公开网络资源，不会使用私有 COS 地址。
                 </p>
 
@@ -825,9 +825,9 @@ export default function AdminSiteSettingsPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-                <h3 className="text-sm font-semibold text-stone-900">页面启动遮罩广告 / 消息弹层</h3>
-                <p className="mt-1 text-xs leading-6 text-stone-500">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
+                <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">页面启动遮罩广告 / 消息弹层</h3>
+                <p className="mt-1 text-xs leading-6 text-stone-500 dark:text-stone-400">
                   进入站点首次加载或刷新后弹出一次；同一次页面访问中切换到创作、对话等路由不会重复弹出。用户手动关闭后，30 分钟内不会再次弹出。
                 </p>
 
@@ -942,8 +942,8 @@ export default function AdminSiteSettingsPage() {
 
                       {startupPopupImageUrl.trim() ? (
                         <div>
-                          <p className="mb-2 text-xs font-medium text-stone-500">图片预览</p>
-                          <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
+                          <p className="mb-2 text-xs font-medium text-stone-500 dark:text-stone-400">图片预览</p>
+                          <div className="overflow-hidden rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 shadow-sm">
                             <div
                               className="mx-auto flex items-center justify-center"
                               style={{
@@ -977,7 +977,7 @@ export default function AdminSiteSettingsPage() {
                           }
                           rows={12}
                           className={monoTextareaCls}
-                          placeholder={`<div style="padding:24px;background:#fff;border-radius:24px">
+                          placeholder={`<div style="padding:24px;background:rgb(250 250 249);border-radius:24px">
   <h2>限时活动</h2>
   <p>这里可以写任意 HTML 内容。</p>
   <a href="/packages">立即查看</a>
@@ -990,8 +990,8 @@ export default function AdminSiteSettingsPage() {
 
                       {startupPopupHtml.trim() ? (
                         <div>
-                          <p className="mb-2 text-xs font-medium text-stone-500">HTML 预览</p>
-                          <div className="overflow-auto rounded-2xl border border-stone-200 bg-white shadow-sm">
+                          <p className="mb-2 text-xs font-medium text-stone-500 dark:text-stone-400">HTML 预览</p>
+                          <div className="overflow-auto rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 shadow-sm">
                             <div
                               className="mx-auto"
                               style={{
@@ -1069,11 +1069,11 @@ export default function AdminSiteSettingsPage() {
           </div>
 
           {/* 保存按钮 */}
-          <div className="pt-6 border-t border-stone-200">
+          <div className="pt-6 border-t border-stone-200 dark:border-stone-800">
             <Button
               type="submit"
               disabled={isSaving}
-              className="rounded-lg bg-aurora-purple px-6 py-2 text-white transition-colors hover:bg-aurora-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-aurora-purple px-6 py-2 text-stone-50 transition-colors hover:bg-aurora-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSaving ? '保存中...' : '保存设置'}
             </Button>

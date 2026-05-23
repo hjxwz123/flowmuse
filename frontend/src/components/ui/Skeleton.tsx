@@ -31,7 +31,7 @@ export const Skeleton = ({
  */
 export const SkeletonCard = () => {
   return (
-    <div className="rounded-3xl overflow-hidden bg-white border border-stone-200 shadow-canvas">
+    <div className="rounded-3xl overflow-hidden bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 shadow-canvas">
       {/* 图片区域 */}
       <Skeleton className="w-full aspect-square" />
 

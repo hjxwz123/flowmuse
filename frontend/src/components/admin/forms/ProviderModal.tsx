@@ -167,15 +167,15 @@ export function ProviderModal({
         {/* 预设 Provider 选择（仅新建模式） */}
         {!isEditMode && (
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               选择预设 Provider
             </label>
             <select
               value={selectedPreset}
               onChange={(e) => handlePresetChange(e.target.value)}
               className={cn(
-                'w-full rounded-lg border-2 border-stone-200 px-4 py-3',
-                'font-ui text-sm text-stone-900',
+                'w-full rounded-lg border-2 border-stone-200 dark:border-stone-800 px-4 py-3',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
@@ -196,7 +196,7 @@ export function ProviderModal({
                 ))}
               </optgroup>
             </select>
-            <p className="mt-2 font-ui text-xs text-stone-500">
+            <p className="mt-2 font-ui text-xs text-stone-500 dark:text-stone-400">
               提示：选择预设后会自动填充下方字段，你也可以不选择预设直接手动填写
             </p>
           </div>
@@ -205,7 +205,7 @@ export function ProviderModal({
         {/* Provider Key and Display Name */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               提供商标识 <span className="text-red-500">*</span>
             </label>
             <input
@@ -214,9 +214,9 @@ export function ProviderModal({
               onChange={(e) => setProviderKey(e.target.value)}
               placeholder="midjourney"
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-mono text-sm text-stone-900',
-                'placeholder:text-stone-400',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-mono text-sm text-stone-900 dark:text-stone-100',
+                'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
@@ -224,7 +224,7 @@ export function ProviderModal({
             />
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.name')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -233,9 +233,9 @@ export function ProviderModal({
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Midjourney"
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
-                'placeholder:text-stone-400',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
+                'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
@@ -246,7 +246,7 @@ export function ProviderModal({
 
         {/* Adapter Class */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             适配器类名 <span className="text-red-500">*</span>
           </label>
           <input
@@ -255,9 +255,9 @@ export function ProviderModal({
             onChange={(e) => setAdapterClass(e.target.value)}
             placeholder="MidjourneyAdapter"
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-mono text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-mono text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
@@ -267,7 +267,7 @@ export function ProviderModal({
 
         {/* Support Types */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             支持类型 <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -286,7 +286,7 @@ export function ProviderModal({
                   'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all',
                   supportTypes.includes(st.value)
                     ? 'border-aurora-purple bg-aurora-purple/10 text-aurora-purple'
-                    : 'border-stone-200 bg-white text-stone-600 hover:border-aurora-purple/30'
+                    : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-aurora-purple/30'
                 )}
               >
                 {st.label}
@@ -298,7 +298,7 @@ export function ProviderModal({
         {/* Sort Order and Status */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.sort')}
             </label>
             <input
@@ -307,15 +307,15 @@ export function ProviderModal({
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
             />
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.enabled')}
             </label>
             <button
@@ -324,8 +324,8 @@ export function ProviderModal({
               className={cn(
                 'w-full rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all',
                 isActive
-                  ? 'border-green-500 bg-green-50 text-green-700'
-                  : 'border-stone-300 bg-stone-50 text-stone-600'
+                  ? 'border-green-500 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300'
+                  : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400'
               )}
             >
               {isActive ? '启用' : '禁用'}
@@ -335,8 +335,8 @@ export function ProviderModal({
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-3">
-            <p className="font-ui text-sm text-red-700">{error}</p>
+          <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/60 p-3">
+            <p className="font-ui text-sm text-red-700 dark:text-red-300">{error}</p>
           </div>
         )}
 

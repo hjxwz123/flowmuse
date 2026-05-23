@@ -142,7 +142,7 @@ function ChatModelIcon({
   return (
     <div
       className={cn(
-        'flex items-center justify-center overflow-hidden rounded-2xl border border-stone-200 bg-stone-50 text-stone-700',
+        'flex items-center justify-center overflow-hidden rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-700 dark:text-stone-300',
         className,
       )}
     >
@@ -157,7 +157,7 @@ function ChatModelIcon({
           <span className="text-xl leading-none">{normalizedIcon}</span>
         )
       ) : (
-        <span className="text-sm font-semibold uppercase tracking-[0.18em] text-stone-500">
+        <span className="text-sm font-semibold uppercase tracking-[0.18em] text-stone-500 dark:text-stone-400">
           {getIconInitial(name)}
         </span>
       )}
@@ -483,15 +483,15 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
   }
 
   const inputClassName = cn(
-    'w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900',
+    'w-full rounded-xl border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
     'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
   )
 
   if (isLoading) {
     return (
-      <Card className="border border-stone-200 !bg-white p-8 !shadow-sm">
+      <Card className="border border-stone-200 dark:border-stone-800 !bg-stone-50 dark:!bg-stone-900 p-8 !shadow-sm">
         <div className="flex min-h-[220px] items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-aurora-purple" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 dark:border-stone-800 border-t-aurora-purple" />
         </div>
       </Card>
     )
@@ -500,14 +500,14 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
   return (
     <div id="chat-models" className="space-y-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <h2 className="text-2xl font-semibold text-stone-900">对话模型配置</h2>
+        <h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-100">对话模型配置</h2>
         <div className="flex flex-wrap items-center gap-2">
           <Button
             type="button"
             variant="secondary"
             onClick={() => void loadData()}
             disabled={isSavingOrder}
-            className="!rounded-xl !border-stone-200 !bg-white !px-4 !py-2.5 !text-stone-700 !shadow-none hover:!border-stone-300 hover:!bg-stone-50"
+            className="!rounded-xl !border-stone-200 !bg-stone-50 dark:!bg-stone-900 !px-4 !py-2.5 !text-stone-700 !shadow-none hover:!border-stone-300 hover:!bg-stone-50"
           >
             <RefreshCw className="mr-2 h-4 w-4" />
             刷新
@@ -524,13 +524,13 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
         </div>
       </div>
 
-      <Card className="border border-stone-200 !bg-white p-0 !shadow-sm">
+      <Card className="border border-stone-200 dark:border-stone-800 !bg-stone-50 dark:!bg-stone-900 p-0 !shadow-sm">
         {models.length === 0 ? (
-          <div className="px-6 py-12 text-center text-sm text-stone-500">
+          <div className="px-6 py-12 text-center text-sm text-stone-500 dark:text-stone-400">
             暂无对话模型
           </div>
         ) : (
-          <div className="divide-y divide-stone-100">
+          <div className="divide-y divide-stone-100 dark:divide-stone-800">
             {models.map((item) => {
               const isDragging = draggingModelId === item.id
               const isDropTarget = dropIndicator?.modelId === item.id
@@ -544,7 +544,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
                   onDrop={(event) => void handleDrop(event, item.id)}
                   className={cn(
                     'flex flex-col gap-4 border-transparent px-5 py-4 transition-colors sm:flex-row sm:items-center',
-                    isDragging && 'bg-stone-50 opacity-60',
+                    isDragging && 'bg-stone-50 dark:bg-stone-900 opacity-60',
                     isDropTarget && 'bg-aurora-purple/5',
                     isDropBefore && 'border-t-2 border-t-aurora-purple',
                     isDropAfter && 'border-b-2 border-b-aurora-purple',
@@ -559,7 +559,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
                       onDragEnd={clearDragState}
                       aria-label={`拖拽排序 ${item.name}`}
                       className={cn(
-                        'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-stone-200 bg-white text-stone-500 transition-colors',
+                        'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 transition-colors',
                         isSavingOrder
                           ? 'cursor-not-allowed opacity-60'
                           : 'cursor-grab hover:border-aurora-purple/40 hover:text-aurora-purple active:cursor-grabbing',
@@ -573,17 +573,17 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
                       className="h-12 w-12 shrink-0"
                     />
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-stone-900">
+                      <p className="truncate text-sm font-semibold text-stone-900 dark:text-stone-100">
                         {item.name}
                       </p>
-                      <p className="truncate font-mono text-xs text-stone-500">
+                      <p className="truncate font-mono text-xs text-stone-500 dark:text-stone-400">
                         {item.modelKey}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-end gap-2">
-                    <span className="rounded-lg bg-stone-100 px-2.5 py-1 text-xs font-medium text-stone-500">
+                    <span className="rounded-lg bg-stone-100 dark:bg-stone-800 px-2.5 py-1 text-xs font-medium text-stone-500 dark:text-stone-400">
                       #{item.sortOrder}
                     </span>
                     <button
@@ -591,7 +591,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
                       onClick={() => handleOpenEditModal(item)}
                       disabled={isSavingOrder}
                       className={cn(
-                        'inline-flex items-center gap-1.5 rounded-xl border border-stone-200 px-3 py-2 text-sm font-medium text-stone-700 transition-colors hover:border-aurora-purple hover:text-aurora-purple',
+                        'inline-flex items-center gap-1.5 rounded-xl border border-stone-200 dark:border-stone-800 px-3 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors hover:border-aurora-purple hover:text-aurora-purple',
                         isSavingOrder && 'cursor-not-allowed opacity-60',
                       )}
                     >
@@ -603,7 +603,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
                       onClick={() => void handleDelete(item)}
                       disabled={isSavingOrder || deletingId === item.id}
                       className={cn(
-                        'inline-flex items-center gap-1.5 rounded-xl border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50',
+                        'inline-flex items-center gap-1.5 rounded-xl border border-red-200 dark:border-red-900/60 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-300 transition-colors hover:bg-red-50 dark:hover:bg-red-950/30',
                         (isSavingOrder || deletingId === item.id) && 'cursor-not-allowed opacity-60',
                       )}
                     >
@@ -627,7 +627,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-2 block text-sm font-medium text-stone-700">
+              <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
                 模型显示名称
               </label>
               <input
@@ -640,7 +640,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-stone-700">
+              <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
                 实际请求模型名
               </label>
               <input
@@ -654,7 +654,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
           </div>
 
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-stone-700">
+            <label className="block text-sm font-medium text-stone-700 dark:text-stone-300">
               图标
             </label>
             <div className="flex flex-col gap-3 lg:flex-row">
@@ -671,14 +671,14 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
                     <button
                       type="button"
                       onClick={() => setDraftField('icon', '')}
-                      className="rounded-xl border border-stone-200 px-4 py-2.5 text-sm font-medium text-stone-600 transition-colors hover:border-red-200 hover:text-red-600"
+                      className="rounded-xl border border-stone-200 dark:border-stone-800 px-4 py-2.5 text-sm font-medium text-stone-600 dark:text-stone-400 transition-colors hover:border-red-200 dark:hover:border-red-800 hover:text-red-600 dark:hover:text-red-300"
                     >
                       清除
                     </button>
                   ) : null}
                 </div>
 
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-stone-300 px-4 py-2.5 text-sm font-medium text-stone-600 transition-colors hover:border-aurora-purple hover:text-aurora-purple">
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-stone-300 dark:border-stone-700 px-4 py-2.5 text-sm font-medium text-stone-600 dark:text-stone-400 transition-colors hover:border-aurora-purple hover:text-aurora-purple">
                   <Upload className="h-4 w-4" />
                   上传图片
                   <input
@@ -690,7 +690,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
                 </label>
               </div>
 
-              <div className="flex shrink-0 items-center justify-center rounded-2xl border border-stone-200 bg-stone-50 p-3">
+              <div className="flex shrink-0 items-center justify-center rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-3">
                 <ChatModelIcon
                   icon={draft.icon}
                   name={draft.name || draft.modelKey}
@@ -701,7 +701,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-stone-700">
+            <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
               模型描述
             </label>
             <textarea
@@ -713,7 +713,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-stone-700">
+            <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
               系统消息
             </label>
             <textarea
@@ -726,7 +726,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
 
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <div>
-              <label className="mb-2 block text-sm font-medium text-stone-700">
+              <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
                 免费每日上限
               </label>
               <input
@@ -740,7 +740,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-stone-700">
+              <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
                 上下文轮数
               </label>
               <input
@@ -754,7 +754,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-stone-700">
+              <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
                 深度研究积分
               </label>
               <input
@@ -768,7 +768,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-stone-700">
+              <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
                 排序
               </label>
               <input
@@ -789,8 +789,8 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
               className={cn(
                 'rounded-2xl border-2 px-4 py-3 text-left text-sm font-medium transition-all',
                 draft.supportsImageInput
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-stone-300 bg-stone-50 text-stone-600',
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300'
+                  : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400',
               )}
             >
               {draft.supportsImageInput ? '支持识图' : '不支持识图'}
@@ -802,8 +802,8 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
               className={cn(
                 'rounded-2xl border-2 px-4 py-3 text-left text-sm font-medium transition-all',
                 draft.isActive
-                  ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                  : 'border-stone-300 bg-stone-50 text-stone-600',
+                  ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300'
+                  : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400',
               )}
             >
               {draft.isActive ? '启用' : '禁用'}
@@ -811,7 +811,7 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
           </div>
 
           {formError ? (
-            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/30 px-4 py-3 text-sm text-red-700 dark:text-red-300">
               {formError}
             </div>
           ) : null}

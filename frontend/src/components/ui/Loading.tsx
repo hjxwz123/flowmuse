@@ -31,7 +31,7 @@ export const Loading = ({ size = 'md', text, className }: LoadingProps) => {
           )}
           style={{
             background:
-              'linear-gradient(rgb(255 255 255), rgb(255 255 255)) padding-box, linear-gradient(to right, #FF6B9D, #B794F6, #60A5FA) border-box',
+              'linear-gradient(rgb(var(--admin-surface-rgb)), rgb(var(--admin-surface-rgb))) padding-box, linear-gradient(to right, #FF6B9D, #B794F6, #60A5FA) border-box',
           }}
         />
         {/* 内圈 - 白色/暗色 */}
@@ -47,7 +47,7 @@ export const Loading = ({ size = 'md', text, className }: LoadingProps) => {
 export const LoadingOverlay = ({ text }: { text?: string }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm">
-      <div className="rounded-3xl bg-white/95 dark:bg-stone-800/95 backdrop-blur-md p-8 shadow-canvas-lg">
+      <div className="rounded-3xl bg-stone-50/95 dark:bg-stone-800/95 backdrop-blur-md p-8 shadow-canvas-lg">
         <Loading size="lg" text={text} />
       </div>
     </div>

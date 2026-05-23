@@ -58,9 +58,9 @@ export function RedeemLogsModal({
     <Modal isOpen={isOpen} onClose={onClose} title={t('logs.title')}>
       <div className="space-y-4">
         {/* Redeem Code Display */}
-        <div className="rounded-lg bg-stone-50 border border-stone-200 p-3">
-          <p className="font-ui text-xs text-stone-500 mb-1">兑换码</p>
-          <p className="font-mono text-sm text-stone-900">{redeemCodeValue}</p>
+        <div className="rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-3">
+          <p className="font-ui text-xs text-stone-500 dark:text-stone-400 mb-1">兑换码</p>
+          <p className="font-mono text-sm text-stone-900 dark:text-stone-100">{redeemCodeValue}</p>
         </div>
 
         {/* Loading State */}
@@ -72,8 +72,8 @@ export function RedeemLogsModal({
 
         {/* Error State */}
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-3">
-            <p className="font-ui text-sm text-red-700">{error}</p>
+          <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/60 p-3">
+            <p className="font-ui text-sm text-red-700 dark:text-red-300">{error}</p>
           </div>
         )}
 
@@ -93,45 +93,45 @@ export function RedeemLogsModal({
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <p className="font-ui text-stone-500">{t('logs.empty')}</p>
+            <p className="font-ui text-stone-500 dark:text-stone-400">{t('logs.empty')}</p>
           </div>
         )}
 
         {/* Logs Table */}
         {!loading && logs.length > 0 && (
-          <div className="rounded-lg border border-stone-200 overflow-hidden">
+          <div className="rounded-lg border border-stone-200 dark:border-stone-800 overflow-hidden">
             <table className="w-full">
-              <thead className="bg-stone-50 border-b border-stone-200">
+              <thead className="bg-stone-50 dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800">
                 <tr>
-                  <th className="px-4 py-3 text-left font-ui text-xs font-medium text-stone-700">
+                  <th className="px-4 py-3 text-left font-ui text-xs font-medium text-stone-700 dark:text-stone-300">
                     {t('logs.user')}
                   </th>
-                  <th className="px-4 py-3 text-left font-ui text-xs font-medium text-stone-700">
+                  <th className="px-4 py-3 text-left font-ui text-xs font-medium text-stone-700 dark:text-stone-300">
                     类型
                   </th>
-                  <th className="px-4 py-3 text-left font-ui text-xs font-medium text-stone-700">
+                  <th className="px-4 py-3 text-left font-ui text-xs font-medium text-stone-700 dark:text-stone-300">
                     价值
                   </th>
-                  <th className="px-4 py-3 text-right font-ui text-xs font-medium text-stone-700">
+                  <th className="px-4 py-3 text-right font-ui text-xs font-medium text-stone-700 dark:text-stone-300">
                     {t('logs.time')}
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-stone-100">
+              <tbody className="bg-stone-50 dark:bg-stone-900 divide-y divide-stone-100 dark:divide-stone-800">
                 {logs.map((log) => (
-                  <tr key={log.id} className="hover:bg-stone-50">
-                    <td className="px-4 py-3 font-ui text-sm text-stone-900">
+                  <tr key={log.id} className="hover:bg-stone-50 dark:hover:bg-stone-800">
+                    <td className="px-4 py-3 font-ui text-sm text-stone-900 dark:text-stone-100">
                       User {log.userId}
                     </td>
-                    <td className="px-4 py-3 font-ui text-sm text-stone-600">
+                    <td className="px-4 py-3 font-ui text-sm text-stone-600 dark:text-stone-400">
                       {log.type === 'membership' ? '会员' : '点数'}
                     </td>
-                    <td className="px-4 py-3 font-ui text-sm text-stone-600">
+                    <td className="px-4 py-3 font-ui text-sm text-stone-600 dark:text-stone-400">
                       {log.type === 'membership'
                         ? `${log.membershipLevel?.name ?? log.membershipLevelId ?? '会员'}（${log.membershipPeriod === 'yearly' ? '年付' : '月付'} x ${log.membershipCycles ?? 1}期）`
                         : `${log.credits} 点`}
                     </td>
-                    <td className="px-4 py-3 font-ui text-sm text-stone-600 text-right">
+                    <td className="px-4 py-3 font-ui text-sm text-stone-600 dark:text-stone-400 text-right">
                       {new Date(log.redeemedAt).toLocaleString('zh-CN')}
                     </td>
                   </tr>

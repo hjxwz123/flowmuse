@@ -152,8 +152,8 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
   }
 
   const inputClass = cn(
-    'w-full rounded-xl border border-stone-200 px-4 py-2.5',
-    'font-ui text-sm text-stone-900 bg-white',
+    'w-full rounded-xl border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+    'font-ui text-sm text-stone-900 dark:text-stone-100 bg-stone-50 dark:bg-stone-900',
     'focus:outline-none focus:ring-2 focus:ring-aurora-purple/20 focus:border-aurora-purple',
     'transition-all duration-200'
   )
@@ -164,7 +164,7 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
 
         {/* 标题 */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             {t('fields.title')} <span className="text-red-500">*</span>
           </label>
           <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
@@ -173,7 +173,7 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
 
         {/* 描述 */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             {t('fields.description')}
           </label>
           <input type="text" value={description} onChange={(e) => setDescription(e.target.value)}
@@ -182,7 +182,7 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
 
         {/* 注意事项 */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             {t('fields.notes')}
           </label>
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3}
@@ -193,7 +193,7 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
         {/* 类型 + 分类 */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
               {t('fields.type')} <span className="text-red-500">*</span>
             </label>
             <select value={type} onChange={(e) => handleTypeChange(e.target.value as 'image' | 'video')}
@@ -203,7 +203,7 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
             </select>
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
               {t('fields.category')}
             </label>
             <input type="text" value={category} onChange={(e) => setCategory(e.target.value)}
@@ -213,7 +213,7 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
 
         {/* 模型 */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             {t('fields.model')} <span className="text-red-500">*</span>
           </label>
           <select value={modelId} onChange={(e) => setModelId(e.target.value)} className={inputClass}>
@@ -227,7 +227,7 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
         {/* 垫图数量 + 垫图标签 */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
               {t('fields.imageCount')} <span className="text-red-500">*</span>
             </label>
             <select value={imageCount} onChange={(e) => setImageCount(e.target.value)} className={inputClass}>
@@ -237,9 +237,9 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
             </select>
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
               {t('fields.imageLabels')}
-              <span className="ml-1 text-xs text-stone-400">（每行一个）</span>
+              <span className="ml-1 text-xs text-stone-400 dark:text-stone-500">（每行一个）</span>
             </label>
             <textarea value={imageLabelsRaw} onChange={(e) => setImageLabelsRaw(e.target.value)}
               rows={parseInt(imageCount, 10) || 1}
@@ -250,7 +250,7 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
 
         {/* 封面图 URL */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             {t('fields.coverUrl')}
           </label>
           <input type="text" value={coverUrl} onChange={(e) => setCoverUrl(e.target.value)}
@@ -259,7 +259,7 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
 
         {/* 预设提示词 */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             {t('fields.prompt')} <span className="text-red-500">*</span>
           </label>
           <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={4}
@@ -270,7 +270,7 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
         {/* 参数 JSON + 排序 */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
               {t('fields.parameters')}
             </label>
             <textarea value={parametersJson} onChange={(e) => setParametersJson(e.target.value)} rows={3}
@@ -278,7 +278,7 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
               placeholder='{"aspectRatio": "1:1"}' />
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
               {t('fields.sortOrder')}
             </label>
             <input type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}
@@ -290,14 +290,14 @@ export function ToolAdminModal({ isOpen, onClose, tool, onSuccess }: ToolAdminMo
         <div className="flex items-center gap-2">
           <input type="checkbox" id="toolIsActive" checked={isActive}
             onChange={(e) => setIsActive(e.target.checked)}
-            className="w-4 h-4 rounded border-stone-300 text-aurora-purple" />
-          <label htmlFor="toolIsActive" className="font-ui text-sm text-stone-700">
+            className="w-4 h-4 rounded border-stone-300 dark:border-stone-700 text-aurora-purple" />
+          <label htmlFor="toolIsActive" className="font-ui text-sm text-stone-700 dark:text-stone-300">
             {t('fields.isActive')}
           </label>
         </div>
 
         {error && (
-          <p className="font-ui text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>
+          <p className="font-ui text-sm text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-950/30 rounded-lg px-3 py-2">{error}</p>
         )}
 
         <div className="flex items-center justify-end gap-3 pt-2">

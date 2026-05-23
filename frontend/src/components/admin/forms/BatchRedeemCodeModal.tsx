@@ -165,18 +165,18 @@ export function BatchRedeemCodeModal({
     return (
       <Modal isOpen={isOpen} onClose={handleClose} title="批量生成成功">
         <div className="space-y-4">
-          <div className="rounded-lg bg-green-50 border border-green-200 p-4">
-            <p className="font-ui text-sm text-green-700">
+          <div className="rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900/60 p-4">
+            <p className="font-ui text-sm text-green-700 dark:text-green-300">
               成功生成 <span className="font-bold">{result.length}</span> 个兑换码
             </p>
           </div>
 
-          <div className="max-h-96 overflow-y-auto rounded-lg border border-stone-200 bg-stone-50 p-4">
+          <div className="max-h-96 overflow-y-auto rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
             <div className="space-y-2">
               {result.map((code) => (
                 <div
                   key={code.id}
-                  className="font-mono text-sm text-stone-900 bg-white rounded px-3 py-2 border border-stone-200"
+                  className="font-mono text-sm text-stone-900 dark:text-stone-100 bg-stone-50 dark:bg-stone-900 rounded px-3 py-2 border border-stone-200 dark:border-stone-800"
                 >
                   {code.code}
                 </div>
@@ -211,7 +211,7 @@ export function BatchRedeemCodeModal({
     <Modal isOpen={isOpen} onClose={handleClose} title={t('batchCreate')}>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('form.typeLabel')} <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -224,7 +224,7 @@ export function BatchRedeemCodeModal({
                   'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all',
                   type === itemType
                     ? 'border-aurora-purple bg-aurora-purple/10 text-aurora-purple'
-                    : 'border-stone-200 bg-white text-stone-600 hover:border-aurora-purple/30'
+                    : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-aurora-purple/30'
                 )}
               >
                 {itemType === 'membership' ? '会员' : '点数'}
@@ -234,7 +234,7 @@ export function BatchRedeemCodeModal({
         </div>
 
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('form.quantityLabel')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -244,28 +244,28 @@ export function BatchRedeemCodeModal({
             value={count}
             onChange={(e) => setCount(e.target.value)}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
             required
           />
-          <p className="text-xs text-stone-500 mt-1">最多 500 个</p>
+          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">最多 500 个</p>
         </div>
 
         {type === 'membership' && (
           <>
             <div>
-              <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+              <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                 会员等级 <span className="text-red-500">*</span>
               </label>
               <select
                 value={membershipLevelId}
                 onChange={(e) => setMembershipLevelId(e.target.value)}
                 className={cn(
-                  'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                  'font-ui text-sm text-stone-900',
+                  'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                  'font-ui text-sm text-stone-900 dark:text-stone-100',
                   'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                   'transition-colors'
                 )}
@@ -283,15 +283,15 @@ export function BatchRedeemCodeModal({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   会员周期 <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={membershipPeriod}
                   onChange={(e) => setMembershipPeriod(e.target.value as MembershipPeriod)}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -302,7 +302,7 @@ export function BatchRedeemCodeModal({
               </div>
 
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   会员期数 <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -311,8 +311,8 @@ export function BatchRedeemCodeModal({
                   value={membershipCycles}
                   onChange={(e) => setMembershipCycles(e.target.value)}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -325,7 +325,7 @@ export function BatchRedeemCodeModal({
 
         {type === 'credits' && (
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('form.creditsLabel')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -335,9 +335,9 @@ export function BatchRedeemCodeModal({
               onChange={(e) => setCredits(e.target.value)}
               placeholder="100"
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
-                'placeholder:text-stone-400',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
+                'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
@@ -347,7 +347,7 @@ export function BatchRedeemCodeModal({
         )}
 
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('form.maxUsesLabel')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -356,8 +356,8 @@ export function BatchRedeemCodeModal({
             value={maxUseCount}
             onChange={(e) => setMaxUseCount(e.target.value)}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
@@ -366,7 +366,7 @@ export function BatchRedeemCodeModal({
         </div>
 
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('form.expiryLabel')}
           </label>
           <input
@@ -374,17 +374,17 @@ export function BatchRedeemCodeModal({
             value={expireDate}
             onChange={(e) => setExpireDate(e.target.value)}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
           />
-          <p className="text-xs text-stone-500 mt-1">留空表示永不过期</p>
+          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">留空表示永不过期</p>
         </div>
 
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             备注
           </label>
           <textarea
@@ -393,9 +393,9 @@ export function BatchRedeemCodeModal({
             rows={2}
             placeholder="批次备注"
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors',
               'resize-none'
@@ -404,7 +404,7 @@ export function BatchRedeemCodeModal({
         </div>
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <div className="rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/30 px-3 py-2 text-sm text-red-700 dark:text-red-300">
             {error}
           </div>
         )}

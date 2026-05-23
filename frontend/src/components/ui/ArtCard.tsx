@@ -33,9 +33,9 @@ export const ArtCard = ({
     <div
       className={cn(
         'group relative cursor-pointer overflow-hidden rounded-3xl',
-        'border border-stone-200/80 bg-white shadow-canvas dark:border-stone-700/80 dark:bg-stone-900 dark:shadow-[0_16px_34px_rgba(0,0,0,0.28)]',
+        'border border-stone-200/80 bg-stone-50 shadow-canvas dark:border-stone-700/80 dark:bg-stone-900 dark:shadow-[0_16px_34px_rgb(12_10_9_/_0.28)]',
         'transition-all duration-500 ease-out',
-        'hover:shadow-aurora hover:scale-[1.02] dark:hover:shadow-[0_22px_48px_rgba(0,0,0,0.42)]',
+        'hover:shadow-aurora hover:scale-[1.02] dark:hover:shadow-[0_22px_48px_rgb(12_10_9_/_0.42)]',
         className
       )}
       onClick={onClick}
@@ -88,13 +88,13 @@ export const ArtCard = ({
               'pointer-events-none'
             )}
           >
-            <div className="absolute bottom-0 left-0 right-0 p-6 text-white pointer-events-auto">
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-stone-50 pointer-events-auto">
               {title && (
                 <h3 className="font-display text-xl mb-2 truncate">{title}</h3>
               )}
               <div className="flex items-center justify-between">
                 {author && (
-                  <p className="font-ui text-sm text-white/90 truncate">
+                  <p className="font-ui text-sm text-stone-50/90 truncate">
                     {author}
                   </p>
                 )}

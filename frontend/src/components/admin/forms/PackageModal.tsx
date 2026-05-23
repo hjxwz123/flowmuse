@@ -154,13 +154,13 @@ export function PackageModal({
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={isEditMode ? t('edit') : t('add')}>
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm text-violet-700">
+        <div className="rounded-xl border border-violet-200 dark:border-violet-900/60 bg-violet-50 dark:bg-violet-950/30 px-4 py-3 text-sm text-violet-700 dark:text-violet-300">
           仅支持永久积分包。时长套餐与每日限额积分已并入会员每日赠送积分。
         </div>
 
         {/* Name */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('fields.name')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -169,9 +169,9 @@ export function PackageModal({
             onChange={(e) => setName(e.target.value)}
             placeholder="基础套餐"
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
@@ -180,7 +180,7 @@ export function PackageModal({
         </div>
 
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('fields.nameEn')}
           </label>
           <input
@@ -189,9 +189,9 @@ export function PackageModal({
             onChange={(e) => setNameEn(e.target.value)}
             placeholder={t('form.nameEnPlaceholder')}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
@@ -200,7 +200,7 @@ export function PackageModal({
 
         {/* Total Credits */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('fields.totalCredits')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -209,8 +209,8 @@ export function PackageModal({
             value={totalCredits}
             onChange={(e) => setTotalCredits(e.target.value)}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
@@ -221,7 +221,7 @@ export function PackageModal({
         {/* Price and Original Price */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.price')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -232,9 +232,9 @@ export function PackageModal({
               onChange={(e) => setPrice(e.target.value)}
               placeholder="9.90"
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
-                'placeholder:text-stone-400',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
+                'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
@@ -242,7 +242,7 @@ export function PackageModal({
             />
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.originalPrice')}
             </label>
             <input
@@ -253,9 +253,9 @@ export function PackageModal({
               onChange={(e) => setOriginalPrice(e.target.value)}
               placeholder="19.90"
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
-                'placeholder:text-stone-400',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
+                'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
@@ -265,7 +265,7 @@ export function PackageModal({
 
         {/* Description */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('fields.description')}
           </label>
           <textarea
@@ -274,9 +274,9 @@ export function PackageModal({
             rows={3}
             placeholder="套餐描述"
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors',
               'resize-none'
@@ -285,7 +285,7 @@ export function PackageModal({
         </div>
 
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('fields.descriptionEn')}
           </label>
           <textarea
@@ -294,9 +294,9 @@ export function PackageModal({
             rows={3}
             placeholder={t('form.descriptionEnPlaceholder')}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors',
               'resize-none'
@@ -307,7 +307,7 @@ export function PackageModal({
         {/* Sort Order and Status */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.sortOrder')}
             </label>
             <input
@@ -316,16 +316,16 @@ export function PackageModal({
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
             />
-            <p className="text-xs text-stone-500 mt-1">越小越靠前</p>
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">越小越靠前</p>
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.status')}
             </label>
             <button
@@ -334,8 +334,8 @@ export function PackageModal({
               className={cn(
                 'w-full rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all',
                 isActive
-                  ? 'border-green-500 bg-green-50 text-green-700'
-                  : 'border-stone-300 bg-stone-50 text-stone-600'
+                  ? 'border-green-500 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300'
+                  : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400'
               )}
             >
               {isActive ? '启用' : '禁用'}
@@ -345,8 +345,8 @@ export function PackageModal({
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-3">
-            <p className="font-ui text-sm text-red-700">{error}</p>
+          <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/60 p-3">
+            <p className="font-ui text-sm text-red-700 dark:text-red-300">{error}</p>
           </div>
         )}
 

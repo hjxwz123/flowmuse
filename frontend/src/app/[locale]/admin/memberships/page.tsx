@@ -120,9 +120,9 @@ export default function AdminMembershipsPage() {
         render: (level) => (
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <span className="font-medium text-stone-900">{level.name}</span>
+              <span className="font-medium text-stone-900 dark:text-stone-100">{level.name}</span>
               <span
-                className="inline-flex rounded-full px-2 py-0.5 text-xs font-medium text-white"
+                className="inline-flex rounded-full px-2 py-0.5 text-xs font-medium text-stone-50"
                 style={{ backgroundColor: level.color }}
               >
                 {level.color}
@@ -137,11 +137,11 @@ export default function AdminMembershipsPage() {
         width: '180px',
         render: (level) => (
           <div className="space-y-1 text-sm">
-            <p className="text-stone-700">
-              {t('fields.monthly')}: <span className="font-semibold text-stone-900">¥{Number(level.monthlyPrice).toFixed(2)}</span>
+            <p className="text-stone-700 dark:text-stone-300">
+              {t('fields.monthly')}: <span className="font-semibold text-stone-900 dark:text-stone-100">¥{Number(level.monthlyPrice).toFixed(2)}</span>
             </p>
-            <p className="text-stone-700">
-              {t('fields.yearly')}: <span className="font-semibold text-stone-900">¥{Number(level.yearlyPrice).toFixed(2)}</span>
+            <p className="text-stone-700 dark:text-stone-300">
+              {t('fields.yearly')}: <span className="font-semibold text-stone-900 dark:text-stone-100">¥{Number(level.yearlyPrice).toFixed(2)}</span>
             </p>
           </div>
         ),
@@ -152,7 +152,7 @@ export default function AdminMembershipsPage() {
         width: '140px',
         align: 'center',
         render: (level) => (
-          <span className="font-medium text-violet-600">
+          <span className="font-medium text-violet-600 dark:text-violet-300">
             {Math.max(0, Number(level.dailyCredits || 0)).toLocaleString()}
           </span>
         ),
@@ -174,17 +174,17 @@ export default function AdminMembershipsPage() {
         render: (level) => {
           const benefits = Array.isArray(level.benefits) ? level.benefits : []
           if (benefits.length === 0) {
-            return <span className="text-stone-400">-</span>
+            return <span className="text-stone-400 dark:text-stone-500">-</span>
           }
           return (
             <div className="space-y-1">
               {benefits.slice(0, 3).map((benefit, index) => (
-                <p key={`${level.id}-benefit-${index}`} className="line-clamp-1 text-sm text-stone-700">
+                <p key={`${level.id}-benefit-${index}`} className="line-clamp-1 text-sm text-stone-700 dark:text-stone-300">
                   - {benefit}
                 </p>
               ))}
               {benefits.length > 3 && (
-                <p className="text-xs text-stone-500">
+                <p className="text-xs text-stone-500 dark:text-stone-400">
                   +{benefits.length - 3} {t('fields.moreBenefits')}
                 </p>
               )}
@@ -224,8 +224,8 @@ export default function AdminMembershipsPage() {
               className={cn(
                 'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
                 level.isActive
-                  ? 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                  : 'bg-green-100 text-green-700 hover:bg-green-200',
+                  ? 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700'
+                  : 'bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50',
                 updatingId === level.id && 'cursor-not-allowed opacity-50'
               )}
             >
@@ -257,7 +257,7 @@ export default function AdminMembershipsPage() {
               disabled={deletingId === level.id}
               className={cn(
                 'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
-                'bg-red-100 text-red-700 hover:bg-red-200',
+                'bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50',
                 deletingId === level.id && 'cursor-not-allowed opacity-50'
               )}
             >

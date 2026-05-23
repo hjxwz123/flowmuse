@@ -191,7 +191,7 @@ export function ChannelModal({
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('fields.name')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -200,9 +200,9 @@ export function ChannelModal({
             onChange={(e) => setName(e.target.value)}
             placeholder="请输入渠道名称"
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
@@ -212,15 +212,15 @@ export function ChannelModal({
 
         {/* Provider */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('fields.provider')} <span className="text-red-500">*</span>
           </label>
           <select
             value={providerId}
             onChange={(e) => setProviderId(e.target.value)}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors',
               providersLoading && 'opacity-50'
@@ -239,7 +239,7 @@ export function ChannelModal({
 
         {/* Base URL */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('fields.baseUrl')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -248,16 +248,16 @@ export function ChannelModal({
             onChange={(e) => setBaseUrl(e.target.value)}
             placeholder="https://api.example.com"
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-mono text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-mono text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
             required
           />
           {isWanxProvider && (
-            <p className="mt-2 text-xs leading-5 text-stone-500">
+            <p className="mt-2 text-xs leading-5 text-stone-500 dark:text-stone-400">
               万相渠道请配置对应地域的 DashScope Endpoint，例如北京 `https://dashscope.aliyuncs.com/api/v1`、
               新加坡 `https://dashscope-intl.aliyuncs.com/api/v1`、弗吉尼亚 `https://dashscope-us.aliyuncs.com/api/v1`。
               模型、Base URL 和 API Key 必须同地域。
@@ -267,10 +267,10 @@ export function ChannelModal({
 
         {/* API Key */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             API Key {!isEditMode && <span className="text-red-500">*</span>}
             {isEditMode && (
-              <span className="ml-2 text-xs text-stone-500">
+              <span className="ml-2 text-xs text-stone-500 dark:text-stone-400">
                 （留空则不更新）
               </span>
             )}
@@ -281,9 +281,9 @@ export function ChannelModal({
             onChange={(e) => setApiKey(e.target.value)}
             placeholder={isEditMode ? '留空则不更新 API Key' : '请输入 API Key'}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-mono text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-mono text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
@@ -294,7 +294,7 @@ export function ChannelModal({
         {/* Weight, Timeout and Status */}
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.weight')}
             </label>
             <input
@@ -303,15 +303,15 @@ export function ChannelModal({
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
             />
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               超时时间 (ms)
             </label>
             <input
@@ -322,15 +322,15 @@ export function ChannelModal({
               onChange={(e) => setTimeout(e.target.value)}
               placeholder="300000"
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
             />
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.status')}
             </label>
             <button
@@ -341,8 +341,8 @@ export function ChannelModal({
               className={cn(
                 'w-full rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all',
                 status === 'active'
-                  ? 'border-green-500 bg-green-50 text-green-700'
-                  : 'border-stone-300 bg-stone-50 text-stone-600'
+                  ? 'border-green-500 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300'
+                  : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400'
               )}
             >
               {status === 'active' ? '启用' : '禁用'}
@@ -352,8 +352,8 @@ export function ChannelModal({
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-3">
-            <p className="font-ui text-sm text-red-700">{error}</p>
+          <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/60 p-3">
+            <p className="font-ui text-sm text-red-700 dark:text-red-300">{error}</p>
           </div>
         )}
 

@@ -92,17 +92,17 @@ export default function AdminEmailWhitelistPage() {
       maxWidthClassName="max-w-5xl"
     >
       <form onSubmit={handleSubmit}>
-        <Card className="space-y-6 border border-stone-200 !bg-white p-6 !shadow-sm">
+        <Card className="space-y-6 border border-stone-200 dark:border-stone-800 !bg-stone-50 dark:!bg-stone-900 p-6 !shadow-sm">
           {/* 启用开关 */}
-          <div className="flex items-start gap-4 p-4 rounded-lg bg-stone-50 border border-stone-200">
+          <div className="flex items-start gap-4 p-4 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
             <div className="p-2 rounded-lg bg-aurora-purple/10">
               <Shield className="w-6 h-6 text-aurora-purple" />
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-stone-900">启用邮箱域名白名单</h3>
-                  <p className="text-sm text-stone-600 mt-1">
+                  <h3 className="font-semibold text-stone-900 dark:text-stone-100">启用邮箱域名白名单</h3>
+                  <p className="text-sm text-stone-600 dark:text-stone-400 mt-1">
                     开启后，只有邮箱后缀在白名单中的用户才能注册
                   </p>
                 </div>
@@ -119,7 +119,7 @@ export default function AdminEmailWhitelistPage() {
                     enabled ? "bg-aurora-purple" : "bg-stone-300"
                   )}>
                     <div className={cn(
-                      "absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform",
+                      "absolute top-0.5 left-0.5 w-5 h-5 bg-stone-50 dark:bg-stone-900 rounded-full shadow transition-transform",
                       enabled ? "translate-x-5" : "translate-x-0"
                     )} />
                   </div>
@@ -130,8 +130,8 @@ export default function AdminEmailWhitelistPage() {
 
           {/* 域名列表 */}
           <div className={cn(!enabled && "opacity-50 pointer-events-none")}>
-            <h2 className="text-lg font-semibold text-stone-900 mb-4">
-              <Mail className="w-5 h-5 inline-block mr-2 text-stone-500" />
+            <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-4">
+              <Mail className="w-5 h-5 inline-block mr-2 text-stone-500 dark:text-stone-400" />
               允许的邮箱域名
             </h2>
 
@@ -148,12 +148,12 @@ export default function AdminEmailWhitelistPage() {
                   }
                 }}
                 placeholder="输入域名，如 gmail.com"
-                className="flex-1 px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-aurora-purple focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-stone-300 dark:border-stone-700 rounded-lg focus:ring-2 focus:ring-aurora-purple focus:border-transparent"
               />
               <Button
                 type="button"
                 onClick={handleAddDomain}
-                className="px-4 py-2 bg-aurora-purple text-white rounded-lg hover:bg-aurora-purple/90 transition-colors"
+                className="px-4 py-2 bg-aurora-purple text-stone-50 rounded-lg hover:bg-aurora-purple/90 transition-colors"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 添加
@@ -162,7 +162,7 @@ export default function AdminEmailWhitelistPage() {
 
             {/* 域名列表 */}
             {domains.length === 0 ? (
-              <div className="text-center py-8 text-stone-500 border border-dashed border-stone-300 rounded-lg">
+              <div className="text-center py-8 text-stone-500 dark:text-stone-400 border border-dashed border-stone-300 dark:border-stone-700 rounded-lg">
                 <Mail className="w-12 h-12 mx-auto mb-2 text-stone-300" />
                 <p>暂无白名单域名</p>
                 <p className="text-sm mt-1">
@@ -174,18 +174,18 @@ export default function AdminEmailWhitelistPage() {
                 {domains.map((domain) => (
                   <div
                     key={domain}
-                    className="flex items-center justify-between p-3 bg-stone-50 border border-stone-200 rounded-lg hover:bg-stone-100 transition-colors"
+                    className="flex items-center justify-between p-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-aurora-purple/10 flex items-center justify-center">
                         <Mail className="w-4 h-4 text-aurora-purple" />
                       </div>
-                      <span className="font-mono text-stone-900">@{domain}</span>
+                      <span className="font-mono text-stone-900 dark:text-stone-100">@{domain}</span>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleRemoveDomain(domain)}
-                      className="p-2 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 text-stone-400 dark:text-stone-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -196,18 +196,18 @@ export default function AdminEmailWhitelistPage() {
 
             {/* 提示信息 */}
             {enabled && domains.length > 0 && (
-              <p className="text-sm text-stone-500 mt-4">
+              <p className="text-sm text-stone-500 dark:text-stone-400 mt-4">
                 当前允许 {domains.length} 个域名注册，例如：user@{domains[0]}
               </p>
             )}
           </div>
 
           {/* 保存按钮 */}
-          <div className="pt-6 border-t border-stone-200">
+          <div className="pt-6 border-t border-stone-200 dark:border-stone-800">
             <Button
               type="submit"
               disabled={isSaving}
-              className="px-6 py-2 bg-aurora-purple text-white rounded-lg hover:bg-aurora-purple/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-2 bg-aurora-purple text-stone-50 rounded-lg hover:bg-aurora-purple/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isSaving ? '保存中...' : '保存设置'}
             </Button>

@@ -184,7 +184,7 @@ export const UserMenu = ({
           prefetch={true}
           className={cn(
             'inline-flex h-10 w-10 items-center justify-center rounded-full',
-            'bg-white/80 backdrop-blur-sm border border-stone-200 text-stone-700 shadow-canvas',
+            'bg-stone-50/80 backdrop-blur-sm border border-stone-200 text-stone-700 shadow-canvas',
             'transition-all duration-300 ease-out hover:scale-105 hover:shadow-canvas-lg hover:border-aurora-purple/30 active:scale-95',
             !forceLight && 'dark:bg-stone-800/80 dark:border-stone-700 dark:text-stone-200',
           )}
@@ -203,7 +203,7 @@ export const UserMenu = ({
           prefetch={true}
           className={cn(
             'rounded-full px-5 py-2 font-ui text-sm font-medium',
-            'bg-white/80 backdrop-blur-sm border border-stone-200 text-stone-700 shadow-canvas',
+            'bg-stone-50/80 backdrop-blur-sm border border-stone-200 text-stone-700 shadow-canvas',
             'transition-all duration-300 ease-out hover:scale-105 hover:shadow-canvas-lg hover:border-aurora-purple/30 active:scale-95',
             !forceLight && 'dark:bg-stone-800/80 dark:border-stone-700 dark:text-stone-200',
           )}
@@ -215,7 +215,7 @@ export const UserMenu = ({
           prefetch={true}
           className={cn(
             'rounded-full px-5 py-2 font-ui text-sm font-medium',
-            'bg-gradient-to-r from-aurora-pink via-aurora-purple to-aurora-blue text-white shadow-aurora',
+            'bg-gradient-to-r from-aurora-pink via-aurora-purple to-aurora-blue text-stone-50 shadow-aurora',
             'transition-all duration-300 ease-out hover:scale-105 hover:shadow-canvas-lg active:scale-95',
           )}
         >
@@ -341,7 +341,7 @@ export const UserMenu = ({
             ? 'flex h-10 w-10 items-center justify-center rounded-full'
             : 'flex items-center gap-3 rounded-full py-2 pl-2 pr-4',
           'relative border backdrop-blur-sm shadow-canvas transition-all duration-300 ease-out hover:border-aurora-purple/30 active:scale-[0.985]',
-          'bg-white/80 border-stone-200 text-stone-700',
+          'bg-stone-50/80 border-stone-200 text-stone-700',
           !forceLight && 'dark:bg-stone-800/80 dark:border-stone-700 dark:text-stone-200',
           styles.triggerButton,
           isOpen && styles.triggerOpen,
@@ -360,7 +360,7 @@ export const UserMenu = ({
               onError={() => setAvatarError(true)}
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-white">
+            <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-stone-50">
               {displayName[0]?.toUpperCase() || 'U'}
             </div>
           )}
@@ -369,7 +369,7 @@ export const UserMenu = ({
         {unreadCount > 0 ? (
           <span
             className={cn(
-              'absolute inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] leading-[18px] text-white shadow-sm',
+              'absolute inline-flex min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] leading-[18px] text-stone-50 shadow-sm',
               isCompact ? '-right-1 -top-1' : 'right-1 top-1',
             )}
           >
@@ -392,7 +392,7 @@ export const UserMenu = ({
 
             {isMembershipActive ? (
               <span
-                className={cn('hidden rounded-full px-2 py-0.5 text-[11px] font-medium text-white md:inline-flex', styles.triggerPill)}
+                className={cn('hidden rounded-full px-2 py-0.5 text-[11px] font-medium text-stone-50 md:inline-flex', styles.triggerPill)}
                 style={{ backgroundColor: user?.membership?.color || '#a855f7' }}
                 title={membershipDetail}
               >

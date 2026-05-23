@@ -123,8 +123,8 @@ export default function AdminProjectsPage() {
         width: '220px',
         render: (project) => (
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-stone-900">{project.name}</p>
-            <p className="truncate text-xs text-stone-500">ID: {project.id}</p>
+            <p className="truncate text-sm font-medium text-stone-900 dark:text-stone-100">{project.name}</p>
+            <p className="truncate text-xs text-stone-500 dark:text-stone-400">ID: {project.id}</p>
           </div>
         ),
       },
@@ -134,13 +134,13 @@ export default function AdminProjectsPage() {
         width: '200px',
         render: (project) => (
           <div className="min-w-0 text-sm">
-            <p className="truncate text-stone-900">
+            <p className="truncate text-stone-900 dark:text-stone-100">
               {project.user.username || project.user.email}
             </p>
             {project.user.username && (
-              <p className="truncate text-xs text-stone-500">{project.user.email}</p>
+              <p className="truncate text-xs text-stone-500 dark:text-stone-400">{project.user.email}</p>
             )}
-            <p className="text-xs text-stone-400">UID: {project.user.id}</p>
+            <p className="text-xs text-stone-400 dark:text-stone-500">UID: {project.user.id}</p>
           </div>
         ),
       },
@@ -148,7 +148,7 @@ export default function AdminProjectsPage() {
         key: 'concept',
         label: '概念',
         render: (project) => (
-          <p className="max-w-xs truncate text-sm text-stone-700">
+          <p className="max-w-xs truncate text-sm text-stone-700 dark:text-stone-300">
             {project.concept || '-'}
           </p>
         ),
@@ -159,7 +159,7 @@ export default function AdminProjectsPage() {
         width: '80px',
         align: 'center',
         render: (project) => (
-          <span className="font-medium text-violet-600">{project.assetCount}</span>
+          <span className="font-medium text-violet-600 dark:text-violet-300">{project.assetCount}</span>
         ),
       },
       {
@@ -176,7 +176,7 @@ export default function AdminProjectsPage() {
         label: '创建时间',
         width: '160px',
         render: (project) => (
-          <span className="text-xs text-stone-600">
+          <span className="text-xs text-stone-600 dark:text-stone-400">
             {new Date(project.createdAt).toLocaleString('zh-CN')}
           </span>
         ),
@@ -186,7 +186,7 @@ export default function AdminProjectsPage() {
         label: '更新时间',
         width: '160px',
         render: (project) => (
-          <span className="text-xs text-stone-600">
+          <span className="text-xs text-stone-600 dark:text-stone-400">
             {new Date(project.updatedAt).toLocaleString('zh-CN')}
           </span>
         ),
@@ -199,17 +199,17 @@ export default function AdminProjectsPage() {
     <AdminPageShell title="项目管理" description="管理所有用户的项目，设置免费用户的项目创建上限">
       {/* Free Quota Config */}
       <FadeIn variant="fade" delay={0.05}>
-        <div className="rounded-xl bg-white p-6 border border-stone-200 shadow-sm">
-          <h3 className="font-ui text-sm font-semibold text-stone-900 mb-4">
+        <div className="rounded-xl bg-stone-50 dark:bg-stone-900 p-6 border border-stone-200 dark:border-stone-800 shadow-sm">
+          <h3 className="font-ui text-sm font-semibold text-stone-900 dark:text-stone-100 mb-4">
             免费用户项目上限
           </h3>
           <div className="flex items-end gap-4">
             <div className="w-48">
-              <label className="block font-ui text-xs font-medium text-stone-600 mb-1.5">
+              <label className="block font-ui text-xs font-medium text-stone-600 dark:text-stone-400 mb-1.5">
                 最大项目数量
               </label>
               {freeQuotaLoading ? (
-                <div className="h-10 animate-pulse rounded-lg bg-stone-100" />
+                <div className="h-10 animate-pulse rounded-lg bg-stone-100 dark:bg-stone-800" />
               ) : (
                 <input
                   type="number"
@@ -218,9 +218,9 @@ export default function AdminProjectsPage() {
                   value={freeQuota}
                   onChange={(e) => setFreeQuota(e.target.value)}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                    'font-ui text-sm text-stone-900',
-                    'placeholder:text-stone-400',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
+                    'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors',
                   )}
@@ -237,7 +237,7 @@ export default function AdminProjectsPage() {
             >
               保存
             </Button>
-            <p className="text-xs text-stone-500 pb-1">
+            <p className="text-xs text-stone-500 dark:text-stone-400 pb-1">
               未购买会员的用户可创建的最大项目数量。会员用户的上限在会员等级的权限配置中设置。
             </p>
           </div>
@@ -246,11 +246,11 @@ export default function AdminProjectsPage() {
 
       {/* Filters */}
       <FadeIn variant="fade" delay={0.1}>
-        <div className="rounded-xl bg-white p-6 border border-stone-200 shadow-sm">
+        <div className="rounded-xl bg-stone-50 dark:bg-stone-900 p-6 border border-stone-200 dark:border-stone-800 shadow-sm">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             {/* Search by project name */}
             <div className="md:col-span-2">
-              <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+              <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                 搜索项目
               </label>
               <div className="flex gap-2">
@@ -261,9 +261,9 @@ export default function AdminProjectsPage() {
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   placeholder="搜索项目名称..."
                   className={cn(
-                    'flex-1 rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
-                    'placeholder:text-stone-400',
+                    'flex-1 rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
+                    'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors',
                   )}
@@ -272,7 +272,7 @@ export default function AdminProjectsPage() {
                   onClick={handleSearch}
                   className={cn(
                     'rounded-lg px-6 py-2 font-ui text-sm font-medium',
-                    'bg-aurora-purple text-white',
+                    'bg-aurora-purple text-stone-50',
                     'hover:bg-aurora-purple/90',
                     'transition-colors',
                   )}
@@ -284,7 +284,7 @@ export default function AdminProjectsPage() {
 
             {/* Filter by userId */}
             <div>
-              <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+              <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                 按用户 ID 筛选
               </label>
               <input
@@ -294,9 +294,9 @@ export default function AdminProjectsPage() {
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="输入用户 ID"
                 className={cn(
-                  'w-full rounded-lg border border-stone-200 px-4 py-2',
-                  'font-ui text-sm text-stone-900',
-                  'placeholder:text-stone-400',
+                  'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                  'font-ui text-sm text-stone-900 dark:text-stone-100',
+                  'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                   'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                   'transition-colors',
                 )}
@@ -309,8 +309,8 @@ export default function AdminProjectsPage() {
                 onClick={handleClearFilters}
                 className={cn(
                   'rounded-lg px-4 py-2 font-ui text-sm font-medium',
-                  'border border-stone-200 bg-white text-stone-700',
-                  'hover:bg-stone-50',
+                  'border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-700 dark:text-stone-300',
+                  'hover:bg-stone-50 dark:hover:bg-stone-800',
                   'transition-colors',
                 )}
               >
@@ -323,7 +323,7 @@ export default function AdminProjectsPage() {
 
       {/* Projects Table */}
       <FadeIn variant="fade" delay={0.2}>
-        <div className="rounded-xl bg-white border border-stone-200 shadow-sm overflow-hidden">
+        <div className="rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden">
           <DataTable
             data={projects}
             columns={columns}
@@ -334,7 +334,7 @@ export default function AdminProjectsPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="border-t border-stone-200 px-6 py-4">
+            <div className="border-t border-stone-200 dark:border-stone-800 px-6 py-4">
               <Pagination
                 currentPage={page}
                 totalPages={totalPages}

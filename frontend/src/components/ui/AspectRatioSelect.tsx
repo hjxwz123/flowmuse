@@ -104,7 +104,7 @@ export function AspectRatioSelect({
         <div
           ref={menuRef}
           className={cn(
-            'overflow-y-auto rounded-xl border-2 border-stone-200 bg-white/95 shadow-canvas-lg backdrop-blur-md dark:border-stone-600 dark:bg-stone-800/95 dark:shadow-canvas-dark-lg',
+            'overflow-y-auto rounded-xl border-2 border-stone-200 bg-stone-50/95 shadow-canvas-lg backdrop-blur-md dark:border-stone-600 dark:bg-stone-800/95 dark:shadow-canvas-dark-lg',
             'animate-in fade-in duration-200',
             openUpwards ? 'slide-in-from-bottom-2' : 'slide-in-from-top-2'
           )}
@@ -187,7 +187,7 @@ export function AspectRatioSelect({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={cn(
-          'flex w-full items-start justify-between gap-2 rounded-xl border-2 border-stone-200 bg-white/80 px-4 py-3 font-ui text-left text-stone-900 shadow-canvas backdrop-blur-sm transition-all duration-300 ease-out sm:items-center sm:gap-3 sm:px-5 sm:py-3.5 dark:border-stone-600 dark:bg-stone-800/80 dark:text-stone-100 dark:shadow-canvas-dark',
+          'flex w-full items-start justify-between gap-2 rounded-xl border-2 border-stone-200 bg-stone-50/80 px-4 py-3 font-ui text-left text-stone-900 shadow-canvas backdrop-blur-sm transition-all duration-300 ease-out sm:items-center sm:gap-3 sm:px-5 sm:py-3.5 dark:border-stone-600 dark:bg-stone-800/80 dark:text-stone-100 dark:shadow-canvas-dark',
           isOpen && 'border-aurora-purple ring-2 ring-aurora-purple/20',
           !disabled && 'cursor-pointer hover:border-stone-300 hover:shadow-canvas-lg dark:hover:border-stone-500 dark:hover:shadow-canvas-dark-lg',
           disabled && 'cursor-not-allowed opacity-50'

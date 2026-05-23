@@ -14,16 +14,16 @@ export function AdminLayoutClient({
 
   if (!isAuthorized) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-50 via-white to-stone-100">
+      <div className="admin-theme flex min-h-screen items-center justify-center bg-gradient-to-br from-stone-50 via-stone-50 to-stone-100 dark:from-stone-950 dark:via-stone-950 dark:to-stone-900">
         <Loading />
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="admin-theme flex min-h-screen flex-col">
       <AdminHeader />
-      <main className="flex-1 bg-gradient-to-br from-stone-50 via-white to-stone-100">
+      <main className="flex-1 bg-gradient-to-br from-stone-50 via-stone-50 to-stone-100 dark:from-stone-950 dark:via-stone-950 dark:to-stone-900">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           {children}
         </div>

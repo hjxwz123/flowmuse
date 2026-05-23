@@ -27,13 +27,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center rounded-full font-ui font-medium transition-all duration-300 ease-out disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-aurora-purple focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-stone-900'
+      'inline-flex items-center justify-center rounded-full font-ui font-medium transition-all duration-300 ease-out disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-aurora-purple focus:ring-offset-2 focus:ring-offset-stone-50 dark:focus:ring-offset-stone-900'
 
     const variants = {
       primary:
         'theme-solid-control theme-solid-shadow hover:scale-[1.02] active:scale-[0.98]',
       secondary:
-        'bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm text-stone-900 dark:text-stone-100 border border-stone-200 dark:border-stone-600 shadow-canvas hover:bg-white dark:hover:bg-stone-800 hover:shadow-canvas-lg hover:border-stone-300 dark:hover:border-stone-500',
+        'bg-stone-50/80 dark:bg-stone-800/80 backdrop-blur-sm text-stone-900 dark:text-stone-100 border border-stone-200 dark:border-stone-600 shadow-canvas hover:bg-stone-50 dark:hover:bg-stone-800 hover:shadow-canvas-lg hover:border-stone-300 dark:hover:border-stone-500',
       ghost:
         'bg-transparent text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-stone-100',
     }

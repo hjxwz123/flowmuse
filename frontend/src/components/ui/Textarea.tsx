@@ -29,7 +29,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           className={cn(
             'w-full rounded-2xl px-6 py-3 font-ui text-base',
-            'bg-white/80 dark:bg-stone-800/80 backdrop-blur-sm',
+            'bg-stone-50/80 dark:bg-stone-800/80 backdrop-blur-sm',
             'border-2 border-stone-200 dark:border-stone-600',
             'text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500',
             'shadow-canvas',

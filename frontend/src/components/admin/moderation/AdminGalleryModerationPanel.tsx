@@ -244,12 +244,12 @@ export function AdminGalleryModerationPanel() {
     <>
       {/* Filters and Actions */}
       <FadeIn variant="fade" delay={0.05}>
-        <div className="rounded-xl bg-white p-6 border border-stone-200 shadow-sm space-y-4">
+        <div className="rounded-xl bg-stone-50 dark:bg-stone-900 p-6 border border-stone-200 dark:border-stone-800 shadow-sm space-y-4">
             {/* Filters */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               {/* Search (client-side: prompt / taskNo) */}
               <div className="md:col-span-2">
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   {tCommon('filters.search')}
                 </label>
                 <div className="flex gap-2">
@@ -260,9 +260,9 @@ export function AdminGalleryModerationPanel() {
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="搜索任务编号或提示词..."
                     className={cn(
-                      'flex-1 rounded-lg border border-stone-200 px-4 py-2',
-                      'font-ui text-sm text-stone-900',
-                      'placeholder:text-stone-400',
+                      'flex-1 rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                      'font-ui text-sm text-stone-900 dark:text-stone-100',
+                      'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                       'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                       'transition-colors'
                     )}
@@ -271,7 +271,7 @@ export function AdminGalleryModerationPanel() {
                     onClick={handleSearch}
                     className={cn(
                       'rounded-lg px-6 py-2 font-ui text-sm font-medium',
-                      'bg-aurora-purple text-white',
+                      'bg-aurora-purple text-stone-50',
                       'hover:bg-aurora-purple/90',
                       'transition-colors'
                     )}
@@ -283,7 +283,7 @@ export function AdminGalleryModerationPanel() {
 
               {/* Type Filter */}
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   {t('filters.type')}
                 </label>
                 <select
@@ -293,8 +293,8 @@ export function AdminGalleryModerationPanel() {
                     setPage(1)
                   }}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -307,10 +307,10 @@ export function AdminGalleryModerationPanel() {
             </div>
 
             {/* 第二行：用户名 + 公开状态（服务端筛选） */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3 pt-2 border-t border-stone-100">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3 pt-2 border-t border-stone-100 dark:border-stone-800">
               {/* 用户名搜索 */}
               <div className="md:col-span-2">
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   用户名 / 邮箱
                 </label>
                 <div className="flex gap-2">
@@ -321,9 +321,9 @@ export function AdminGalleryModerationPanel() {
                     onKeyDown={(e) => e.key === 'Enter' && handleFilter()}
                     placeholder="搜索用户名或邮箱..."
                     className={cn(
-                      'flex-1 rounded-lg border border-stone-200 px-4 py-2',
-                      'font-ui text-sm text-stone-900',
-                      'placeholder:text-stone-400',
+                      'flex-1 rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                      'font-ui text-sm text-stone-900 dark:text-stone-100',
+                      'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                       'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                       'transition-colors'
                     )}
@@ -332,7 +332,7 @@ export function AdminGalleryModerationPanel() {
                     onClick={handleFilter}
                     className={cn(
                       'rounded-lg px-6 py-2 font-ui text-sm font-medium',
-                      'bg-stone-700 text-white',
+                      'bg-stone-700 text-stone-50',
                       'hover:bg-stone-800',
                       'transition-colors'
                     )}
@@ -344,7 +344,7 @@ export function AdminGalleryModerationPanel() {
 
               {/* 公开状态筛选 */}
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   公开状态
                 </label>
                 <select
@@ -354,8 +354,8 @@ export function AdminGalleryModerationPanel() {
                     setPage(1)
                   }}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -369,7 +369,7 @@ export function AdminGalleryModerationPanel() {
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   审核状态
                 </label>
                 <select
@@ -381,8 +381,8 @@ export function AdminGalleryModerationPanel() {
                     setPage(1)
                   }}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -404,12 +404,12 @@ export function AdminGalleryModerationPanel() {
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-aurora-purple border-r-transparent" />
-              <p className="mt-4 font-ui text-sm text-stone-600">加载中...</p>
+              <p className="mt-4 font-ui text-sm text-stone-600 dark:text-stone-400">加载中...</p>
             </div>
           </div>
         ) : items.length === 0 ? (
-          <div className="rounded-xl bg-white p-20 border border-stone-200 text-center">
-            <p className="font-ui text-stone-500">{tCommon('status.noData')}</p>
+          <div className="rounded-xl bg-stone-50 dark:bg-stone-900 p-20 border border-stone-200 dark:border-stone-800 text-center">
+            <p className="font-ui text-stone-500 dark:text-stone-400">{tCommon('status.noData')}</p>
           </div>
         ) : (
           <MasonryGrid columns={4}>
@@ -423,14 +423,14 @@ export function AdminGalleryModerationPanel() {
                     if (e.key === 'Enter' || e.key === ' ') setPreviewItem(item)
                   }}
                   className={cn(
-                    'group relative rounded-xl overflow-hidden border-2 border-stone-200 transition-all',
-                    'hover:border-stone-300 hover:shadow-canvas-lg hover:z-10',
+                    'group relative rounded-xl overflow-hidden border-2 border-stone-200 dark:border-stone-800 transition-all',
+                    'hover:border-stone-300 dark:hover:border-stone-600 hover:shadow-canvas-lg hover:z-10',
                     'cursor-pointer focus:outline-none focus:ring-2 focus:ring-aurora-purple/40',
-                    'bg-white'
+                    'bg-stone-50 dark:bg-stone-900'
                   )}
                 >
                   {/* Image/Video - 使用缩略图 */}
-                  <div className="relative w-full bg-stone-100">
+                  <div className="relative w-full bg-stone-100 dark:bg-stone-800">
                     {(item.thumbnailUrl || item.resultUrl) ? (
                       <div className="relative w-full" style={{ paddingBottom: '100%' }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -443,7 +443,7 @@ export function AdminGalleryModerationPanel() {
                       </div>
                     ) : (
                       <div className="relative w-full" style={{ paddingBottom: '100%' }}>
-                        <div className="absolute inset-0 flex items-center justify-center text-stone-400">
+                        <div className="absolute inset-0 flex items-center justify-center text-stone-400 dark:text-stone-500">
                           <div className="text-center p-6">
                             <div className="text-4xl mb-2">
                               {item.type === 'image' ? '🖼️' : '🎬'}
@@ -462,8 +462,8 @@ export function AdminGalleryModerationPanel() {
                         className={cn(
                           'inline-flex items-center rounded-md border px-2 py-1 font-ui text-xs font-semibold shadow-sm',
                           item.type === 'image'
-                            ? 'bg-blue-500 text-white border-blue-600'
-                            : 'bg-purple-500 text-white border-purple-600'
+                            ? 'bg-blue-500 text-stone-50 border-blue-600'
+                            : 'bg-purple-500 text-stone-50 border-purple-600'
                         )}
                       >
                         {item.type === 'image' ? '图片' : '视频'}
@@ -472,7 +472,7 @@ export function AdminGalleryModerationPanel() {
 
                     {/* Public Badge */}
                     {item.isPublic && (
-                      <div className="absolute top-2 right-2 rounded-md bg-green-500 px-2 py-1 text-xs font-semibold text-white shadow-sm">
+                      <div className="absolute top-2 right-2 rounded-md bg-green-500 px-2 py-1 text-xs font-semibold text-stone-50 shadow-sm">
                         公开
                       </div>
                     )}
@@ -484,10 +484,10 @@ export function AdminGalleryModerationPanel() {
                           item.publicModerationStatus === 'pending'
                             ? 'border-amber-300 bg-amber-100 text-amber-800'
                             : item.publicModerationStatus === 'approved'
-                            ? 'border-green-300 bg-green-100 text-green-800'
+                            ? 'border-green-300 dark:border-green-900/60 bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-200'
                             : item.publicModerationStatus === 'rejected'
-                            ? 'border-red-300 bg-red-100 text-red-800'
-                            : 'border-stone-300 bg-white/90 text-stone-600'
+                            ? 'border-red-300 dark:border-red-900/60 bg-red-100 dark:bg-red-950/40 text-red-800 dark:text-red-200'
+                            : 'border-stone-300 dark:border-stone-700 bg-stone-50/90 dark:bg-stone-900/90 text-stone-600 dark:text-stone-400'
                         )}
                       >
                         {item.publicModerationStatus === 'pending'
@@ -518,7 +518,7 @@ export function AdminGalleryModerationPanel() {
                     {/* Action Buttons (visible on hover) */}
                     <div
                       className={cn(
-                        'absolute inset-0 z-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent',
+                        'absolute inset-0 z-20 bg-gradient-to-t from-stone-950/80 via-stone-950/40 to-transparent',
                         'opacity-0 group-hover:opacity-100 transition-opacity',
                         'flex items-end justify-center p-3'
                       )}
@@ -531,7 +531,7 @@ export function AdminGalleryModerationPanel() {
                                 e.stopPropagation()
                                 handleApprove(item)
                               }}
-                              className="w-full rounded-lg px-3 py-2 bg-emerald-500 text-white text-xs font-medium hover:bg-emerald-600 transition-colors"
+                              className="w-full rounded-lg px-3 py-2 bg-emerald-500 text-stone-50 text-xs font-medium hover:bg-emerald-600 transition-colors"
                             >
                               通过公开
                             </button>
@@ -540,7 +540,7 @@ export function AdminGalleryModerationPanel() {
                                 e.stopPropagation()
                                 handleReject(item)
                               }}
-                              className="w-full rounded-lg px-3 py-2 bg-orange-500 text-white text-xs font-medium hover:bg-orange-600 transition-colors"
+                              className="w-full rounded-lg px-3 py-2 bg-orange-500 text-stone-50 text-xs font-medium hover:bg-orange-600 transition-colors"
                             >
                               拒绝公开
                             </button>
@@ -552,7 +552,7 @@ export function AdminGalleryModerationPanel() {
                               e.stopPropagation()
                               handleHide(item)
                             }}
-                            className="w-full rounded-lg px-3 py-2 bg-yellow-500 text-white text-xs font-medium hover:bg-yellow-600 transition-colors"
+                            className="w-full rounded-lg px-3 py-2 bg-yellow-500 text-stone-50 text-xs font-medium hover:bg-yellow-600 transition-colors"
                           >
                             隐藏
                           </button>
@@ -562,7 +562,7 @@ export function AdminGalleryModerationPanel() {
                             e.stopPropagation()
                             handleDelete(item)
                           }}
-                          className="w-full rounded-lg px-3 py-2 bg-red-500 text-white text-xs font-medium hover:bg-red-600 transition-colors"
+                          className="w-full rounded-lg px-3 py-2 bg-red-500 text-stone-50 text-xs font-medium hover:bg-red-600 transition-colors"
                         >
                           删除
                         </button>
@@ -571,27 +571,27 @@ export function AdminGalleryModerationPanel() {
                   </div>
 
                   {/* Info */}
-                  <div className="p-3 bg-white">
-                    <p className="font-mono text-xs text-stone-500 truncate mb-1">
+                  <div className="p-3 bg-stone-50 dark:bg-stone-900">
+                    <p className="font-mono text-xs text-stone-500 dark:text-stone-400 truncate mb-1">
                       {item.taskNo}
                     </p>
-                    <p className="text-sm text-stone-900 line-clamp-2 mb-2 min-h-[2.5rem]">
+                    <p className="text-sm text-stone-900 dark:text-stone-100 line-clamp-2 mb-2 min-h-[2.5rem]">
                       {item.prompt}
                     </p>
                     {/* User Info */}
                     {item.user && (
-                      <p className="text-xs text-stone-600 truncate mb-1">
+                      <p className="text-xs text-stone-600 dark:text-stone-400 truncate mb-1">
                         👤 {item.user.username || item.user.email}
                       </p>
                     )}
-                    <div className="flex items-center justify-between text-xs text-stone-600">
+                    <div className="flex items-center justify-between text-xs text-stone-600 dark:text-stone-400">
                       <span className="truncate">{item.provider}</span>
                       <span className="font-medium text-aurora-purple ml-2 flex-shrink-0">
                         {item.creditsCost || 0} 点
                       </span>
                     </div>
                     {item.publicModerationNote ? (
-                      <p className="mt-2 line-clamp-2 text-xs text-stone-500">
+                      <p className="mt-2 line-clamp-2 text-xs text-stone-500 dark:text-stone-400">
                         备注：{item.publicModerationNote}
                       </p>
                     ) : null}
@@ -625,7 +625,7 @@ export function AdminGalleryModerationPanel() {
         {!previewItem ? null : (
           <div className="space-y-5">
             <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="text-xs text-stone-500">
+              <div className="text-xs text-stone-500 dark:text-stone-400">
                 <span className="mr-3">类型：{previewItem.type === 'image' ? '图片' : '视频'}</span>
                 <span className="mr-3">状态：{previewItem.status}</span>
                 <span className="mr-3">Provider：{previewItem.provider}</span>
@@ -654,7 +654,7 @@ export function AdminGalleryModerationPanel() {
                     <Button
                       variant="secondary"
                       onClick={() => handleReject(previewItem)}
-                      className="text-orange-600"
+                      className="text-orange-600 dark:text-orange-300"
                     >
                       拒绝公开
                     </Button>
@@ -671,7 +671,7 @@ export function AdminGalleryModerationPanel() {
                 <Button
                   variant="secondary"
                   onClick={() => handleDelete(previewItem)}
-                  className="text-red-600"
+                  className="text-red-600 dark:text-red-300"
                 >
                   删除
                 </Button>
@@ -680,19 +680,19 @@ export function AdminGalleryModerationPanel() {
 
             {/* User Info */}
             {previewItem.user && (
-              <div className="rounded-2xl border border-stone-200 bg-white p-4">
-                <div className="text-xs text-stone-500 mb-1">创建用户</div>
-                <div className="text-sm text-stone-900 font-medium">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
+                <div className="text-xs text-stone-500 dark:text-stone-400 mb-1">创建用户</div>
+                <div className="text-sm text-stone-900 dark:text-stone-100 font-medium">
                   {previewItem.user.username || previewItem.user.email}
                 </div>
                 {previewItem.user.username && (
-                  <div className="text-xs text-stone-500 mt-1">{previewItem.user.email}</div>
+                  <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">{previewItem.user.email}</div>
                 )}
               </div>
             )}
 
             {previewItem.type === 'image' ? (
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-stone-100 border border-stone-200">
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-800">
                 {(previewItem.thumbnailUrl || previewItem.resultUrl) ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
@@ -701,17 +701,17 @@ export function AdminGalleryModerationPanel() {
                     className="absolute inset-0 w-full h-full object-contain"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-stone-400">暂无图片</div>
+                  <div className="flex h-full w-full items-center justify-center text-stone-400 dark:text-stone-500">暂无图片</div>
                 )}
               </div>
             ) : previewItem.resultUrl ? (
               <video
                 src={previewItem.resultUrl}
                 controls
-                className="w-full rounded-2xl border border-stone-200 bg-black"
+                className="w-full rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-950"
               />
             ) : previewItem.thumbnailUrl ? (
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-stone-100 border border-stone-200">
+              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-800">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={previewItem.thumbnailUrl}
@@ -720,30 +720,30 @@ export function AdminGalleryModerationPanel() {
                 />
               </div>
             ) : (
-              <div className="flex h-64 w-full items-center justify-center rounded-2xl border border-stone-200 bg-stone-50 text-stone-400">
+              <div className="flex h-64 w-full items-center justify-center rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-400 dark:text-stone-500">
                 暂无视频
               </div>
             )}
 
-            <div className="rounded-2xl border border-stone-200 bg-white p-4 space-y-2">
-              <div className="text-xs text-stone-500">提示词</div>
-              <div className="whitespace-pre-wrap text-sm text-stone-900">{previewItem.prompt}</div>
-              <div className="text-xs text-stone-500 pt-2">
+            <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 space-y-2">
+              <div className="text-xs text-stone-500 dark:text-stone-400">提示词</div>
+              <div className="whitespace-pre-wrap text-sm text-stone-900 dark:text-stone-100">{previewItem.prompt}</div>
+              <div className="text-xs text-stone-500 dark:text-stone-400 pt-2">
                 创建时间：{new Date(previewItem.createdAt).toLocaleString('zh-CN')} · 点数：{previewItem.creditsCost || 0}
               </div>
               {previewItem.publicRequestedAt ? (
-                <div className="text-xs text-stone-500">
+                <div className="text-xs text-stone-500 dark:text-stone-400">
                   申请时间：{new Date(previewItem.publicRequestedAt).toLocaleString('zh-CN')}
                 </div>
               ) : null}
               {previewItem.publicModeratedAt ? (
-                <div className="text-xs text-stone-500">
+                <div className="text-xs text-stone-500 dark:text-stone-400">
                   审核时间：{new Date(previewItem.publicModeratedAt).toLocaleString('zh-CN')}
                   {previewItem.publicModeratedBy ? ` · 审核人：${previewItem.publicModeratedBy}` : ''}
                 </div>
               ) : null}
               {previewItem.publicModerationNote ? (
-                <div className="text-xs text-stone-600">
+                <div className="text-xs text-stone-600 dark:text-stone-400">
                   审核备注：{previewItem.publicModerationNote}
                 </div>
               ) : null}
@@ -777,30 +777,30 @@ export function AdminGalleryModerationPanel() {
       >
         <div className="space-y-4">
           {actionType === 'delete' && (
-            <div className="rounded-xl bg-red-50 border border-red-200 p-4">
-              <p className="font-ui text-sm text-red-800">
+            <div className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/60 p-4">
+              <p className="font-ui text-sm text-red-800 dark:text-red-200">
                 <span className="font-semibold">警告：</span>删除操作无法撤销，确定要删除这个内容吗？
               </p>
             </div>
           )}
 
           {actionType === 'reject' && (
-            <div className="rounded-xl bg-orange-50 border border-orange-200 p-4">
-              <p className="font-ui text-sm text-orange-800">
+            <div className="rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/60 p-4">
+              <p className="font-ui text-sm text-orange-800 dark:text-orange-200">
                 可以填写拒绝原因，用户会在收件箱里收到这条审核说明。
               </p>
             </div>
           )}
 
           {actionItem && (
-            <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
-              <p className="font-mono text-xs text-stone-500 mb-2">{actionItem.taskNo}</p>
-              <p className="text-sm text-stone-900 line-clamp-2">{actionItem.prompt}</p>
+            <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
+              <p className="font-mono text-xs text-stone-500 dark:text-stone-400 mb-2">{actionItem.taskNo}</p>
+              <p className="text-sm text-stone-900 dark:text-stone-100 line-clamp-2">{actionItem.prompt}</p>
             </div>
           )}
 
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               向用户发送消息（可选）
             </label>
             <textarea
@@ -809,14 +809,14 @@ export function AdminGalleryModerationPanel() {
               placeholder="留空将使用默认提示消息..."
               rows={3}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-3',
-                'font-ui text-sm text-stone-900',
-                'placeholder:text-stone-400',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-3',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
+                'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors resize-none'
               )}
             />
-            <p className="mt-1 text-xs text-stone-500">
+            <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
               此消息将发送给内容创建者
             </p>
           </div>
@@ -843,7 +843,7 @@ export function AdminGalleryModerationPanel() {
             >
               {actionLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-r-transparent" />
+                  <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-stone-50 border-r-transparent" />
                   处理中...
                 </span>
               ) : (

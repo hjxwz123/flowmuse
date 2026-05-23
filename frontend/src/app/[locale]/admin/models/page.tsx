@@ -216,8 +216,8 @@ export default function AdminModelsPage() {
       width: '200px',
       render: (provider) => (
         <div>
-          <p className="font-medium text-stone-900">{provider.displayName}</p>
-          <p className="text-xs text-stone-500">{provider.provider}</p>
+          <p className="font-medium text-stone-900 dark:text-stone-100">{provider.displayName}</p>
+          <p className="text-xs text-stone-500 dark:text-stone-400">{provider.provider}</p>
         </div>
       ),
     },
@@ -226,7 +226,7 @@ export default function AdminModelsPage() {
       label: t('providers.fields.type'),
       width: '150px',
       render: (provider) => (
-        <span className="inline-flex items-center rounded-md border border-stone-200 bg-stone-50 px-2.5 py-0.5 font-ui text-xs font-semibold text-stone-700">
+        <span className="inline-flex items-center rounded-md border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-2.5 py-0.5 font-ui text-xs font-semibold text-stone-700 dark:text-stone-300">
           {provider.supportTypes.join(', ')}
         </span>
       ),
@@ -246,7 +246,7 @@ export default function AdminModelsPage() {
       width: '80px',
       align: 'center',
       render: (provider) => (
-        <span className="font-medium text-stone-900">{provider.sortOrder}</span>
+        <span className="font-medium text-stone-900 dark:text-stone-100">{provider.sortOrder}</span>
       ),
     },
     {
@@ -277,8 +277,8 @@ export default function AdminModelsPage() {
             }}
             className={cn(
               'rounded-lg px-3 py-1.5 font-ui text-xs font-medium',
-              'bg-red-50 text-red-600',
-              'hover:bg-red-100',
+              'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-300',
+              'hover:bg-red-100 dark:hover:bg-red-900/40',
               'transition-colors duration-300'
             )}
           >
@@ -296,7 +296,7 @@ export default function AdminModelsPage() {
       label: t('channels.fields.name'),
       width: '200px',
       render: (channel) => (
-        <span className="font-medium text-stone-900">{channel.name}</span>
+        <span className="font-medium text-stone-900 dark:text-stone-100">{channel.name}</span>
       ),
     },
     {
@@ -304,14 +304,14 @@ export default function AdminModelsPage() {
       label: t('channels.fields.provider'),
       width: '150px',
       render: (channel) => (
-        <span className="text-stone-700">{channel.provider}</span>
+        <span className="text-stone-700 dark:text-stone-300">{channel.provider}</span>
       ),
     },
     {
       key: 'baseUrl',
       label: t('channels.fields.baseUrl'),
       render: (channel) => (
-        <span className="font-mono text-xs text-stone-600">
+        <span className="font-mono text-xs text-stone-600 dark:text-stone-400">
           {channel.baseUrl}
         </span>
       ),
@@ -322,7 +322,7 @@ export default function AdminModelsPage() {
       width: '80px',
       align: 'center',
       render: (channel) => (
-        <span className="font-medium text-stone-900">{channel.priority}</span>
+        <span className="font-medium text-stone-900 dark:text-stone-100">{channel.priority}</span>
       ),
     },
     {
@@ -346,8 +346,8 @@ export default function AdminModelsPage() {
           <button
             className={cn(
               'rounded-lg px-3 py-1.5 font-ui text-xs font-medium',
-              'bg-blue-100 text-blue-700',
-              'hover:bg-blue-200',
+              'bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300',
+              'hover:bg-blue-200 dark:hover:bg-blue-900/50',
               'transition-colors duration-300'
             )}
           >
@@ -374,8 +374,8 @@ export default function AdminModelsPage() {
             }}
             className={cn(
               'rounded-lg px-3 py-1.5 font-ui text-xs font-medium',
-              'bg-red-50 text-red-600',
-              'hover:bg-red-100',
+              'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-300',
+              'hover:bg-red-100 dark:hover:bg-red-900/40',
               'transition-colors duration-300'
             )}
           >
@@ -486,7 +486,7 @@ export default function AdminModelsPage() {
             {/* Providers Tab */}
             <TabsContent value="providers" className="space-y-4">
               <div className="flex justify-between items-center">
-                <h2 className="font-ui text-xl font-semibold text-stone-900">
+                <h2 className="font-ui text-xl font-semibold text-stone-900 dark:text-stone-100">
                   {t('providers.title')}
                 </h2>
                 <Button
@@ -513,7 +513,7 @@ export default function AdminModelsPage() {
             {/* Channels Tab */}
             <TabsContent value="channels" className="space-y-4">
               <div className="flex justify-between items-center">
-                <h2 className="font-ui text-xl font-semibold text-stone-900">
+                <h2 className="font-ui text-xl font-semibold text-stone-900 dark:text-stone-100">
                   {t('channels.title')}
                 </h2>
                 <Button
@@ -541,10 +541,10 @@ export default function AdminModelsPage() {
             <TabsContent value="models" className="space-y-4">
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                 <div className="space-y-1">
-                  <h2 className="font-ui text-xl font-semibold text-stone-900">
+                  <h2 className="font-ui text-xl font-semibold text-stone-900 dark:text-stone-100">
                     {t('models.title')}
                   </h2>
-                  <p className="text-sm text-stone-500">
+                  <p className="text-sm text-stone-500 dark:text-stone-400">
                     {isSavingModelOrder ? t('models.savingOrder') : t('models.reorderHint')}
                   </p>
                 </div>
@@ -561,35 +561,35 @@ export default function AdminModelsPage() {
                 </Button>
               </div>
 
-              <div className="rounded-2xl border border-stone-200 bg-white/80 shadow-canvas backdrop-blur-sm overflow-hidden">
+              <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50/80 dark:bg-stone-900/80 shadow-canvas backdrop-blur-sm overflow-hidden">
                 <Table>
-                  <TableHeader className="bg-stone-50">
+                  <TableHeader className="bg-stone-50 dark:bg-stone-900">
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="w-16 font-ui text-sm font-semibold text-stone-700">
+                      <TableHead className="w-16 font-ui text-sm font-semibold text-stone-700 dark:text-stone-300">
                         {t('models.fields.drag')}
                       </TableHead>
-                      <TableHead className="w-[240px] font-ui text-sm font-semibold text-stone-700">
+                      <TableHead className="w-[240px] font-ui text-sm font-semibold text-stone-700 dark:text-stone-300">
                         {t('models.fields.name')}
                       </TableHead>
-                      <TableHead className="w-[120px] font-ui text-sm font-semibold text-stone-700">
+                      <TableHead className="w-[120px] font-ui text-sm font-semibold text-stone-700 dark:text-stone-300">
                         {t('models.fields.type')}
                       </TableHead>
-                      <TableHead className="w-[160px] font-ui text-sm font-semibold text-stone-700">
+                      <TableHead className="w-[160px] font-ui text-sm font-semibold text-stone-700 dark:text-stone-300">
                         {t('models.fields.provider')}
                       </TableHead>
-                      <TableHead className="w-[160px] font-ui text-sm font-semibold text-stone-700">
+                      <TableHead className="w-[160px] font-ui text-sm font-semibold text-stone-700 dark:text-stone-300">
                         {t('models.fields.channel')}
                       </TableHead>
-                      <TableHead className="w-[90px] text-center font-ui text-sm font-semibold text-stone-700">
+                      <TableHead className="w-[90px] text-center font-ui text-sm font-semibold text-stone-700 dark:text-stone-300">
                         {t('models.fields.sortOrder')}
                       </TableHead>
-                      <TableHead className="w-[140px] text-right font-ui text-sm font-semibold text-stone-700">
+                      <TableHead className="w-[140px] text-right font-ui text-sm font-semibold text-stone-700 dark:text-stone-300">
                         {t('models.fields.creditsCost')}
                       </TableHead>
-                      <TableHead className="w-[100px] text-center font-ui text-sm font-semibold text-stone-700">
+                      <TableHead className="w-[100px] text-center font-ui text-sm font-semibold text-stone-700 dark:text-stone-300">
                         {t('models.fields.enabled')}
                       </TableHead>
-                      <TableHead className="w-[170px] text-center font-ui text-sm font-semibold text-stone-700">
+                      <TableHead className="w-[170px] text-center font-ui text-sm font-semibold text-stone-700 dark:text-stone-300">
                         {tCommon('actions.edit')}
                       </TableHead>
                     </TableRow>
@@ -606,7 +606,7 @@ export default function AdminModelsPage() {
                         <TableCell colSpan={9} className="h-64 text-center">
                           <div className="flex flex-col items-center justify-center gap-3">
                             <svg
-                              className="h-12 w-12 text-stone-400"
+                              className="h-12 w-12 text-stone-400 dark:text-stone-500"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -618,7 +618,7 @@ export default function AdminModelsPage() {
                                 d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
                               />
                             </svg>
-                            <p className="font-ui text-sm text-stone-500">{tCommon('status.noData')}</p>
+                            <p className="font-ui text-sm text-stone-500 dark:text-stone-400">{tCommon('status.noData')}</p>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -639,8 +639,8 @@ export default function AdminModelsPage() {
                             onDragOver={(event) => handleModelDragOver(event, model.id)}
                             onDrop={(event) => void handleModelDrop(event, model.id)}
                             className={cn(
-                              'transition-colors hover:bg-stone-50/50',
-                              isDragging && 'bg-stone-50 opacity-60',
+                              'transition-colors hover:bg-stone-50 dark:hover:bg-stone-800/50',
+                              isDragging && 'bg-stone-50 dark:bg-stone-900 opacity-60',
                               isDropTarget && 'bg-aurora-purple/5'
                             )}
                           >
@@ -653,7 +653,7 @@ export default function AdminModelsPage() {
                                 onDragEnd={clearModelDragState}
                                 aria-label={`${t('models.fields.drag')} ${model.name}`}
                                 className={cn(
-                                  'inline-flex h-9 w-9 items-center justify-center rounded-lg border border-stone-200 bg-white text-stone-500 transition-colors',
+                                  'inline-flex h-9 w-9 items-center justify-center rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-500 dark:text-stone-400 transition-colors',
                                   isSavingModelOrder
                                     ? 'cursor-not-allowed opacity-60'
                                     : 'cursor-grab hover:border-aurora-purple/40 hover:text-aurora-purple active:cursor-grabbing'
@@ -662,10 +662,10 @@ export default function AdminModelsPage() {
                                 <GripVertical className="h-4 w-4" />
                               </button>
                             </TableCell>
-                            <TableCell className="font-ui text-sm text-stone-700">
+                            <TableCell className="font-ui text-sm text-stone-700 dark:text-stone-300">
                               <div className="flex items-center gap-2">
                                 {model.icon ? (
-                                  <span className="inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-md border border-stone-200 bg-white">
+                                  <span className="inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-md border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900">
                                     {model.icon.startsWith('data:image') || model.icon.startsWith('http') ? (
                                       <img
                                         src={model.icon}
@@ -678,20 +678,20 @@ export default function AdminModelsPage() {
                                   </span>
                                 ) : null}
                                 <div>
-                                  <p className="font-medium text-stone-900">{model.name}</p>
-                                  <p className="font-mono text-xs text-stone-500">{model.modelKey}</p>
+                                  <p className="font-medium text-stone-900 dark:text-stone-100">{model.name}</p>
+                                  <p className="font-mono text-xs text-stone-500 dark:text-stone-400">{model.modelKey}</p>
                                 </div>
                               </div>
                             </TableCell>
-                            <TableCell className="font-ui text-sm text-stone-700">
+                            <TableCell className="font-ui text-sm text-stone-700 dark:text-stone-300">
                               <span
                                 className={cn(
                                   'inline-flex items-center rounded-md border px-2.5 py-0.5 font-ui text-xs font-semibold',
                                   model.type === 'image'
-                                    ? 'border-blue-200 bg-blue-100 text-blue-700'
+                                    ? 'border-blue-200 dark:border-blue-900/60 bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
                                     : model.type === 'video'
-                                      ? 'border-purple-200 bg-purple-100 text-purple-700'
-                                      : 'border-emerald-200 bg-emerald-100 text-emerald-700'
+                                      ? 'border-purple-200 dark:border-purple-900/60 bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300'
+                                      : 'border-emerald-200 dark:border-emerald-900/60 bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
                                 )}
                               >
                                 {model.type === 'image'
@@ -701,21 +701,21 @@ export default function AdminModelsPage() {
                                     : t('models.types.chat')}
                               </span>
                             </TableCell>
-                            <TableCell className="font-ui text-sm text-stone-700">
+                            <TableCell className="font-ui text-sm text-stone-700 dark:text-stone-300">
                               {model.provider}
                             </TableCell>
-                            <TableCell className="font-ui text-sm text-stone-700">
+                            <TableCell className="font-ui text-sm text-stone-700 dark:text-stone-300">
                               {model.channel?.name || '-'}
                             </TableCell>
-                            <TableCell className="text-center font-ui text-sm text-stone-700">
-                              <span className="font-medium text-stone-900">{model.sortOrder}</span>
+                            <TableCell className="text-center font-ui text-sm text-stone-700 dark:text-stone-300">
+                              <span className="font-medium text-stone-900 dark:text-stone-100">{model.sortOrder}</span>
                             </TableCell>
-                            <TableCell className="text-right font-ui text-sm text-stone-700">
+                            <TableCell className="text-right font-ui text-sm text-stone-700 dark:text-stone-300">
                               <div className="flex flex-col items-end">
                                 {specialCredits !== null ? (
                                   <>
                                     <span className="font-semibold text-rose-500">{specialCredits}</span>
-                                    <span className="text-xs text-stone-400 line-through">
+                                    <span className="text-xs text-stone-400 dark:text-stone-500 line-through">
                                       {model.creditsPerUse}
                                     </span>
                                   </>
@@ -726,10 +726,10 @@ export default function AdminModelsPage() {
                                 )}
                               </div>
                             </TableCell>
-                            <TableCell className="text-center font-ui text-sm text-stone-700">
+                            <TableCell className="text-center font-ui text-sm text-stone-700 dark:text-stone-300">
                               <StatusBadge status={model.isActive ? 'enabled' : 'disabled'} />
                             </TableCell>
-                            <TableCell className="text-center font-ui text-sm text-stone-700">
+                            <TableCell className="text-center font-ui text-sm text-stone-700 dark:text-stone-300">
                               <div className="flex items-center justify-center gap-2">
                                 <button
                                   onClick={() => {
@@ -752,8 +752,8 @@ export default function AdminModelsPage() {
                                   }}
                                   className={cn(
                                     'rounded-lg px-3 py-1.5 font-ui text-xs font-medium',
-                                    'bg-red-50 text-red-600',
-                                    'hover:bg-red-100',
+                                    'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-300',
+                                    'hover:bg-red-100 dark:hover:bg-red-900/40',
                                     'transition-colors duration-300'
                                   )}
                                 >
@@ -820,9 +820,9 @@ export default function AdminModelsPage() {
         title="确认删除"
       >
         <div className="space-y-4">
-          <p className="text-sm text-stone-600">
+          <p className="text-sm text-stone-600 dark:text-stone-400">
             确定要删除
-            <span className="font-semibold text-stone-900 mx-1">
+            <span className="font-semibold text-stone-900 dark:text-stone-100 mx-1">
               {deleteConfirm?.name}
             </span>
             吗？此操作不可撤销。
@@ -838,7 +838,7 @@ export default function AdminModelsPage() {
             </p>
           )}
           {deleteError && (
-            <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">{deleteError}</p>
+            <p className="text-xs text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-950/30 rounded-lg px-3 py-2">{deleteError}</p>
           )}
           <div className="flex justify-end gap-3 pt-2">
             <Button

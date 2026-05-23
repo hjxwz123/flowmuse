@@ -27,17 +27,17 @@ export function StatsCard({
   return (
     <div
       className={cn(
-        'rounded-xl bg-white p-6 border border-stone-200 shadow-sm',
+        'rounded-xl bg-stone-50 dark:bg-stone-900 p-6 border border-stone-200 dark:border-stone-800 shadow-sm',
         'transition-all duration-300 hover:shadow-md',
         className
       )}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="font-ui text-sm text-stone-600">{title}</p>
+          <p className="font-ui text-sm text-stone-600 dark:text-stone-400">{title}</p>
           <p
             className={cn(
-              'mt-2 font-display text-3xl font-bold text-stone-900',
+              'mt-2 font-display text-3xl font-bold text-stone-900 dark:text-stone-100',
               valueClassName
             )}
           >
@@ -48,7 +48,7 @@ export function StatsCard({
             <div className="mt-2 flex items-center gap-1">
               {trend.isPositive ? (
                 <svg
-                  className="h-4 w-4 text-green-600"
+                  className="h-4 w-4 text-green-600 dark:text-green-300"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -62,7 +62,7 @@ export function StatsCard({
                 </svg>
               ) : (
                 <svg
-                  className="h-4 w-4 text-red-600"
+                  className="h-4 w-4 text-red-600 dark:text-red-300"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -78,7 +78,7 @@ export function StatsCard({
               <span
                 className={cn(
                   'font-ui text-sm font-medium',
-                  trend.isPositive ? 'text-green-600' : 'text-red-600'
+                  trend.isPositive ? 'text-green-600 dark:text-green-300' : 'text-red-600 dark:text-red-300'
                 )}
               >
                 {trend.value > 0 ? '+' : ''}

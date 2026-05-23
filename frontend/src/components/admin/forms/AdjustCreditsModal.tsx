@@ -96,16 +96,16 @@ export function AdjustCreditsModal({
     <Modal isOpen={isOpen} onClose={handleClose} title={t('title')}>
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Current Credits */}
-        <div className="rounded-lg bg-stone-50 p-4">
-          <p className="font-ui text-sm text-stone-600 mb-1">当前剩余点数</p>
-          <p className="font-display text-2xl font-bold text-stone-900">
+        <div className="rounded-lg bg-stone-50 dark:bg-stone-900 p-4">
+          <p className="font-ui text-sm text-stone-600 dark:text-stone-400 mb-1">当前剩余点数</p>
+          <p className="font-display text-2xl font-bold text-stone-900 dark:text-stone-100">
             {(currentCredits || 0).toLocaleString()}
           </p>
         </div>
 
         {/* Type Selection */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-3">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-3">
             {t('type')}
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -115,8 +115,8 @@ export function AdjustCreditsModal({
               className={cn(
                 'rounded-lg border-2 px-4 py-3 font-ui text-sm font-medium transition-all',
                 type === 'add'
-                  ? 'border-green-500 bg-green-50 text-green-700'
-                  : 'border-stone-200 bg-white text-stone-600 hover:border-green-200'
+                  ? 'border-green-500 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300'
+                  : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-green-200 dark:hover:border-green-800'
               )}
             >
               ✓ {t('add')}
@@ -127,8 +127,8 @@ export function AdjustCreditsModal({
               className={cn(
                 'rounded-lg border-2 px-4 py-3 font-ui text-sm font-medium transition-all',
                 type === 'deduct'
-                  ? 'border-red-500 bg-red-50 text-red-700'
-                  : 'border-stone-200 bg-white text-stone-600 hover:border-red-200'
+                  ? 'border-red-500 bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300'
+                  : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-red-200 dark:hover:border-red-800'
               )}
             >
               − {t('deduct')}
@@ -138,7 +138,7 @@ export function AdjustCreditsModal({
 
         {/* Amount Input */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('amount')}
           </label>
           <input
@@ -148,9 +148,9 @@ export function AdjustCreditsModal({
             onChange={(e) => setAmount(e.target.value)}
             placeholder="请输入点数"
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-3',
-              'font-ui text-base text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-3',
+              'font-ui text-base text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
@@ -160,7 +160,7 @@ export function AdjustCreditsModal({
 
         {/* Reason Input */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('reason')}
           </label>
           <textarea
@@ -169,9 +169,9 @@ export function AdjustCreditsModal({
             placeholder="请说明调整原因"
             rows={3}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-3',
-              'font-ui text-base text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-3',
+              'font-ui text-base text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors resize-none'
             )}
@@ -182,13 +182,13 @@ export function AdjustCreditsModal({
         {/* Preview */}
         {amount && !isNaN(parseInt(amount)) && (
           <div className="rounded-lg bg-aurora-purple/5 border border-aurora-purple/20 p-4">
-            <p className="font-ui text-sm text-stone-600 mb-1">预览调整后余额</p>
+            <p className="font-ui text-sm text-stone-600 dark:text-stone-400 mb-1">预览调整后余额</p>
             <div className="flex items-center gap-3">
-              <span className="font-display text-xl text-stone-900">
+              <span className="font-display text-xl text-stone-900 dark:text-stone-100">
                 {currentCredits.toLocaleString()}
               </span>
               <svg
-                className="h-5 w-5 text-stone-400"
+                className="h-5 w-5 text-stone-400 dark:text-stone-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -203,7 +203,7 @@ export function AdjustCreditsModal({
               <span
                 className={cn(
                   'font-display text-2xl font-bold',
-                  type === 'add' ? 'text-green-600' : 'text-red-600'
+                  type === 'add' ? 'text-green-600 dark:text-green-300' : 'text-red-600 dark:text-red-300'
                 )}
               >
                 {previewNewBalance.toLocaleString()}
@@ -214,8 +214,8 @@ export function AdjustCreditsModal({
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-3">
-            <p className="font-ui text-sm text-red-700">{error}</p>
+          <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/60 p-3">
+            <p className="font-ui text-sm text-red-700 dark:text-red-300">{error}</p>
           </div>
         )}
 

@@ -79,12 +79,12 @@ export const Pagination = ({
     <div
       className={cn(
         'flex flex-col sm:flex-row items-center justify-between gap-4',
-        'py-4 px-6 bg-white/80 backdrop-blur-sm border-t border-stone-200',
+        'py-4 px-6 bg-stone-50/80 dark:bg-stone-900/80 backdrop-blur-sm border-t border-stone-200 dark:border-stone-800',
         className
       )}
     >
       {/* Items Info */}
-      <div className="font-ui text-sm text-stone-600">
+      <div className="font-ui text-sm text-stone-600 dark:text-stone-400">
         显示 {startItem} - {endItem} 条，共 {totalItems} 条
       </div>
 
@@ -96,10 +96,10 @@ export const Pagination = ({
           disabled={!canGoPrevious}
           className={cn(
             'flex items-center gap-2 px-3 py-2 rounded-lg font-ui text-sm',
-            'border border-stone-200 transition-all duration-300',
+            'border border-stone-200 dark:border-stone-800 transition-all duration-300',
             canGoPrevious
-              ? 'bg-white hover:bg-stone-50 text-stone-700 hover:border-aurora-purple/30'
-              : 'bg-stone-50 text-stone-400 cursor-not-allowed'
+              ? 'bg-stone-50 dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 hover:border-aurora-purple/30'
+              : 'bg-stone-50 dark:bg-stone-900 text-stone-400 dark:text-stone-500 cursor-not-allowed'
           )}
         >
           <svg
@@ -125,7 +125,7 @@ export const Pagination = ({
               return (
                 <span
                   key={`ellipsis-${index}`}
-                  className="px-3 py-2 font-ui text-sm text-stone-400"
+                  className="px-3 py-2 font-ui text-sm text-stone-400 dark:text-stone-500"
                 >
                   ...
                 </span>
@@ -140,8 +140,8 @@ export const Pagination = ({
                   'px-3 py-2 rounded-lg font-ui text-sm transition-all duration-300',
                   'border',
                   page === currentPage
-                    ? 'bg-gradient-to-r from-aurora-pink via-aurora-purple to-aurora-blue text-white border-transparent shadow-aurora'
-                    : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50 hover:border-aurora-purple/30'
+                    ? 'bg-gradient-to-r from-aurora-pink via-aurora-purple to-aurora-blue text-stone-50 border-transparent shadow-aurora'
+                    : 'bg-stone-50 dark:bg-stone-900 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-800 hover:bg-stone-50 dark:hover:bg-stone-800 hover:border-aurora-purple/30'
                 )}
               >
                 {page}
@@ -151,7 +151,7 @@ export const Pagination = ({
         </div>
 
         {/* Mobile Page Info */}
-        <div className="sm:hidden px-3 py-2 font-ui text-sm text-stone-600">
+        <div className="sm:hidden px-3 py-2 font-ui text-sm text-stone-600 dark:text-stone-400">
           {currentPage} / {totalPages}
         </div>
 
@@ -161,10 +161,10 @@ export const Pagination = ({
           disabled={!canGoNext}
           className={cn(
             'flex items-center gap-2 px-3 py-2 rounded-lg font-ui text-sm',
-            'border border-stone-200 transition-all duration-300',
+            'border border-stone-200 dark:border-stone-800 transition-all duration-300',
             canGoNext
-              ? 'bg-white hover:bg-stone-50 text-stone-700 hover:border-aurora-purple/30'
-              : 'bg-stone-50 text-stone-400 cursor-not-allowed'
+              ? 'bg-stone-50 dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 hover:border-aurora-purple/30'
+              : 'bg-stone-50 dark:bg-stone-900 text-stone-400 dark:text-stone-500 cursor-not-allowed'
           )}
         >
           下一页

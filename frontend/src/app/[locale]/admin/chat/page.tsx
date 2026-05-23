@@ -130,9 +130,9 @@ export default function AdminChatPage() {
   return (
     <AdminPageShell title={t('title')} description={t('description')}>
       <FadeIn variant="fade" delay={0.05}>
-          <div className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm md:grid-cols-[1fr_auto]">
+          <div className="grid gap-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 shadow-sm md:grid-cols-[1fr_auto]">
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
+              <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-stone-400 dark:text-stone-500" />
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
@@ -143,7 +143,7 @@ export default function AdminChatPage() {
                 }}
                 placeholder={t('searchPlaceholder')}
                 className={cn(
-                  'w-full rounded-xl border border-stone-200 px-9 py-2.5 text-sm text-stone-900',
+                  'w-full rounded-xl border border-stone-200 dark:border-stone-800 px-9 py-2.5 text-sm text-stone-900 dark:text-stone-100',
                   'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
                 )}
               />
@@ -162,7 +162,7 @@ export default function AdminChatPage() {
               </Button>
               <button
                 type="button"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-100"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800"
                 onClick={() => void fetchList()}
                 title={t('refresh')}
               >
@@ -174,17 +174,17 @@ export default function AdminChatPage() {
 
       <FadeIn variant="fade" delay={0.1}>
           <div className="grid min-h-[68vh] gap-4 md:grid-cols-[360px_1fr]">
-            <section className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
-              <div className="border-b border-stone-200 px-4 py-3">
-                <p className="text-sm font-medium text-stone-800">{t('conversationList')}</p>
-                <p className="mt-1 text-xs text-stone-500">{t('total', { total })}</p>
+            <section className="overflow-hidden rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 shadow-sm">
+              <div className="border-b border-stone-200 dark:border-stone-800 px-4 py-3">
+                <p className="text-sm font-medium text-stone-800 dark:text-stone-200">{t('conversationList')}</p>
+                <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">{t('total', { total })}</p>
               </div>
 
               <div className="max-h-[68vh] space-y-2 overflow-y-auto p-3">
                 {loadingList ? (
-                  <p className="px-2 py-2 text-sm text-stone-500">{t('conversationLoading')}</p>
+                  <p className="px-2 py-2 text-sm text-stone-500 dark:text-stone-400">{t('conversationLoading')}</p>
                 ) : items.length === 0 ? (
-                  <p className="px-2 py-2 text-sm text-stone-500">{t('conversationEmpty')}</p>
+                  <p className="px-2 py-2 text-sm text-stone-500 dark:text-stone-400">{t('conversationEmpty')}</p>
                 ) : (
                   items.map((item) => (
                     <button
@@ -195,19 +195,19 @@ export default function AdminChatPage() {
                         'w-full rounded-xl border px-3 py-2 text-left transition-colors',
                         item.id === activeConversationId
                           ? 'border-aurora-purple/40 bg-aurora-purple/5'
-                          : 'border-transparent hover:border-stone-200 hover:bg-stone-50'
+                          : 'border-transparent hover:border-stone-200 dark:hover:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800'
                       )}
                     >
-                      <p className="line-clamp-1 flex items-center gap-1 text-sm font-medium text-stone-800">
+                      <p className="line-clamp-1 flex items-center gap-1 text-sm font-medium text-stone-800 dark:text-stone-200">
                         {item.isPinned ? <Pin className="h-3.5 w-3.5 text-amber-500" /> : null}
                         <span>{item.title}</span>
                       </p>
-                      <p className="mt-1 line-clamp-1 text-xs text-stone-500">{item.lastMessagePreview || '...'}</p>
-                      <div className="mt-2 flex items-center justify-between text-[11px] text-stone-400">
+                      <p className="mt-1 line-clamp-1 text-xs text-stone-500 dark:text-stone-400">{item.lastMessagePreview || '...'}</p>
+                      <div className="mt-2 flex items-center justify-between text-[11px] text-stone-400 dark:text-stone-500">
                         <span>{item.user.username || item.user.email}</span>
                         <span>{formatDate(item.lastMessageAt)}</span>
                       </div>
-                      <div className="mt-1 flex items-center justify-between text-[11px] text-stone-400">
+                      <div className="mt-1 flex items-center justify-between text-[11px] text-stone-400 dark:text-stone-500">
                         <span>{item.model.name}</span>
                         <span>
                           {t('messageCount')}: {item.messageCount}
@@ -218,12 +218,12 @@ export default function AdminChatPage() {
                 )}
               </div>
 
-              <div className="flex items-center justify-between border-t border-stone-200 px-3 py-2 text-xs text-stone-500">
+              <div className="flex items-center justify-between border-t border-stone-200 dark:border-stone-800 px-3 py-2 text-xs text-stone-500 dark:text-stone-400">
                 <button
                   type="button"
                   onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                   disabled={page <= 1}
-                  className="rounded-md border border-stone-200 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border border-stone-200 dark:border-stone-800 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t('paginationPrev')}
                 </button>
@@ -234,25 +234,25 @@ export default function AdminChatPage() {
                   type="button"
                   onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
                   disabled={page >= totalPages}
-                  className="rounded-md border border-stone-200 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border border-stone-200 dark:border-stone-800 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t('paginationNext')}
                 </button>
               </div>
             </section>
 
-            <section className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
-              <div className="border-b border-stone-200 px-5 py-4">
+            <section className="overflow-hidden rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 shadow-sm">
+              <div className="border-b border-stone-200 dark:border-stone-800 px-5 py-4">
                 {activeConversation ? (
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-1">
-                      <p className="text-base font-semibold text-stone-900">{activeConversation.title}</p>
-                      <p className="text-xs text-stone-500">
+                      <p className="text-base font-semibold text-stone-900 dark:text-stone-100">{activeConversation.title}</p>
+                      <p className="text-xs text-stone-500 dark:text-stone-400">
                         {t('user')}: {activeConversation.user.username || activeConversation.user.email} | {t('model')}:
                         {' '}
                         {activeConversation.model.name}
                       </p>
-                      <p className="text-xs text-stone-400">
+                      <p className="text-xs text-stone-400 dark:text-stone-500">
                         {t('lastMessage')}: {formatDate(activeConversation.lastMessageAt)}
                       </p>
                     </div>
@@ -262,29 +262,29 @@ export default function AdminChatPage() {
                       variant="secondary"
                       onClick={() => void handleDeleteConversation()}
                       disabled={deletingConversationId === activeConversation.id}
-                      className="rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="rounded-xl border-red-200 dark:border-red-900/60 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <Trash2 className="h-4 w-4" />
                       <span>{deletingConversationId === activeConversation.id ? t('deleting') : t('delete')}</span>
                     </Button>
                   </div>
                 ) : (
-                  <p className="text-sm text-stone-500">{t('messageEmpty')}</p>
+                  <p className="text-sm text-stone-500 dark:text-stone-400">{t('messageEmpty')}</p>
                 )}
               </div>
 
               <div className="max-h-[68vh] space-y-4 overflow-y-auto px-5 py-4">
                 {loadingDetail ? (
-                  <p className="text-sm text-stone-500">{t('messageLoading')}</p>
+                  <p className="text-sm text-stone-500 dark:text-stone-400">{t('messageLoading')}</p>
                 ) : !detail || detail.messages.length === 0 ? (
-                  <p className="text-sm text-stone-500">{t('messageEmpty')}</p>
+                  <p className="text-sm text-stone-500 dark:text-stone-400">{t('messageEmpty')}</p>
                 ) : (
                   detail.messages.map((message) => {
                     const isUser = message.role === 'user'
                     return (
                       <div key={message.id} className={cn('flex', isUser ? 'justify-end' : 'justify-start')}>
                         <div className={cn('max-w-[88%]', isUser ? 'items-end' : 'items-start')}>
-                          <div className={cn('mb-1 flex items-center gap-1 text-xs text-stone-500', isUser ? 'justify-end' : 'justify-start')}>
+                          <div className={cn('mb-1 flex items-center gap-1 text-xs text-stone-500 dark:text-stone-400', isUser ? 'justify-end' : 'justify-start')}>
                             {isUser ? <User className="h-3.5 w-3.5" /> : <Bot className="h-3.5 w-3.5" />}
                             <span>{isUser ? 'User' : 'Assistant'}</span>
                             <span>{formatDate(message.createdAt)}</span>
@@ -294,8 +294,8 @@ export default function AdminChatPage() {
                             className={cn(
                               'rounded-2xl px-4 py-3 text-sm leading-6',
                               isUser
-                                ? 'bg-gradient-to-r from-aurora-purple to-aurora-blue text-white'
-                                : 'border border-stone-200 bg-stone-50 text-stone-800'
+                                ? 'bg-gradient-to-r from-aurora-purple to-aurora-blue text-stone-50'
+                                : 'border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-800 dark:text-stone-200'
                             )}
                           >
                             {message.content ? <p className="whitespace-pre-wrap break-words">{message.content}</p> : null}
@@ -307,7 +307,7 @@ export default function AdminChatPage() {
                                     key={`${message.id}-${index}`}
                                     src={image}
                                     alt={`chat-image-${index + 1}`}
-                                    className="max-h-56 w-full rounded-xl border border-white/40 object-cover"
+                                    className="max-h-56 w-full rounded-xl border border-stone-50/40 dark:border-stone-700/40 object-cover"
                                   />
                                 ))}
                               </div>

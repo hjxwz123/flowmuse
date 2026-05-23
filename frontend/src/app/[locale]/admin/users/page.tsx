@@ -100,16 +100,16 @@ export default function AdminUsersPage() {
                   }}
                 />
               ) : null}
-              <div className="flex h-full w-full items-center justify-center text-white font-display text-sm">
+              <div className="flex h-full w-full items-center justify-center text-stone-50 font-display text-sm">
                 {user.username?.[0]?.toUpperCase() ||
                   user.email[0]?.toUpperCase()}
               </div>
             </div>
             {/* Email & Username */}
             <div className="flex flex-col">
-              <span className="font-medium text-stone-900">{user.email}</span>
+              <span className="font-medium text-stone-900 dark:text-stone-100">{user.email}</span>
               {user.username && (
-                <span className="text-xs text-stone-500">{user.username}</span>
+                <span className="text-xs text-stone-500 dark:text-stone-400">{user.username}</span>
               )}
             </div>
           </div>
@@ -124,8 +124,8 @@ export default function AdminUsersPage() {
             className={cn(
               'inline-flex items-center rounded-md border px-2.5 py-0.5 font-ui text-xs font-semibold',
               user.role === 'admin'
-                ? 'bg-purple-100 text-purple-700 border-purple-200'
-                : 'bg-blue-100 text-blue-700 border-blue-200'
+                ? 'bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-900/60'
+                : 'bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-900/60'
             )}
           >
             {user.role === 'admin' ? t('roles.admin') : t('roles.user')}
@@ -161,7 +161,7 @@ export default function AdminUsersPage() {
         width: '100px',
         align: 'right',
         render: (user) => (
-          <span className="font-medium text-stone-900">
+          <span className="font-medium text-stone-900 dark:text-stone-100">
             {(user.permanentCredits ?? 0).toLocaleString()}
           </span>
         ),
@@ -171,7 +171,7 @@ export default function AdminUsersPage() {
         label: t('fields.createdAt'),
         width: '180px',
         render: (user) => (
-          <span className="text-stone-600">
+          <span className="text-stone-600 dark:text-stone-400">
             {new Date(user.createdAt).toLocaleString('zh-CN', {
               year: 'numeric',
               month: '2-digit',
@@ -211,11 +211,11 @@ export default function AdminUsersPage() {
     <AdminPageShell title={t('title')} description={t('list')}>
       {/* Filters */}
       <FadeIn variant="fade" delay={0.05}>
-          <div className="rounded-2xl bg-white/80 backdrop-blur-sm border border-stone-200 shadow-canvas p-6">
+          <div className="rounded-2xl bg-stone-50/80 dark:bg-stone-900/80 backdrop-blur-sm border border-stone-200 dark:border-stone-800 shadow-canvas p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Search */}
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   {tCommon('actions.search')}
                 </label>
                 <input
@@ -224,9 +224,9 @@ export default function AdminUsersPage() {
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder={t('fields.email')}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
-                    'placeholder:text-stone-400',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
+                    'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -235,15 +235,15 @@ export default function AdminUsersPage() {
 
               {/* Role Filter */}
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   {t('filters.role')}
                 </label>
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value as UserRole | '')}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -256,7 +256,7 @@ export default function AdminUsersPage() {
 
               {/* Status Filter */}
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   {t('filters.status')}
                 </label>
                 <select
@@ -265,8 +265,8 @@ export default function AdminUsersPage() {
                     setStatusFilter(e.target.value as UserStatus | '')
                   }
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}

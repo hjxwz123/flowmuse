@@ -63,10 +63,10 @@ export default function AdminToolsPage() {
       render: (tool) =>
         tool.coverUrl ? (
           <img src={tool.coverUrl} alt={tool.title}
-            className="w-12 h-12 rounded-lg object-cover border border-stone-200" />
+            className="w-12 h-12 rounded-lg object-cover border border-stone-200 dark:border-stone-800" />
         ) : (
-          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-aurora-pink/20 via-aurora-purple/20 to-aurora-blue/20 flex items-center justify-center border border-stone-200">
-            <svg className="w-6 h-6 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-aurora-pink/20 via-aurora-purple/20 to-aurora-blue/20 flex items-center justify-center border border-stone-200 dark:border-stone-800">
+            <svg className="w-6 h-6 text-stone-400 dark:text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
             </svg>
           </div>
@@ -77,9 +77,9 @@ export default function AdminToolsPage() {
       label: t('fields.title'),
       render: (tool) => (
         <div>
-          <span className="font-medium text-stone-900">{tool.title}</span>
+          <span className="font-medium text-stone-900 dark:text-stone-100">{tool.title}</span>
           {tool.description && (
-            <p className="text-xs text-stone-500 mt-0.5 line-clamp-1">{tool.description}</p>
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 line-clamp-1">{tool.description}</p>
           )}
         </div>
       ),
@@ -91,7 +91,7 @@ export default function AdminToolsPage() {
       render: (tool) => (
         <span className={cn(
           'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-          tool.type === 'image' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
+          tool.type === 'image' ? 'bg-blue-100 dark:bg-blue-950/40 text-blue-800 dark:text-blue-200' : 'bg-purple-100 dark:bg-purple-950/40 text-purple-800 dark:text-purple-200'
         )}>
           {tool.type === 'image' ? '图片' : '视频'}
         </span>
@@ -101,7 +101,7 @@ export default function AdminToolsPage() {
       key: 'model',
       label: t('fields.model'),
       width: '120px',
-      render: (tool) => <span className="text-stone-600 text-sm">{tool.modelName}</span>,
+      render: (tool) => <span className="text-stone-600 dark:text-stone-400 text-sm">{tool.modelName}</span>,
     },
     {
       key: 'imageCount',
@@ -109,7 +109,7 @@ export default function AdminToolsPage() {
       width: '80px',
       align: 'center',
       render: (tool) => (
-        <span className="inline-flex items-center gap-1 text-stone-600 text-sm">
+        <span className="inline-flex items-center gap-1 text-stone-600 dark:text-stone-400 text-sm">
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
@@ -140,7 +140,7 @@ export default function AdminToolsPage() {
           </button>
           <button onClick={() => handleDelete(tool.id)} disabled={deletingId === tool.id}
             className={cn('rounded-lg px-3 py-1.5 font-ui text-xs font-medium',
-              'bg-red-100 text-red-700 hover:bg-red-200',
+              'bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50',
               'disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300')}>
             {deletingId === tool.id ? '删除中...' : tCommon('actions.delete')}
           </button>
@@ -175,8 +175,8 @@ export default function AdminToolsPage() {
               <button key={type} onClick={() => setTypeFilter(type)}
                 className={cn('px-4 py-2 rounded-lg font-ui text-sm font-medium transition-all duration-200',
                   typeFilter === type
-                    ? 'bg-aurora-purple text-white shadow-aurora'
-                    : 'bg-white text-stone-600 border border-stone-200 hover:border-aurora-purple/50')}>
+                    ? 'bg-aurora-purple text-stone-50 shadow-aurora'
+                    : 'bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:border-aurora-purple/50')}>
                 {type === 'all' ? '全部' : type === 'image' ? '图片' : '视频'}
               </button>
             ))}

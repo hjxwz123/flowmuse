@@ -21,7 +21,7 @@ interface MembershipChatQuotaModalProps {
 function renderIcon(icon: string | null, label: string) {
   if (!icon) {
     return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-stone-50 text-xs font-semibold text-stone-400">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-xs font-semibold text-stone-400 dark:text-stone-500">
         AI
       </div>
     )
@@ -29,7 +29,7 @@ function renderIcon(icon: string | null, label: string) {
 
   if (icon.startsWith('http') || icon.startsWith('data:image')) {
     return (
-      <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-stone-200 bg-white">
+      <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={icon} alt={label} className="h-full w-full object-contain" />
       </div>
@@ -37,7 +37,7 @@ function renderIcon(icon: string | null, label: string) {
   }
 
   return (
-    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-stone-50 text-base leading-none text-stone-700">
+    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-base leading-none text-stone-700 dark:text-stone-300">
       {icon}
     </div>
   )
@@ -164,28 +164,28 @@ export function MembershipChatQuotaModal({
     >
       {loading ? (
         <div className="flex min-h-[320px] items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-aurora-purple" />
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 dark:border-stone-800 border-t-aurora-purple" />
         </div>
       ) : (
         <div className="space-y-5">
-          <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-3 text-sm text-stone-600">
+          <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50/80 dark:bg-stone-900/80 px-4 py-3 text-sm text-stone-600 dark:text-stone-400">
             留空表示不限制。
           </div>
 
           {/* Project Quota */}
-          <div className="rounded-2xl border border-stone-200 bg-white px-4 py-4">
+          <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-4 py-4">
             <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_160px]">
               <div className="flex min-w-0 items-start gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-stone-50 text-base leading-none text-stone-700">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-base leading-none text-stone-700 dark:text-stone-300">
                   📁
                 </div>
                 <div className="min-w-0 space-y-1">
-                  <p className="text-sm font-semibold text-stone-900">可创建项目数量</p>
-                  <p className="text-sm leading-6 text-stone-600">限制该会员等级可创建的最大项目数量</p>
+                  <p className="text-sm font-semibold text-stone-900 dark:text-stone-100">可创建项目数量</p>
+                  <p className="text-sm leading-6 text-stone-600 dark:text-stone-400">限制该会员等级可创建的最大项目数量</p>
                 </div>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-stone-700">上限</label>
+                <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">上限</label>
                 <input
                   type="number"
                   min="0"
@@ -193,7 +193,7 @@ export function MembershipChatQuotaModal({
                   value={projectMaxCount}
                   onChange={(event) => setProjectMaxCount(event.target.value)}
                   className={cn(
-                    'w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900',
+                    'w-full rounded-xl border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
                   )}
                   placeholder="不限"
@@ -202,7 +202,7 @@ export function MembershipChatQuotaModal({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-3 text-sm text-stone-600">
+          <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50/80 dark:bg-stone-900/80 px-4 py-3 text-sm text-stone-600 dark:text-stone-400">
             以下为模型每日使用额度配置，留空表示不限制。
           </div>
 
@@ -210,33 +210,33 @@ export function MembershipChatQuotaModal({
             {items.map((item) => (
               <div
                 key={item.modelId}
-                className="grid gap-4 rounded-2xl border border-stone-200 bg-white px-4 py-4 md:grid-cols-[minmax(0,1fr)_160px]"
+                className="grid gap-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-4 py-4 md:grid-cols-[minmax(0,1fr)_160px]"
               >
                 <div className="flex min-w-0 items-start gap-3">
                   {renderIcon(item.icon, item.modelName)}
                   <div className="min-w-0 space-y-1">
                     <div className="flex items-center gap-2">
-                      <p className="truncate text-sm font-semibold text-stone-900">{item.modelName}</p>
+                      <p className="truncate text-sm font-semibold text-stone-900 dark:text-stone-100">{item.modelName}</p>
                       <span
                         className={cn(
                           'rounded-full px-2 py-0.5 text-[11px] font-medium',
                           item.isActive
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-stone-100 text-stone-500'
+                            ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300'
+                            : 'bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400'
                         )}
                       >
                         {item.isActive ? '启用' : '禁用'}
                       </span>
                     </div>
-                    <p className="truncate font-mono text-xs text-stone-500">{item.modelKey}</p>
+                    <p className="truncate font-mono text-xs text-stone-500 dark:text-stone-400">{item.modelKey}</p>
                     {item.description ? (
-                      <p className="text-sm leading-6 text-stone-600">{item.description}</p>
+                      <p className="text-sm leading-6 text-stone-600 dark:text-stone-400">{item.description}</p>
                     ) : null}
                   </div>
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-stone-700">每日额度</label>
+                  <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">每日额度</label>
                   <input
                     type="number"
                     min="0"
@@ -249,7 +249,7 @@ export function MembershipChatQuotaModal({
                       }))
                     }
                     className={cn(
-                      'w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900',
+                      'w-full rounded-xl border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
                       'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
                     )}
                     placeholder="不限"

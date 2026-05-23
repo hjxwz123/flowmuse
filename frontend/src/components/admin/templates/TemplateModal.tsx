@@ -141,8 +141,8 @@ export function TemplateModal({
   }
 
   const inputClass = cn(
-    'w-full rounded-xl border border-stone-200 px-4 py-2.5',
-    'font-ui text-sm text-stone-900 bg-white',
+    'w-full rounded-xl border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+    'font-ui text-sm text-stone-900 dark:text-stone-100 bg-stone-50 dark:bg-stone-900',
     'focus:outline-none focus:ring-2 focus:ring-aurora-purple/20 focus:border-aurora-purple',
     'transition-all duration-200'
   )
@@ -156,7 +156,7 @@ export function TemplateModal({
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* 标题 */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             {t('fields.title')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -170,7 +170,7 @@ export function TemplateModal({
 
         {/* 描述 */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             {t('fields.description')}
           </label>
           <input
@@ -185,7 +185,7 @@ export function TemplateModal({
         {/* 类型 + 分类 */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
               {t('fields.type')} <span className="text-red-500">*</span>
             </label>
             <select
@@ -206,7 +206,7 @@ export function TemplateModal({
             </select>
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
               {t('fields.category')}
             </label>
             <input
@@ -221,7 +221,7 @@ export function TemplateModal({
 
         {/* 封面图 URL */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             {t('fields.coverUrl')}
           </label>
           <input
@@ -235,7 +235,7 @@ export function TemplateModal({
 
         {/* 预设提示词 */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             {t('fields.prompt')} <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -250,7 +250,7 @@ export function TemplateModal({
         {/* 指定模型 + 排序权重 */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
               {t('fields.modelId')}
             </label>
             <select
@@ -267,7 +267,7 @@ export function TemplateModal({
             </select>
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
               {t('fields.sortOrder')}
             </label>
             <input
@@ -282,7 +282,7 @@ export function TemplateModal({
 
         {/* 参数 JSON */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-1">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
             {t('fields.parameters')}
           </label>
           <textarea
@@ -301,15 +301,15 @@ export function TemplateModal({
             id="isPublic"
             checked={isPublic}
             onChange={(e) => setIsPublic(e.target.checked)}
-            className="w-4 h-4 rounded border-stone-300 text-aurora-purple"
+            className="w-4 h-4 rounded border-stone-300 dark:border-stone-700 text-aurora-purple"
           />
-          <label htmlFor="isPublic" className="font-ui text-sm text-stone-700">
+          <label htmlFor="isPublic" className="font-ui text-sm text-stone-700 dark:text-stone-300">
             {t('fields.isPublic')}
           </label>
         </div>
 
         {error && (
-          <p className="font-ui text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+          <p className="font-ui text-sm text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-950/30 rounded-lg px-3 py-2">
             {error}
           </p>
         )}

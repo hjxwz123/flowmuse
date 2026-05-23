@@ -153,7 +153,7 @@ export function FileDropzone({
             return (
               <div
                 key={key}
-                className="group flex items-center gap-3 rounded-xl border border-stone-200 bg-white/90 p-3 dark:border-stone-700 dark:bg-stone-900/70"
+                className="group flex items-center gap-3 rounded-xl border border-stone-200 bg-stone-50/90 p-3 dark:border-stone-700 dark:bg-stone-900/70"
               >
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-stone-100 dark:bg-stone-800">
                   {previewUrl ? (
@@ -176,7 +176,7 @@ export function FileDropzone({
                     event.stopPropagation()
                     handleRemove(index)
                   }}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500 text-stone-50 transition-colors hover:bg-red-600"
                 >
                   <X className="h-4 w-4" />
                 </button>

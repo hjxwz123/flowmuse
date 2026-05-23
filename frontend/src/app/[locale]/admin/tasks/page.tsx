@@ -112,8 +112,8 @@ export default function AdminTasksPage() {
       width: '200px',
       render: (task) => (
         <div>
-          <p className="font-mono text-xs text-stone-900">{task.taskNo}</p>
-          <p className="text-xs text-stone-500">ID: {task.id}</p>
+          <p className="font-mono text-xs text-stone-900 dark:text-stone-100">{task.taskNo}</p>
+          <p className="text-xs text-stone-500 dark:text-stone-400">ID: {task.id}</p>
         </div>
       ),
     },
@@ -125,15 +125,15 @@ export default function AdminTasksPage() {
         <div className="text-sm">
           {task.user ? (
             <>
-              <p className="text-stone-900 truncate">
+              <p className="text-stone-900 dark:text-stone-100 truncate">
                 {task.user.username || task.user.email}
               </p>
               {task.user.username && (
-                <p className="text-xs text-stone-500 truncate">{task.user.email}</p>
+                <p className="text-xs text-stone-500 dark:text-stone-400 truncate">{task.user.email}</p>
               )}
             </>
           ) : (
-            <span className="text-stone-400">-</span>
+            <span className="text-stone-400 dark:text-stone-500">-</span>
           )}
         </div>
       ),
@@ -147,10 +147,10 @@ export default function AdminTasksPage() {
           className={cn(
             'inline-flex items-center rounded-md border px-2.5 py-0.5 font-ui text-xs font-semibold',
             task.type === 'image'
-              ? 'bg-blue-100 text-blue-700 border-blue-200'
+              ? 'bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-900/60'
               : task.type === 'video'
-                ? 'bg-purple-100 text-purple-700 border-purple-200'
-                : 'bg-emerald-100 text-emerald-700 border-emerald-200'
+                ? 'bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-900/60'
+                : 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900/60'
           )}
         >
           {task.type === 'image' ? '图片' : task.type === 'video' ? '视频' : '深度研究'}
@@ -161,7 +161,7 @@ export default function AdminTasksPage() {
       key: 'prompt',
       label: t('fields.prompt'),
       render: (task) => (
-        <p className="max-w-md truncate text-sm text-stone-700">
+        <p className="max-w-md truncate text-sm text-stone-700 dark:text-stone-300">
           {task.prompt}
         </p>
       ),
@@ -171,7 +171,7 @@ export default function AdminTasksPage() {
       label: t('fields.provider'),
       width: '120px',
       render: (task) => (
-        <span className="text-sm text-stone-700">{task.provider}</span>
+        <span className="text-sm text-stone-700 dark:text-stone-300">{task.provider}</span>
       ),
     },
     {
@@ -205,7 +205,7 @@ export default function AdminTasksPage() {
       label: t('fields.createdAt'),
       width: '150px',
       render: (task) => (
-        <span className="text-xs text-stone-600">
+        <span className="text-xs text-stone-600 dark:text-stone-400">
           {new Date(task.createdAt).toLocaleString('zh-CN')}
         </span>
       ),
@@ -215,9 +215,9 @@ export default function AdminTasksPage() {
       label: '错误',
       render: (task) =>
         task.status === 'failed' ? (
-          <span className="text-xs text-red-600 line-clamp-1">{task.errorMessage || '-'}</span>
+          <span className="text-xs text-red-600 dark:text-red-300 line-clamp-1">{task.errorMessage || '-'}</span>
         ) : (
-          <span className="text-xs text-stone-400">-</span>
+          <span className="text-xs text-stone-400 dark:text-stone-500">-</span>
         ),
     },
     {
@@ -230,7 +230,7 @@ export default function AdminTasksPage() {
           onClick={() => openDetail(task)}
           className={cn(
             'rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
-            'bg-stone-100 text-stone-700 hover:bg-stone-200'
+            'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
           )}
         >
           详情
@@ -246,33 +246,33 @@ export default function AdminTasksPage() {
         {stats && stats.totals && stats.byStatus && (
           <FadeIn variant="fade" delay={0.05}>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
-              <div className="rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 p-4 border border-blue-200">
-                <p className="font-ui text-sm text-blue-700">总任务数</p>
-                <p className="mt-1 font-display text-2xl font-bold text-blue-900">
+              <div className="rounded-xl bg-gradient-to-br from-blue-50 dark:from-blue-950/50 to-blue-100 dark:to-blue-900/30 p-4 border border-blue-200 dark:border-blue-900/60">
+                <p className="font-ui text-sm text-blue-700 dark:text-blue-300">总任务数</p>
+                <p className="mt-1 font-display text-2xl font-bold text-blue-900 dark:text-blue-100">
                   {stats.totals.all.toLocaleString()}
                 </p>
               </div>
-              <div className="rounded-xl bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 border border-yellow-200">
-                <p className="font-ui text-sm text-yellow-700">等待中</p>
-                <p className="mt-1 font-display text-2xl font-bold text-yellow-900">
+              <div className="rounded-xl bg-gradient-to-br from-yellow-50 dark:from-yellow-950/50 to-yellow-100 dark:to-yellow-900/30 p-4 border border-yellow-200 dark:border-yellow-900/60">
+                <p className="font-ui text-sm text-yellow-700 dark:text-yellow-300">等待中</p>
+                <p className="mt-1 font-display text-2xl font-bold text-yellow-900 dark:text-yellow-100">
                   {stats.byStatus.all.pending}
                 </p>
               </div>
-              <div className="rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 p-4 border border-purple-200">
-                <p className="font-ui text-sm text-purple-700">处理中</p>
-                <p className="mt-1 font-display text-2xl font-bold text-purple-900">
+              <div className="rounded-xl bg-gradient-to-br from-purple-50 dark:from-purple-950/50 to-purple-100 dark:to-purple-900/30 p-4 border border-purple-200 dark:border-purple-900/60">
+                <p className="font-ui text-sm text-purple-700 dark:text-purple-300">处理中</p>
+                <p className="mt-1 font-display text-2xl font-bold text-purple-900 dark:text-purple-100">
                   {stats.byStatus.all.processing}
                 </p>
               </div>
-              <div className="rounded-xl bg-gradient-to-br from-green-50 to-green-100 p-4 border border-green-200">
-                <p className="font-ui text-sm text-green-700">已完成</p>
-                <p className="mt-1 font-display text-2xl font-bold text-green-900">
+              <div className="rounded-xl bg-gradient-to-br from-green-50 dark:from-green-950/50 to-green-100 dark:to-green-900/30 p-4 border border-green-200 dark:border-green-900/60">
+                <p className="font-ui text-sm text-green-700 dark:text-green-300">已完成</p>
+                <p className="mt-1 font-display text-2xl font-bold text-green-900 dark:text-green-100">
                   {stats.byStatus.all.completed}
                 </p>
               </div>
-              <div className="rounded-xl bg-gradient-to-br from-red-50 to-red-100 p-4 border border-red-200">
-                <p className="font-ui text-sm text-red-700">失败</p>
-                <p className="mt-1 font-display text-2xl font-bold text-red-900">
+              <div className="rounded-xl bg-gradient-to-br from-red-50 dark:from-red-950/50 to-red-100 dark:to-red-900/30 p-4 border border-red-200 dark:border-red-900/60">
+                <p className="font-ui text-sm text-red-700 dark:text-red-300">失败</p>
+                <p className="mt-1 font-display text-2xl font-bold text-red-900 dark:text-red-100">
                   {stats.byStatus.all.failed}
                 </p>
               </div>
@@ -282,11 +282,11 @@ export default function AdminTasksPage() {
 
         {/* Filters */}
         <FadeIn variant="fade" delay={0.1}>
-          <div className="rounded-xl bg-white p-6 border border-stone-200 shadow-sm">
+          <div className="rounded-xl bg-stone-50 dark:bg-stone-900 p-6 border border-stone-200 dark:border-stone-800 shadow-sm">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
               {/* Search */}
               <div className="md:col-span-2">
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   {tCommon('filters.search')}
                 </label>
                 <div className="flex gap-2">
@@ -297,9 +297,9 @@ export default function AdminTasksPage() {
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="搜索任务编号或提示词..."
                     className={cn(
-                      'flex-1 rounded-lg border border-stone-200 px-4 py-2',
-                      'font-ui text-sm text-stone-900',
-                      'placeholder:text-stone-400',
+                      'flex-1 rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                      'font-ui text-sm text-stone-900 dark:text-stone-100',
+                      'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                       'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                       'transition-colors'
                     )}
@@ -308,7 +308,7 @@ export default function AdminTasksPage() {
                     onClick={handleSearch}
                     className={cn(
                       'rounded-lg px-6 py-2 font-ui text-sm font-medium',
-                      'bg-aurora-purple text-white',
+                      'bg-aurora-purple text-stone-50',
                       'hover:bg-aurora-purple/90',
                       'transition-colors'
                     )}
@@ -320,7 +320,7 @@ export default function AdminTasksPage() {
 
               {/* Type Filter */}
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   {t('filters.type')}
                 </label>
                 <select
@@ -330,8 +330,8 @@ export default function AdminTasksPage() {
                     setPage(1)
                   }}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -345,7 +345,7 @@ export default function AdminTasksPage() {
 
               {/* Status Filter */}
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   {t('filters.status')}
                 </label>
                 <select
@@ -355,8 +355,8 @@ export default function AdminTasksPage() {
                     setPage(1)
                   }}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -374,7 +374,7 @@ export default function AdminTasksPage() {
 
         {/* Tasks Table */}
         <FadeIn variant="fade" delay={0.2}>
-          <div className="rounded-xl bg-white border border-stone-200 shadow-sm overflow-hidden">
+          <div className="rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden">
             <DataTable
               data={tasks}
               columns={taskColumns}
@@ -385,7 +385,7 @@ export default function AdminTasksPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="border-t border-stone-200 px-6 py-4">
+              <div className="border-t border-stone-200 dark:border-stone-800 px-6 py-4">
                 <Pagination
                   currentPage={page}
                   totalPages={totalPages}
@@ -406,71 +406,71 @@ export default function AdminTasksPage() {
         size="lg"
       >
         {detailLoading ? (
-          <div className="py-10 text-center text-stone-500">加载中...</div>
+          <div className="py-10 text-center text-stone-500 dark:text-stone-400">加载中...</div>
         ) : !taskDetail ? (
-          <div className="py-10 text-center text-stone-500">暂无详情</div>
+          <div className="py-10 text-center text-stone-500 dark:text-stone-400">暂无详情</div>
         ) : (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-xl border border-stone-200 bg-white p-4">
-                <div className="text-xs text-stone-500 mb-1">用户</div>
-                <div className="text-sm text-stone-900">{taskDetail.user.email}</div>
+              <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
+                <div className="text-xs text-stone-500 dark:text-stone-400 mb-1">用户</div>
+                <div className="text-sm text-stone-900 dark:text-stone-100">{taskDetail.user.email}</div>
                 {taskDetail.user.username ? (
-                  <div className="text-xs text-stone-500 mt-1">@{taskDetail.user.username}</div>
+                  <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">@{taskDetail.user.username}</div>
                 ) : null}
               </div>
-              <div className="rounded-xl border border-stone-200 bg-white p-4">
-                <div className="text-xs text-stone-500 mb-1">模型</div>
-                <div className="text-sm text-stone-900">{taskDetail.model?.name ?? '-'}</div>
-                <div className="text-xs text-stone-500 mt-1">
+              <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
+                <div className="text-xs text-stone-500 dark:text-stone-400 mb-1">模型</div>
+                <div className="text-sm text-stone-900 dark:text-stone-100">{taskDetail.model?.name ?? '-'}</div>
+                <div className="text-xs text-stone-500 dark:text-stone-400 mt-1">
                   {taskDetail.model?.provider ?? '-'} / {taskDetail.model?.modelKey ?? '-'}
                 </div>
               </div>
             </div>
 
-            <div className="rounded-xl border border-stone-200 bg-white p-4">
-              <div className="text-xs text-stone-500 mb-2">
+            <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
+              <div className="text-xs text-stone-500 dark:text-stone-400 mb-2">
                 {taskDetail.task.type === 'research' ? '研究主题' : '提示词'}
               </div>
-              <div className="whitespace-pre-wrap text-sm text-stone-900">{taskDetail.task.prompt}</div>
+              <div className="whitespace-pre-wrap text-sm text-stone-900 dark:text-stone-100">{taskDetail.task.prompt}</div>
             </div>
 
             {taskDetail.task.type === 'research' ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="rounded-xl border border-stone-200 bg-white p-4">
-                  <div className="text-xs text-stone-500 mb-1">阶段</div>
-                  <div className="text-sm text-stone-900">{taskDetail.task.stage ?? '-'}</div>
+                <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
+                  <div className="text-xs text-stone-500 dark:text-stone-400 mb-1">阶段</div>
+                  <div className="text-sm text-stone-900 dark:text-stone-100">{taskDetail.task.stage ?? '-'}</div>
                 </div>
-                <div className="rounded-xl border border-stone-200 bg-white p-4">
-                  <div className="text-xs text-stone-500 mb-1">进度</div>
-                  <div className="text-sm text-stone-900">{taskDetail.task.progress ?? 0}%</div>
+                <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
+                  <div className="text-xs text-stone-500 dark:text-stone-400 mb-1">进度</div>
+                  <div className="text-sm text-stone-900 dark:text-stone-100">{taskDetail.task.progress ?? 0}%</div>
                 </div>
-                <div className="rounded-xl border border-stone-200 bg-white p-4">
-                  <div className="text-xs text-stone-500 mb-1">报告标题</div>
-                  <div className="text-sm text-stone-900">{taskDetail.task.providerData && typeof taskDetail.task.providerData === 'object' && 'reportTitle' in taskDetail.task.providerData ? String(taskDetail.task.providerData.reportTitle ?? '-') : '-'}</div>
+                <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
+                  <div className="text-xs text-stone-500 dark:text-stone-400 mb-1">报告标题</div>
+                  <div className="text-sm text-stone-900 dark:text-stone-100">{taskDetail.task.providerData && typeof taskDetail.task.providerData === 'object' && 'reportTitle' in taskDetail.task.providerData ? String(taskDetail.task.providerData.reportTitle ?? '-') : '-'}</div>
                 </div>
               </div>
             ) : null}
 
             {taskDetail.task.type === 'research' && taskDetail.task.report ? (
-              <div className="rounded-xl border border-stone-200 bg-white p-4">
-                <div className="text-xs text-stone-500 mb-2">研究报告</div>
-                <div className="max-h-[420px] overflow-auto whitespace-pre-wrap text-sm text-stone-900">
+              <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
+                <div className="text-xs text-stone-500 dark:text-stone-400 mb-2">研究报告</div>
+                <div className="max-h-[420px] overflow-auto whitespace-pre-wrap text-sm text-stone-900 dark:text-stone-100">
                   {taskDetail.task.report}
                 </div>
               </div>
             ) : null}
 
             {taskDetail.task.status === 'failed' ? (
-              <div className="rounded-xl border border-red-200 bg-red-50 p-4">
-                <div className="text-xs text-red-700 mb-2">错误信息</div>
-                <div className="whitespace-pre-wrap text-sm text-red-700">{taskDetail.task.errorMessage ?? '-'}</div>
+              <div className="rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/30 p-4">
+                <div className="text-xs text-red-700 dark:text-red-300 mb-2">错误信息</div>
+                <div className="whitespace-pre-wrap text-sm text-red-700 dark:text-red-300">{taskDetail.task.errorMessage ?? '-'}</div>
               </div>
             ) : null}
 
-            <div className="rounded-xl border border-stone-200 bg-white p-4">
+            <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
               <div className="flex items-center justify-between gap-3 mb-2">
-                <div className="text-xs text-stone-500">上游返回（providerData）</div>
+                <div className="text-xs text-stone-500 dark:text-stone-400">上游返回（providerData）</div>
                 <Button
                   variant="secondary"
                   onClick={async () => {
@@ -484,7 +484,7 @@ export default function AdminTasksPage() {
                   复制
                 </Button>
               </div>
-              <pre className="text-xs text-stone-700 bg-stone-50 border border-stone-200 rounded-xl p-4 overflow-auto max-h-[420px]">
+              <pre className="text-xs text-stone-700 dark:text-stone-300 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-4 overflow-auto max-h-[420px]">
                 {JSON.stringify(taskDetail.task.providerData ?? {}, null, 2)}
               </pre>
             </div>

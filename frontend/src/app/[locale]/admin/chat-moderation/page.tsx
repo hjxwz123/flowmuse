@@ -132,7 +132,7 @@ export default function AdminChatModerationPage() {
   return (
     <AdminPageShell title={t('title')} description={t('description')}>
       <FadeIn variant="fade" delay={0.05}>
-        <div className="rounded-2xl border border-stone-200 bg-white p-2 shadow-sm">
+        <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-2 shadow-sm">
           <div className="grid gap-2 sm:grid-cols-2">
             <button
               type="button"
@@ -140,12 +140,12 @@ export default function AdminChatModerationPage() {
               className={cn(
                 'rounded-xl px-4 py-3 text-left transition-colors',
                 activeTab === 'input'
-                  ? 'bg-aurora-purple text-white shadow-sm'
-                  : 'text-stone-700 hover:bg-stone-100'
+                  ? 'bg-aurora-purple text-stone-50 shadow-sm'
+                  : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'
               )}
             >
               <p className="text-sm font-semibold">{t('tabs.input')}</p>
-              <p className={cn('mt-1 text-xs', activeTab === 'input' ? 'text-white/80' : 'text-stone-500')}>
+              <p className={cn('mt-1 text-xs', activeTab === 'input' ? 'text-stone-50/80' : 'text-stone-500 dark:text-stone-400')}>
                 {t('tabs.inputDesc')}
               </p>
             </button>
@@ -155,12 +155,12 @@ export default function AdminChatModerationPage() {
               className={cn(
                 'rounded-xl px-4 py-3 text-left transition-colors',
                 activeTab === 'content'
-                  ? 'bg-aurora-purple text-white shadow-sm'
-                  : 'text-stone-700 hover:bg-stone-100'
+                  ? 'bg-aurora-purple text-stone-50 shadow-sm'
+                  : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'
               )}
             >
               <p className="text-sm font-semibold">{t('tabs.content')}</p>
-              <p className={cn('mt-1 text-xs', activeTab === 'content' ? 'text-white/80' : 'text-stone-500')}>
+              <p className={cn('mt-1 text-xs', activeTab === 'content' ? 'text-stone-50/80' : 'text-stone-500 dark:text-stone-400')}>
                 {t('tabs.contentDesc')}
               </p>
             </button>
@@ -173,10 +173,10 @@ export default function AdminChatModerationPage() {
       ) : (
         <>
           <FadeIn variant="fade" delay={0.08}>
-            <div className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+            <div className="grid gap-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 shadow-sm">
               <div className="grid gap-4 md:grid-cols-[1fr_auto]">
                 <div className="relative">
-                  <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
+                  <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-stone-400 dark:text-stone-500" />
                   <input
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
@@ -187,7 +187,7 @@ export default function AdminChatModerationPage() {
                     }}
                     placeholder={t('searchPlaceholder')}
                     className={cn(
-                      'w-full rounded-xl border border-stone-200 px-9 py-2.5 text-sm text-stone-900',
+                      'w-full rounded-xl border border-stone-200 dark:border-stone-800 px-9 py-2.5 text-sm text-stone-900 dark:text-stone-100',
                       'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
                     )}
                   />
@@ -206,7 +206,7 @@ export default function AdminChatModerationPage() {
                   </Button>
                   <button
                     type="button"
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-100"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800"
                     onClick={() => void load()}
                     title={t('refresh')}
                   >
@@ -227,8 +227,8 @@ export default function AdminChatModerationPage() {
                     className={cn(
                       'rounded-full border px-3 py-1.5 text-sm transition-colors',
                       source === option.value
-                        ? 'border-aurora-purple bg-aurora-purple text-white'
-                        : 'border-stone-200 text-stone-600 hover:bg-stone-100'
+                        ? 'border-aurora-purple bg-aurora-purple text-stone-50'
+                        : 'border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
                     )}
                   >
                     {option.label}
@@ -239,15 +239,15 @@ export default function AdminChatModerationPage() {
           </FadeIn>
 
           <FadeIn variant="fade" delay={0.12}>
-            <div className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
-              <div className="border-b border-stone-200 px-5 py-4">
-                <p className="text-sm font-medium text-stone-800">{t('total', { total })}</p>
+            <div className="overflow-hidden rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 shadow-sm">
+              <div className="border-b border-stone-200 dark:border-stone-800 px-5 py-4">
+                <p className="text-sm font-medium text-stone-800 dark:text-stone-200">{t('total', { total })}</p>
               </div>
 
               {loading ? (
-                <div className="px-5 py-16 text-center text-sm text-stone-500">{t('loading')}</div>
+                <div className="px-5 py-16 text-center text-sm text-stone-500 dark:text-stone-400">{t('loading')}</div>
               ) : items.length === 0 ? (
-                <div className="px-5 py-16 text-center text-sm text-stone-500">{t('empty')}</div>
+                <div className="px-5 py-16 text-center text-sm text-stone-500 dark:text-stone-400">{t('empty')}</div>
               ) : (
                 <div className="divide-y divide-stone-200">
                   {items.map((item) => (
@@ -257,20 +257,20 @@ export default function AdminChatModerationPage() {
                           className={cn(
                             'rounded-full px-2.5 py-1 text-[11px] font-semibold',
                             item.source === 'chat'
-                              ? 'bg-blue-100 text-blue-700'
+                              ? 'bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
                               : item.source === 'image_generate'
-                              ? 'bg-emerald-100 text-emerald-700'
+                              ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
                               : 'bg-amber-100 text-amber-800'
                           )}
                         >
                           {renderSourceLabel(item.source)}
                         </span>
-                        <span className="rounded-full bg-stone-100 px-2.5 py-1 text-[11px] font-medium text-stone-600">
+                        <span className="rounded-full bg-stone-100 dark:bg-stone-800 px-2.5 py-1 text-[11px] font-medium text-stone-600 dark:text-stone-400">
                           {renderSceneLabel(item.scene)}
                         </span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-stone-500">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-stone-500 dark:text-stone-400">
                         <span>
                           {t('fields.user')}: {item.user.username || item.user.email}
                         </span>
@@ -294,9 +294,9 @@ export default function AdminChatModerationPage() {
                         </span>
                       </div>
 
-                      <div className="rounded-xl border border-stone-200 bg-stone-50 p-3">
-                        <p className="mb-1 text-xs font-medium text-stone-500">{t('fields.content')}</p>
-                        <p className="whitespace-pre-wrap break-words text-sm text-stone-900">{item.content}</p>
+                      <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-3">
+                        <p className="mb-1 text-xs font-medium text-stone-500 dark:text-stone-400">{t('fields.content')}</p>
+                        <p className="whitespace-pre-wrap break-words text-sm text-stone-900 dark:text-stone-100">{item.content}</p>
                       </div>
 
                       {(item.providerResponse || item.reason) && (
@@ -312,12 +312,12 @@ export default function AdminChatModerationPage() {
                 </div>
               )}
 
-              <div className="flex items-center justify-between border-t border-stone-200 px-4 py-3 text-xs text-stone-500">
+              <div className="flex items-center justify-between border-t border-stone-200 dark:border-stone-800 px-4 py-3 text-xs text-stone-500 dark:text-stone-400">
                 <button
                   type="button"
                   onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                   disabled={page <= 1}
-                  className="rounded-md border border-stone-200 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border border-stone-200 dark:border-stone-800 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t('paginationPrev')}
                 </button>
@@ -328,7 +328,7 @@ export default function AdminChatModerationPage() {
                   type="button"
                   onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
                   disabled={page >= totalPages}
-                  className="rounded-md border border-stone-200 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md border border-stone-200 dark:border-stone-800 px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t('paginationNext')}
                 </button>

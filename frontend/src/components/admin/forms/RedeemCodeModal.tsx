@@ -184,7 +184,7 @@ export function RedeemCodeModal({
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('form.typeLabel')} <span className="text-red-500">*</span>
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -198,7 +198,7 @@ export function RedeemCodeModal({
                   'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all',
                   type === itemType
                     ? 'border-aurora-purple bg-aurora-purple/10 text-aurora-purple'
-                    : 'border-stone-200 bg-white text-stone-600 hover:border-aurora-purple/30',
+                    : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-aurora-purple/30',
                   isEditMode && 'opacity-50 cursor-not-allowed'
                 )}
               >
@@ -209,7 +209,7 @@ export function RedeemCodeModal({
         </div>
 
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('form.codeLabel')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -218,29 +218,29 @@ export function RedeemCodeModal({
             onChange={(e) => setCode(e.target.value)}
             placeholder="SPRING2026"
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-mono text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-mono text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
             required
           />
-          <p className="text-xs text-stone-500 mt-1">{t('form.codeHint')}</p>
+          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">{t('form.codeHint')}</p>
         </div>
 
         {type === 'membership' && (
           <>
             <div>
-              <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+              <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                 会员等级 <span className="text-red-500">*</span>
               </label>
               <select
                 value={membershipLevelId}
                 onChange={(e) => setMembershipLevelId(e.target.value)}
                 className={cn(
-                  'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                  'font-ui text-sm text-stone-900',
+                  'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                  'font-ui text-sm text-stone-900 dark:text-stone-100',
                   'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                   'transition-colors'
                 )}
@@ -255,21 +255,21 @@ export function RedeemCodeModal({
                 ))}
               </select>
               {loadingMemberships && (
-                <p className="text-xs text-stone-500 mt-1">加载会员等级中...</p>
+                <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">加载会员等级中...</p>
               )}
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   会员周期 <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={membershipPeriod}
                   onChange={(e) => setMembershipPeriod(e.target.value as MembershipPeriod)}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -280,7 +280,7 @@ export function RedeemCodeModal({
               </div>
 
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   会员期数 <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -289,8 +289,8 @@ export function RedeemCodeModal({
                   value={membershipCycles}
                   onChange={(e) => setMembershipCycles(e.target.value)}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -303,7 +303,7 @@ export function RedeemCodeModal({
 
         {type === 'credits' && (
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('form.creditsLabel')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -313,9 +313,9 @@ export function RedeemCodeModal({
               onChange={(e) => setCredits(e.target.value)}
               placeholder="100"
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
-                'placeholder:text-stone-400',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
+                'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
@@ -325,7 +325,7 @@ export function RedeemCodeModal({
         )}
 
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('form.maxUsesLabel')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -334,8 +334,8 @@ export function RedeemCodeModal({
             value={maxUseCount}
             onChange={(e) => setMaxUseCount(e.target.value)}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
@@ -344,7 +344,7 @@ export function RedeemCodeModal({
         </div>
 
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('form.expiryLabel')}
           </label>
           <input
@@ -352,17 +352,17 @@ export function RedeemCodeModal({
             value={expireDate}
             onChange={(e) => setExpireDate(e.target.value)}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors'
             )}
           />
-          <p className="text-xs text-stone-500 mt-1">留空表示永不过期</p>
+          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">留空表示永不过期</p>
         </div>
 
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('fields.description')}
           </label>
           <textarea
@@ -371,9 +371,9 @@ export function RedeemCodeModal({
             rows={2}
             placeholder="备注信息"
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors',
               'resize-none'
@@ -383,15 +383,15 @@ export function RedeemCodeModal({
 
         {isEditMode && (
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.status')}
             </label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as RedeemCodeStatus)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
@@ -404,7 +404,7 @@ export function RedeemCodeModal({
         )}
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <div className="rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/30 px-3 py-2 text-sm text-red-700 dark:text-red-300">
             {error}
           </div>
         )}

@@ -119,7 +119,7 @@ export default function AdminAnnouncementsPage() {
       actions={
         <Button
           onClick={handleCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-stone-50 rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-4 h-4" />
           创建公告
@@ -129,27 +129,27 @@ export default function AdminAnnouncementsPage() {
     >
 
       {announcements.length === 0 ? (
-        <Card className="border border-stone-200 !bg-white p-12 text-center !shadow-sm">
-          <p className="text-stone-400">暂无公告</p>
+        <Card className="border border-stone-200 dark:border-stone-800 !bg-stone-50 dark:!bg-stone-900 p-12 text-center !shadow-sm">
+          <p className="text-stone-400 dark:text-stone-500">暂无公告</p>
         </Card>
       ) : (
         <div className="space-y-3">
           {announcements.map((announcement) => (
-            <Card key={announcement.id} className="border border-stone-200 !bg-white p-4 !shadow-sm">
+            <Card key={announcement.id} className="border border-stone-200 dark:border-stone-800 !bg-stone-50 dark:!bg-stone-900 p-4 !shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
                     {announcement.isPinned && (
                       <Pin className="w-4 h-4 text-orange-500 flex-shrink-0" />
                     )}
-                    <h3 className="font-semibold text-stone-900 truncate">
+                    <h3 className="font-semibold text-stone-900 dark:text-stone-100 truncate">
                       {announcement.title}
                     </h3>
                     <span
                       className={`flex-shrink-0 px-2 py-0.5 text-xs rounded-full ${
                         announcement.isActive
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-700'
+                          ? 'bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300'
+                          : 'bg-gray-100 dark:bg-gray-950/40 text-gray-700 dark:text-gray-300'
                       }`}
                     >
                       {announcement.isActive ? (
@@ -163,10 +163,10 @@ export default function AdminAnnouncementsPage() {
                       )}
                     </span>
                   </div>
-                  <p className="text-sm text-stone-600 line-clamp-2 mb-2 whitespace-pre-wrap">
+                  <p className="text-sm text-stone-600 dark:text-stone-400 line-clamp-2 mb-2 whitespace-pre-wrap">
                     {stripHtml(announcement.content)}
                   </p>
-                  <div className="flex items-center gap-4 text-xs text-stone-400">
+                  <div className="flex items-center gap-4 text-xs text-stone-400 dark:text-stone-500">
                     <span>创建：{formatDate(announcement.createdAt)}</span>
                     <span>排序：{announcement.sortOrder}</span>
                   </div>
@@ -174,13 +174,13 @@ export default function AdminAnnouncementsPage() {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={() => handleEdit(announcement)}
-                    className="p-2 text-stone-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    className="p-2 text-stone-600 dark:text-stone-400 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-lg transition-colors"
                   >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(announcement.id)}
-                    className="p-2 text-stone-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-stone-600 dark:text-stone-400 hover:text-red-600 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -199,11 +199,11 @@ export default function AdminAnnouncementsPage() {
               setPagination((prev) => ({ ...prev, page: Math.max(1, prev.page - 1) }))
             }
             disabled={pagination.page === 1}
-            className="px-4 py-2 border border-stone-300 text-stone-700 rounded-lg hover:bg-stone-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             上一页
           </Button>
-          <span className="text-sm text-stone-600">
+          <span className="text-sm text-stone-600 dark:text-stone-400">
             第 {pagination.page} / {pagination.totalPages} 页
           </span>
           <Button
@@ -214,7 +214,7 @@ export default function AdminAnnouncementsPage() {
               }))
             }
             disabled={pagination.page >= pagination.totalPages}
-            className="px-4 py-2 border border-stone-300 text-stone-700 rounded-lg hover:bg-stone-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             下一页
           </Button>

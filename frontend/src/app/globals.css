@@ -16,6 +16,15 @@
   --aurora-purple-hover: var(--aurora-purple-hover-light);
   --aurora-on-primary: var(--aurora-on-primary-light);
   --aurora-shadow: var(--aurora-shadow-light);
+  --admin-page-rgb: 245 245 244;
+  --admin-surface-rgb: 250 250 249;
+  --admin-surface-muted-rgb: 245 245 244;
+  --admin-control-rgb: 250 250 249;
+  --admin-border-rgb: 214 211 209;
+  --admin-text-rgb: 28 25 23;
+  --admin-muted-rgb: 87 83 78;
+  --admin-placeholder-rgb: 168 162 158;
+  --admin-shadow-rgb: 68 64 60;
 }
 
 /* Canvas Design System - 基础样式 */
@@ -32,6 +41,15 @@
     --aurora-purple-hover: var(--aurora-purple-hover-dark);
     --aurora-on-primary: var(--aurora-on-primary-dark);
     --aurora-shadow: var(--aurora-shadow-dark);
+    --admin-page-rgb: 12 10 9;
+    --admin-surface-rgb: 28 25 23;
+    --admin-surface-muted-rgb: 41 37 36;
+    --admin-control-rgb: 28 25 23;
+    --admin-border-rgb: 68 64 60;
+    --admin-text-rgb: 245 245 244;
+    --admin-muted-rgb: 168 162 158;
+    --admin-placeholder-rgb: 120 113 108;
+    --admin-shadow-rgb: 12 10 9;
   }
 
   html[data-darkreader-scheme='dark'] {
@@ -40,6 +58,15 @@
     --aurora-purple-hover: var(--aurora-purple-hover-dark);
     --aurora-on-primary: var(--aurora-on-primary-dark);
     --aurora-shadow: var(--aurora-shadow-dark);
+    --admin-page-rgb: 12 10 9;
+    --admin-surface-rgb: 28 25 23;
+    --admin-surface-muted-rgb: 41 37 36;
+    --admin-control-rgb: 28 25 23;
+    --admin-border-rgb: 68 64 60;
+    --admin-text-rgb: 245 245 244;
+    --admin-muted-rgb: 168 162 158;
+    --admin-placeholder-rgb: 120 113 108;
+    --admin-shadow-rgb: 12 10 9;
   }
 
   body {
@@ -122,6 +149,36 @@
   .theme-tab-trigger[data-state='active']:hover {
     background-color: rgb(var(--aurora-purple-hover) / 1) !important;
     color: rgb(var(--aurora-on-primary) / 1) !important;
+  }
+
+  .admin-theme {
+    background-color: rgb(var(--admin-page-rgb) / 1);
+    color: rgb(var(--admin-text-rgb) / 1);
+  }
+
+  .admin-theme input:not([type='checkbox']):not([type='radio']):not([type='color']),
+  .admin-theme select,
+  .admin-theme textarea {
+    background-color: rgb(var(--admin-control-rgb) / 1);
+    border-color: rgb(var(--admin-border-rgb) / 1);
+    color: rgb(var(--admin-text-rgb) / 1);
+  }
+
+  .admin-theme input::placeholder,
+  .admin-theme textarea::placeholder {
+    color: rgb(var(--admin-placeholder-rgb) / 1);
+  }
+
+  .admin-theme select option {
+    background-color: rgb(var(--admin-control-rgb) / 1);
+    color: rgb(var(--admin-text-rgb) / 1);
+  }
+
+  .admin-theme input[type='checkbox'],
+  .admin-theme input[type='radio'] {
+    background-color: rgb(var(--admin-control-rgb) / 1);
+    border-color: rgb(var(--admin-border-rgb) / 1);
+    color: rgb(var(--aurora-purple) / 1);
   }
 
   /* 极光背景 */

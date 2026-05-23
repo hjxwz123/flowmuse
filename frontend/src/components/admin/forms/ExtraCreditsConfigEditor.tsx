@@ -361,13 +361,13 @@ export function ExtraCreditsConfigEditor({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-2 rounded-xl border border-stone-200 bg-stone-50/60 p-4">
+      <div className="flex flex-col gap-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/60 p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300">
               额外积分规则
             </label>
-            <p className="mt-1 text-xs leading-5 text-stone-500">
+            <p className="mt-1 text-xs leading-5 text-stone-500 dark:text-stone-400">
               先固定一组条件，再集中编辑某个参数下的价格表。保存时会自动展开成兼容后端的规则数组。
             </p>
           </div>
@@ -376,7 +376,7 @@ export function ExtraCreditsConfigEditor({
             onClick={handleAddGroup}
             disabled={disabled}
             className={cn(
-              'rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-sm font-medium text-stone-700 transition-colors',
+              'rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-1.5 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors',
               'hover:border-aurora-purple hover:text-aurora-purple',
               disabled && 'cursor-not-allowed opacity-50',
             )}
@@ -393,14 +393,14 @@ export function ExtraCreditsConfigEditor({
       </datalist>
 
       {groups.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-stone-300 bg-white p-5">
+        <div className="rounded-xl border border-dashed border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 p-5">
           <button
             type="button"
             onClick={handleAddGroup}
             disabled={disabled}
             className={cn(
-              'w-full rounded-lg bg-stone-100 px-4 py-2.5 text-sm font-medium text-stone-700 transition-colors',
-              'hover:bg-stone-200',
+              'w-full rounded-lg bg-stone-100 dark:bg-stone-800 px-4 py-2.5 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors',
+              'hover:bg-stone-200 dark:hover:bg-stone-700',
               disabled && 'cursor-not-allowed opacity-50',
             )}
           >
@@ -412,19 +412,19 @@ export function ExtraCreditsConfigEditor({
       {groups.map((group, groupIndex) => (
         <div
           key={`extra-credit-group-${groupIndex}`}
-          className="space-y-4 rounded-2xl border border-stone-200 bg-white p-4 shadow-[0_14px_36px_-32px_rgba(15,23,42,0.35)]"
+          className="space-y-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 shadow-[0_14px_36px_-32px_rgba(15,23,42,0.35)]"
         >
           <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1 space-y-1">
               <div className="flex min-w-0 flex-wrap items-start gap-2">
-                <span className="inline-flex rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-medium text-stone-700">
+                <span className="inline-flex rounded-full border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-2.5 py-1 text-xs font-medium text-stone-700 dark:text-stone-300">
                   条件组 {groupIndex + 1}
                 </span>
-                <span className="inline-flex max-w-full min-w-0 break-all whitespace-normal rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs text-stone-500">
+                <span className="inline-flex max-w-full min-w-0 break-all whitespace-normal rounded-full border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-2.5 py-1 text-xs text-stone-500 dark:text-stone-400">
                   固定条件：{summarizeFixedConditions(group.fixedConditions)}
                 </span>
               </div>
-              <p className="min-w-0 break-words text-xs leading-5 text-stone-500">
+              <p className="min-w-0 break-words text-xs leading-5 text-stone-500 dark:text-stone-400">
                 这组中的每一行都会生成一条规则：固定条件 + {group.variableParameter.trim() || '浮动参数'} = 对应积分。
               </p>
             </div>
@@ -435,7 +435,7 @@ export function ExtraCreditsConfigEditor({
                 onClick={() => handleCopyGroup(groupIndex)}
                 disabled={disabled}
                 className={cn(
-                  'rounded-lg border border-stone-200 px-3 py-1.5 text-sm font-medium text-stone-700 transition-colors',
+                  'rounded-lg border border-stone-200 dark:border-stone-800 px-3 py-1.5 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors',
                   'hover:border-aurora-purple hover:text-aurora-purple',
                   disabled && 'cursor-not-allowed opacity-50',
                 )}
@@ -447,8 +447,8 @@ export function ExtraCreditsConfigEditor({
                 onClick={() => handleRemoveGroup(groupIndex)}
                 disabled={disabled}
                 className={cn(
-                  'rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors',
-                  'hover:bg-red-50',
+                  'rounded-lg border border-red-200 dark:border-red-900/60 px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-300 transition-colors',
+                  'hover:bg-red-50 dark:hover:bg-red-950/30',
                   disabled && 'cursor-not-allowed opacity-50',
                 )}
               >
@@ -458,9 +458,9 @@ export function ExtraCreditsConfigEditor({
           </div>
 
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1.9fr)]">
-            <div className="min-w-0 space-y-4 rounded-xl border border-stone-200 bg-stone-50/70 p-4">
+            <div className="min-w-0 space-y-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 p-4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-stone-700">
+                <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
                   浮动参数
                 </label>
                 <input
@@ -470,13 +470,13 @@ export function ExtraCreditsConfigEditor({
                   onChange={(event) => handleVariableParameterChange(groupIndex, event.target.value)}
                   disabled={disabled}
                   placeholder="例如：duration"
-                  className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                  className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
                 />
               </div>
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
-                  <label className="text-sm font-medium text-stone-700">
+                  <label className="text-sm font-medium text-stone-700 dark:text-stone-300">
                     固定条件
                   </label>
                   <button
@@ -484,7 +484,7 @@ export function ExtraCreditsConfigEditor({
                     onClick={() => handleAddFixedCondition(groupIndex)}
                     disabled={disabled}
                     className={cn(
-                      'rounded-lg border border-stone-200 px-3 py-1.5 text-sm font-medium text-stone-700 transition-colors',
+                      'rounded-lg border border-stone-200 dark:border-stone-800 px-3 py-1.5 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors',
                       'hover:border-aurora-purple hover:text-aurora-purple',
                       disabled && 'cursor-not-allowed opacity-50',
                     )}
@@ -494,7 +494,7 @@ export function ExtraCreditsConfigEditor({
                 </div>
 
                 {group.fixedConditions.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-stone-300 bg-white px-3 py-3 text-xs text-stone-500">
+                  <div className="rounded-lg border border-dashed border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-3 py-3 text-xs text-stone-500 dark:text-stone-400">
                     当前没有固定条件。适合做“所有时长统一按秒计费”这类规则。
                   </div>
                 ) : null}
@@ -513,7 +513,7 @@ export function ExtraCreditsConfigEditor({
                       }
                       disabled={disabled}
                       placeholder="参数名"
-                      className="min-w-0 rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
                     />
                     <input
                       type="text"
@@ -523,15 +523,15 @@ export function ExtraCreditsConfigEditor({
                       }
                       disabled={disabled}
                       placeholder="参数值"
-                      className="min-w-0 rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
                     />
                     <button
                       type="button"
                       onClick={() => handleRemoveFixedCondition(groupIndex, conditionIndex)}
                       disabled={disabled}
                       className={cn(
-                        'justify-self-start rounded-lg border border-stone-200 px-3 py-2 text-sm font-medium text-stone-600 transition-colors',
-                        'hover:border-red-200 hover:text-red-600',
+                        'justify-self-start rounded-lg border border-stone-200 dark:border-stone-800 px-3 py-2 text-sm font-medium text-stone-600 dark:text-stone-400 transition-colors',
+                        'hover:border-red-200 dark:hover:border-red-800 hover:text-red-600 dark:hover:text-red-300',
                         disabled && 'cursor-not-allowed opacity-50',
                       )}
                     >
@@ -542,13 +542,13 @@ export function ExtraCreditsConfigEditor({
               </div>
             </div>
 
-            <div className="min-w-0 space-y-4 rounded-xl border border-stone-200 bg-stone-50/70 p-4">
+            <div className="min-w-0 space-y-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 p-4">
               <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-stone-700">
+                  <p className="text-sm font-medium text-stone-700 dark:text-stone-300">
                     价格表
                   </p>
-                  <p className="mt-1 min-w-0 break-words text-xs leading-5 text-stone-500">
+                  <p className="mt-1 min-w-0 break-words text-xs leading-5 text-stone-500 dark:text-stone-400">
                     在固定条件不变的情况下，逐个填写 {group.variableParameter.trim() || '参数'} 的值与对应积分。
                   </p>
                 </div>
@@ -557,7 +557,7 @@ export function ExtraCreditsConfigEditor({
                   onClick={() => handleAddItem(groupIndex)}
                   disabled={disabled}
                   className={cn(
-                    'rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-sm font-medium text-stone-700 transition-colors',
+                    'rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-1.5 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors',
                     'hover:border-aurora-purple hover:text-aurora-purple',
                     disabled && 'cursor-not-allowed opacity-50',
                   )}
@@ -567,11 +567,11 @@ export function ExtraCreditsConfigEditor({
               </div>
 
               {group.variableParameter.trim() === 'duration' ? (
-                <div className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
+                <div className="rounded-xl border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/60 dark:bg-indigo-950/20 p-4">
                   <div className="flex min-w-0 flex-col gap-3 xl:flex-row xl:items-end">
                     <div className="grid min-w-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-3">
                       <div>
-                        <label className="mb-2 block text-xs font-medium text-stone-600">
+                        <label className="mb-2 block text-xs font-medium text-stone-600 dark:text-stone-400">
                           起始秒数
                         </label>
                         <input
@@ -583,11 +583,11 @@ export function ExtraCreditsConfigEditor({
                             handleDurationPricingFieldChange(groupIndex, 'start', event.target.value)
                           }
                           disabled={disabled}
-                          className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                          className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
                         />
                       </div>
                       <div>
-                        <label className="mb-2 block text-xs font-medium text-stone-600">
+                        <label className="mb-2 block text-xs font-medium text-stone-600 dark:text-stone-400">
                           结束秒数
                         </label>
                         <input
@@ -599,11 +599,11 @@ export function ExtraCreditsConfigEditor({
                             handleDurationPricingFieldChange(groupIndex, 'end', event.target.value)
                           }
                           disabled={disabled}
-                          className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                          className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
                         />
                       </div>
                       <div>
-                        <label className="mb-2 block text-xs font-medium text-stone-600">
+                        <label className="mb-2 block text-xs font-medium text-stone-600 dark:text-stone-400">
                           每秒积分
                         </label>
                         <input
@@ -616,7 +616,7 @@ export function ExtraCreditsConfigEditor({
                           }
                           disabled={disabled}
                           placeholder="例如：2"
-                          className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                          className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
                         />
                       </div>
                     </div>
@@ -625,22 +625,22 @@ export function ExtraCreditsConfigEditor({
                       onClick={() => handleGenerateDurationItems(groupIndex)}
                       disabled={disabled || !isDurationPricingReady(group)}
                       className={cn(
-                        'rounded-lg border border-indigo-200 bg-white px-4 py-2 text-sm font-medium text-indigo-700 transition-colors',
-                        'hover:border-indigo-300 hover:bg-indigo-100/70',
+                        'rounded-lg border border-indigo-200 dark:border-indigo-900/60 bg-stone-50 dark:bg-stone-900 px-4 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 transition-colors',
+                        'hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-100 dark:hover:bg-indigo-900/40/70',
                         (disabled || !isDurationPricingReady(group)) && 'cursor-not-allowed opacity-50',
                       )}
                     >
                       按每秒积分生成
                     </button>
                   </div>
-                  <p className="mt-3 text-xs leading-5 text-stone-500">
+                  <p className="mt-3 text-xs leading-5 text-stone-500 dark:text-stone-400">
                     会把区间内每一秒自动生成或覆盖成“时长秒数 × 每秒积分”。例如每秒 2 积分，则 5 秒为 10 积分、8 秒为 16 积分。
                   </p>
                 </div>
               ) : null}
 
               <div className="space-y-2">
-                <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)_auto] gap-2 px-1 text-xs font-medium uppercase tracking-[0.08em] text-stone-500">
+                <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)_auto] gap-2 px-1 text-xs font-medium uppercase tracking-[0.08em] text-stone-500 dark:text-stone-400">
                   <span>{group.variableParameter.trim() || '参数值'}</span>
                   <span>积分</span>
                   <span>操作</span>
@@ -657,7 +657,7 @@ export function ExtraCreditsConfigEditor({
                       onChange={(event) => handleItemChange(groupIndex, itemIndex, 'value', event.target.value)}
                       disabled={disabled}
                       placeholder={resolveValuePlaceholder(group.variableParameter)}
-                      className="min-w-0 rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
                     />
                     <input
                       type="number"
@@ -666,7 +666,7 @@ export function ExtraCreditsConfigEditor({
                       value={Number.isFinite(item.credits) ? item.credits : 0}
                       onChange={(event) => handleItemChange(groupIndex, itemIndex, 'credits', event.target.value)}
                       disabled={disabled}
-                      className="min-w-0 rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
                     />
                     <div className="flex flex-wrap items-center gap-2">
                       <button
@@ -674,7 +674,7 @@ export function ExtraCreditsConfigEditor({
                         onClick={() => handleCopyItem(groupIndex, itemIndex)}
                         disabled={disabled}
                         className={cn(
-                          'rounded-lg border border-stone-200 px-2.5 py-2 text-xs font-medium text-stone-600 transition-colors',
+                          'rounded-lg border border-stone-200 dark:border-stone-800 px-2.5 py-2 text-xs font-medium text-stone-600 dark:text-stone-400 transition-colors',
                           'hover:border-aurora-purple hover:text-aurora-purple',
                           disabled && 'cursor-not-allowed opacity-50',
                         )}
@@ -686,8 +686,8 @@ export function ExtraCreditsConfigEditor({
                         onClick={() => handleRemoveItem(groupIndex, itemIndex)}
                         disabled={disabled}
                         className={cn(
-                          'rounded-lg border border-stone-200 px-2.5 py-2 text-xs font-medium text-stone-600 transition-colors',
-                          'hover:border-red-200 hover:text-red-600',
+                          'rounded-lg border border-stone-200 dark:border-stone-800 px-2.5 py-2 text-xs font-medium text-stone-600 dark:text-stone-400 transition-colors',
+                          'hover:border-red-200 dark:hover:border-red-800 hover:text-red-600 dark:hover:text-red-300',
                           disabled && 'cursor-not-allowed opacity-50',
                         )}
                       >

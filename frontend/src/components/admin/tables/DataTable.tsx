@@ -65,19 +65,19 @@ export function DataTable<T>({
   return (
     <div
       className={cn(
-        'rounded-2xl bg-white/80 backdrop-blur-sm border border-stone-200 shadow-canvas overflow-hidden',
+        'rounded-2xl bg-stone-50/80 dark:bg-stone-900/80 backdrop-blur-sm border border-stone-200 dark:border-stone-800 shadow-canvas overflow-hidden',
         className
       )}
     >
       <Table>
-        <TableHeader className="bg-stone-50">
+        <TableHeader className="bg-stone-50 dark:bg-stone-900">
           <TableRow>
             {columns.map((column) => (
               <TableHead
                 key={column.key}
                 style={{ width: column.width }}
                 className={cn(
-                  'font-ui text-sm font-semibold text-stone-700',
+                  'font-ui text-sm font-semibold text-stone-700 dark:text-stone-300',
                   column.align === 'center' && 'text-center',
                   column.align === 'right' && 'text-right',
                   column.sortable && 'cursor-pointer hover:text-aurora-purple',
@@ -130,7 +130,7 @@ export function DataTable<T>({
               >
                 <div className="flex flex-col items-center justify-center gap-3">
                   <svg
-                    className="h-12 w-12 text-stone-400"
+                    className="h-12 w-12 text-stone-400 dark:text-stone-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -142,7 +142,7 @@ export function DataTable<T>({
                       d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
                     />
                   </svg>
-                  <p className="font-ui text-sm text-stone-500">{emptyText}</p>
+                  <p className="font-ui text-sm text-stone-500 dark:text-stone-400">{emptyText}</p>
                 </div>
               </TableCell>
             </TableRow>
@@ -150,13 +150,13 @@ export function DataTable<T>({
             data.map((item, index) => (
               <TableRow
                 key={keyExtractor(item)}
-                className="hover:bg-stone-50/50 transition-colors"
+                className="hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors"
               >
                 {columns.map((column) => (
                   <TableCell
                     key={column.key}
                     className={cn(
-                      'font-ui text-sm text-stone-700',
+                      'font-ui text-sm text-stone-700 dark:text-stone-300',
                       column.align === 'center' && 'text-center',
                       column.align === 'right' && 'text-right'
                     )}

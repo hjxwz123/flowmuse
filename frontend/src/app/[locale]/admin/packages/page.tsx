@@ -112,9 +112,9 @@ export default function AdminPackagesPage() {
         width: '200px',
         render: (pkg) => (
           <div className="flex flex-col">
-            <span className="font-medium text-stone-900">{pkg.name}</span>
+            <span className="font-medium text-stone-900 dark:text-stone-100">{pkg.name}</span>
             {pkg.description && (
-              <span className="text-xs text-stone-500 mt-0.5">
+              <span className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                 {pkg.description}
               </span>
             )}
@@ -125,7 +125,7 @@ export default function AdminPackagesPage() {
         key: 'packageType',
         label: '类型',
         width: '100px',
-        render: () => <span className="text-stone-900">永久积分包</span>,
+        render: () => <span className="text-stone-900 dark:text-stone-100">永久积分包</span>,
       },
       {
         key: 'credits',
@@ -134,7 +134,7 @@ export default function AdminPackagesPage() {
         align: 'right',
         render: (pkg) => (
           <div className="flex flex-col items-end">
-            <span className="font-medium text-stone-900">
+            <span className="font-medium text-stone-900 dark:text-stone-100">
               {pkg.totalCredits.toLocaleString()} 点
             </span>
           </div>
@@ -151,7 +151,7 @@ export default function AdminPackagesPage() {
               ¥{parseFloat(pkg.price).toFixed(2)}
             </span>
             {pkg.originalPrice && (
-              <span className="text-xs text-stone-400 line-through">
+              <span className="text-xs text-stone-400 dark:text-stone-500 line-through">
                 ¥{parseFloat(pkg.originalPrice).toFixed(2)}
               </span>
             )}
@@ -175,7 +175,7 @@ export default function AdminPackagesPage() {
         width: '80px',
         align: 'center',
         render: (pkg) => (
-          <span className="text-stone-600">{pkg.sortOrder}</span>
+          <span className="text-stone-600 dark:text-stone-400">{pkg.sortOrder}</span>
         ),
       },
       {
@@ -191,8 +191,8 @@ export default function AdminPackagesPage() {
                 'rounded-lg px-3 py-1.5 font-ui text-xs font-medium',
                 'transition-colors duration-300',
                 pkg.isActive
-                  ? 'bg-stone-100 text-stone-600 hover:bg-stone-200'
-                  : 'bg-green-100 text-green-700 hover:bg-green-200'
+                  ? 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700'
+                  : 'bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50'
               )}
             >
               {pkg.isActive ? '禁用' : '启用'}
@@ -213,8 +213,8 @@ export default function AdminPackagesPage() {
               disabled={deletingId === pkg.id}
               className={cn(
                 'rounded-lg px-3 py-1.5 font-ui text-xs font-medium',
-                'bg-red-100 text-red-700',
-                'hover:bg-red-200',
+                'bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300',
+                'hover:bg-red-200 dark:hover:bg-red-900/50',
                 'disabled:opacity-50 disabled:cursor-not-allowed',
                 'transition-colors duration-300'
               )}

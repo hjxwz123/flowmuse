@@ -76,7 +76,7 @@ export const AnnouncementEditor = ({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-2">
+          <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             标题 <span className="text-red-500">*</span>
           </label>
           <input
@@ -84,29 +84,29 @@ export const AnnouncementEditor = ({
             required
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-stone-300 dark:border-stone-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="输入公告标题"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-2">
+          <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             内容 <span className="text-red-500">*</span>
           </label>
           <textarea
             required
             value={formData.content}
             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[200px]"
+            className="w-full px-4 py-2 border border-stone-300 dark:border-stone-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[200px]"
             placeholder="输入公告内容（支持 HTML，可嵌入 iframe/img/a 等）"
           />
-          <p className="text-xs text-stone-500 mt-2">
-            支持 HTML 渲染；纯文本换行会保留，使用 HTML 时建议用 <code className="px-1 py-0.5 bg-stone-100 rounded">{'<br />'}</code> 或 <code className="px-1 py-0.5 bg-stone-100 rounded">{'<p>'}</code> 控制排版
+          <p className="text-xs text-stone-500 dark:text-stone-400 mt-2">
+            支持 HTML 渲染；纯文本换行会保留，使用 HTML 时建议用 <code className="px-1 py-0.5 bg-stone-100 dark:bg-stone-800 rounded">{'<br />'}</code> 或 <code className="px-1 py-0.5 bg-stone-100 dark:bg-stone-800 rounded">{'<p>'}</code> 控制排版
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-stone-700 mb-2">
+          <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             排序顺序
           </label>
           <input
@@ -115,9 +115,9 @@ export const AnnouncementEditor = ({
             onChange={(e) =>
               setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })
             }
-            className="w-full px-4 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-stone-300 dark:border-stone-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
-          <p className="text-xs text-stone-500 mt-1">数字越小越靠前</p>
+          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">数字越小越靠前</p>
         </div>
 
         <div className="space-y-3">
@@ -127,9 +127,9 @@ export const AnnouncementEditor = ({
               id="isActive"
               checked={formData.isActive}
               onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-blue-600 dark:text-blue-300 rounded focus:ring-blue-500"
             />
-            <label htmlFor="isActive" className="text-sm font-medium text-stone-700">
+            <label htmlFor="isActive" className="text-sm font-medium text-stone-700 dark:text-stone-300">
               启用公告
             </label>
           </div>
@@ -140,26 +140,26 @@ export const AnnouncementEditor = ({
               id="isPinned"
               checked={formData.isPinned}
               onChange={(e) => setFormData({ ...formData, isPinned: e.target.checked })}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-blue-600 dark:text-blue-300 rounded focus:ring-blue-500"
             />
-            <label htmlFor="isPinned" className="text-sm font-medium text-stone-700">
+            <label htmlFor="isPinned" className="text-sm font-medium text-stone-700 dark:text-stone-300">
               置顶公告
             </label>
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-stone-200">
+        <div className="flex justify-end gap-3 pt-4 border-t border-stone-200 dark:border-stone-800">
           <Button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 border border-stone-300 text-stone-700 rounded-lg hover:bg-stone-50 transition-colors"
+            className="px-4 py-2 border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
           >
             取消
           </Button>
           <Button
             type="submit"
             disabled={isSaving}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-blue-600 text-stone-50 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSaving ? '保存中...' : '保存'}
           </Button>

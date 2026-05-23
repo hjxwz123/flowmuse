@@ -32,6 +32,15 @@ import {
 
 type LooseRecord = Record<string, unknown>
 
+const chartGridStroke = 'rgb(var(--admin-border-rgb))'
+const chartAxisStroke = 'rgb(var(--admin-muted-rgb))'
+const chartTooltipStyle = {
+  backgroundColor: 'rgb(var(--admin-surface-rgb))',
+  border: '1px solid rgb(var(--admin-border-rgb))',
+  borderRadius: '8px',
+  color: 'rgb(var(--admin-text-rgb))',
+}
+
 function toSafeNumber(value: unknown) {
   if (typeof value === 'number') {
     return Number.isFinite(value) ? value : 0
@@ -204,11 +213,11 @@ export default function AdminDashboardPage() {
         description={`欢迎来到 ${siteTitle} 管理后台`}
       >
         <FadeIn variant="fade" delay={0.05}>
-          <div className="rounded-xl border border-rose-200 bg-rose-50 p-6 shadow-sm">
-            <h2 className="font-ui text-lg font-semibold text-rose-900">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 p-6 shadow-sm dark:border-rose-900/60 dark:bg-rose-950/30">
+            <h2 className="font-ui text-lg font-semibold text-rose-900 dark:text-rose-100">
               仪表板加载失败
             </h2>
-            <p className="mt-2 text-sm text-rose-700">
+            <p className="mt-2 text-sm text-rose-700 dark:text-rose-300">
               {error || '暂时无法获取仪表板数据。'}
             </p>
             <button
@@ -216,7 +225,7 @@ export default function AdminDashboardPage() {
               onClick={() => {
                 setReloadToken((current) => current + 1)
               }}
-              className="mt-4 inline-flex items-center rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-stone-800"
+              className="mt-4 inline-flex items-center rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-stone-50 transition hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-950 dark:hover:bg-stone-200"
             >
               重试
             </button>
@@ -269,8 +278,8 @@ export default function AdminDashboardPage() {
                   />
                 </svg>
               }
-              className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200"
-              valueClassName="text-blue-900"
+              className="bg-gradient-to-br from-blue-50 dark:from-blue-950/50 to-blue-100 dark:to-blue-900/30 border-blue-200 dark:border-blue-900/60"
+              valueClassName="text-blue-900 dark:text-blue-100"
             />
 
             <StatsCard
@@ -291,8 +300,8 @@ export default function AdminDashboardPage() {
                   />
                 </svg>
               }
-              className="bg-gradient-to-br from-green-50 to-green-100 border-green-200"
-              valueClassName="text-green-900"
+              className="bg-gradient-to-br from-green-50 dark:from-green-950/50 to-green-100 dark:to-green-900/30 border-green-200 dark:border-green-900/60"
+              valueClassName="text-green-900 dark:text-green-100"
             />
 
             <StatsCard
@@ -313,8 +322,8 @@ export default function AdminDashboardPage() {
                   />
                 </svg>
               }
-              className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200"
-              valueClassName="text-purple-900"
+              className="bg-gradient-to-br from-purple-50 dark:from-purple-950/50 to-purple-100 dark:to-purple-900/30 border-purple-200 dark:border-purple-900/60"
+              valueClassName="text-purple-900 dark:text-purple-100"
             />
 
             <StatsCard
@@ -345,26 +354,20 @@ export default function AdminDashboardPage() {
       <FadeIn variant="fade" delay={0.1}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* User Growth Chart */}
-            <div className="rounded-xl bg-white p-6 border border-stone-200 shadow-sm">
-              <h3 className="font-ui text-lg font-semibold text-stone-900 mb-4">
+            <div className="rounded-xl bg-stone-50 dark:bg-stone-900 p-6 border border-stone-200 dark:border-stone-800 shadow-sm">
+              <h3 className="font-ui text-lg font-semibold text-stone-900 dark:text-stone-100 mb-4">
                 用户增长趋势
               </h3>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={dashboardData.userGrowth}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartGridStroke} />
                   <XAxis
                     dataKey="date"
-                    stroke="#78716c"
+                    stroke={chartAxisStroke}
                     style={{ fontSize: '12px' }}
                   />
-                  <YAxis stroke="#78716c" style={{ fontSize: '12px' }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e7e5e4',
-                      borderRadius: '8px',
-                    }}
-                  />
+                  <YAxis stroke={chartAxisStroke} style={{ fontSize: '12px' }} />
+                  <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
                   <Line
                     type="monotone"
@@ -380,26 +383,20 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Task Trend Chart */}
-            <div className="rounded-xl bg-white p-6 border border-stone-200 shadow-sm">
-              <h3 className="font-ui text-lg font-semibold text-stone-900 mb-4">
+            <div className="rounded-xl bg-stone-50 dark:bg-stone-900 p-6 border border-stone-200 dark:border-stone-800 shadow-sm">
+              <h3 className="font-ui text-lg font-semibold text-stone-900 dark:text-stone-100 mb-4">
                 任务完成趋势
               </h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={dashboardData.taskTrend}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartGridStroke} />
                   <XAxis
                     dataKey="date"
-                    stroke="#78716c"
+                    stroke={chartAxisStroke}
                     style={{ fontSize: '12px' }}
                   />
-                  <YAxis stroke="#78716c" style={{ fontSize: '12px' }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e7e5e4',
-                      borderRadius: '8px',
-                    }}
-                  />
+                  <YAxis stroke={chartAxisStroke} style={{ fontSize: '12px' }} />
+                  <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
                   <Bar dataKey="completed" name="完成" fill="#34D399" />
                   <Bar dataKey="failed" name="失败" fill="#F87171" />
@@ -413,8 +410,8 @@ export default function AdminDashboardPage() {
       <FadeIn variant="fade" delay={0.2}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Model Usage Pie Chart */}
-            <div className="rounded-xl bg-white p-6 border border-stone-200 shadow-sm">
-              <h3 className="font-ui text-lg font-semibold text-stone-900 mb-4">
+            <div className="rounded-xl bg-stone-50 dark:bg-stone-900 p-6 border border-stone-200 dark:border-stone-800 shadow-sm">
+              <h3 className="font-ui text-lg font-semibold text-stone-900 dark:text-stone-100 mb-4">
                 模型使用分布
               </h3>
               <ResponsiveContainer width="100%" height={300}>
@@ -439,38 +436,26 @@ export default function AdminDashboardPage() {
                       />
                     ))}
                   </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e7e5e4',
-                      borderRadius: '8px',
-                    }}
-                  />
+                  <Tooltip contentStyle={chartTooltipStyle} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
 
             {/* Revenue Trend Chart */}
-            <div className="rounded-xl bg-white p-6 border border-stone-200 shadow-sm">
-              <h3 className="font-ui text-lg font-semibold text-stone-900 mb-4">
+            <div className="rounded-xl bg-stone-50 dark:bg-stone-900 p-6 border border-stone-200 dark:border-stone-800 shadow-sm">
+              <h3 className="font-ui text-lg font-semibold text-stone-900 dark:text-stone-100 mb-4">
                 收入趋势
               </h3>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={dashboardData.revenueTrend}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chartGridStroke} />
                   <XAxis
                     dataKey="date"
-                    stroke="#78716c"
+                    stroke={chartAxisStroke}
                     style={{ fontSize: '12px' }}
                   />
-                  <YAxis stroke="#78716c" style={{ fontSize: '12px' }} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e7e5e4',
-                      borderRadius: '8px',
-                    }}
-                  />
+                  <YAxis stroke={chartAxisStroke} style={{ fontSize: '12px' }} />
+                  <Tooltip contentStyle={chartTooltipStyle} />
                   <Legend />
                   <Line
                     type="monotone"
@@ -489,26 +474,20 @@ export default function AdminDashboardPage() {
 
       {/* Credits Consumption Chart */}
       <FadeIn variant="fade" delay={0.3}>
-          <div className="rounded-xl bg-white p-6 border border-stone-200 shadow-sm">
-            <h3 className="font-ui text-lg font-semibold text-stone-900 mb-4">
+          <div className="rounded-xl bg-stone-50 dark:bg-stone-900 p-6 border border-stone-200 dark:border-stone-800 shadow-sm">
+            <h3 className="font-ui text-lg font-semibold text-stone-900 dark:text-stone-100 mb-4">
               点数消耗趋势
             </h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={dashboardData.creditsConsumption}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" />
+                <CartesianGrid strokeDasharray="3 3" stroke={chartGridStroke} />
                 <XAxis
                   dataKey="date"
-                  stroke="#78716c"
+                  stroke={chartAxisStroke}
                   style={{ fontSize: '12px' }}
                 />
-                <YAxis stroke="#78716c" style={{ fontSize: '12px' }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e7e5e4',
-                    borderRadius: '8px',
-                  }}
-                />
+                <YAxis stroke={chartAxisStroke} style={{ fontSize: '12px' }} />
+                <Tooltip contentStyle={chartTooltipStyle} />
                 <Legend />
                 <Bar
                   dataKey="issued"

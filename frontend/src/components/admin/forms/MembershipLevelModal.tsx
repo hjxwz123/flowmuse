@@ -173,7 +173,7 @@ export function MembershipLevelModal({
     <Modal isOpen={isOpen} onClose={handleClose} title={isEditMode ? t('edit') : t('add')}>
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="mb-2 block text-sm font-medium text-stone-700">
+          <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
             {t('fields.name')} <span className="text-red-500">*</span>
           </label>
           <input
@@ -182,7 +182,7 @@ export function MembershipLevelModal({
             onChange={(event) => setName(event.target.value)}
             maxLength={100}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5 text-sm text-stone-900',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
               'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
             )}
             placeholder={t('form.namePlaceholder')}
@@ -191,7 +191,7 @@ export function MembershipLevelModal({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-stone-700">
+          <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
             {t('fields.nameEn')}
           </label>
           <input
@@ -200,7 +200,7 @@ export function MembershipLevelModal({
             onChange={(event) => setNameEn(event.target.value)}
             maxLength={100}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5 text-sm text-stone-900',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
               'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
             )}
             placeholder={t('form.nameEnPlaceholder')}
@@ -209,7 +209,7 @@ export function MembershipLevelModal({
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <label className="mb-2 block text-sm font-medium text-stone-700">
+            <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
               {t('fields.color')} <span className="text-red-500">*</span>
             </label>
             <div className="flex items-center gap-2">
@@ -217,14 +217,14 @@ export function MembershipLevelModal({
                 type="color"
                 value={normalizeColorForPicker(color)}
                 onChange={(event) => setColor(event.target.value.toUpperCase())}
-                className="h-10 w-16 cursor-pointer rounded-lg border border-stone-200 bg-white p-1"
+                className="h-10 w-16 cursor-pointer rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-1"
               />
               <input
                 type="text"
                 value={color}
                 onChange={(event) => setColor(event.target.value)}
                 className={cn(
-                  'flex-1 rounded-lg border border-stone-200 px-4 py-2.5 text-sm text-stone-900',
+                  'flex-1 rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
                   'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
                 )}
                 placeholder="#F59E0B"
@@ -234,7 +234,7 @@ export function MembershipLevelModal({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-stone-700">
+            <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
               {t('fields.sortOrder')}
             </label>
             <input
@@ -244,7 +244,7 @@ export function MembershipLevelModal({
               value={sortOrder}
               onChange={(event) => setSortOrder(event.target.value)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5 text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
               )}
             />
@@ -253,7 +253,7 @@ export function MembershipLevelModal({
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <div>
-            <label className="mb-2 block text-sm font-medium text-stone-700">
+            <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
               {t('fields.monthlyPrice')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -263,7 +263,7 @@ export function MembershipLevelModal({
               value={monthlyPrice}
               onChange={(event) => setMonthlyPrice(event.target.value)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5 text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
               )}
               placeholder="29.90"
@@ -272,7 +272,7 @@ export function MembershipLevelModal({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-stone-700">
+            <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
               {t('fields.yearlyPrice')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -282,7 +282,7 @@ export function MembershipLevelModal({
               value={yearlyPrice}
               onChange={(event) => setYearlyPrice(event.target.value)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5 text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
               )}
               placeholder="299.00"
@@ -291,7 +291,7 @@ export function MembershipLevelModal({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-stone-700">
+            <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
               每日赠送积分
             </label>
             <input
@@ -301,7 +301,7 @@ export function MembershipLevelModal({
               value={dailyCredits}
               onChange={(event) => setDailyCredits(event.target.value)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5 text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
               )}
               placeholder="0"
@@ -309,7 +309,7 @@ export function MembershipLevelModal({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-stone-700">
+            <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
               {t('fields.bonusPermanentCredits')}
             </label>
             <input
@@ -319,7 +319,7 @@ export function MembershipLevelModal({
               value={bonusPermanentCredits}
               onChange={(event) => setBonusPermanentCredits(event.target.value)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5 text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
               )}
               placeholder="0"
@@ -328,7 +328,7 @@ export function MembershipLevelModal({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-stone-700">
+          <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
             {t('fields.benefits')}
           </label>
           <textarea
@@ -336,16 +336,16 @@ export function MembershipLevelModal({
             value={benefitsText}
             onChange={(event) => setBenefitsText(event.target.value)}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5 text-sm text-stone-900',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
               'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
             )}
             placeholder={t('form.benefitsPlaceholder')}
           />
-          <p className="mt-1 text-xs text-stone-500">{t('form.benefitsHint')}</p>
+          <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">{t('form.benefitsHint')}</p>
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-stone-700">
+          <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
             {t('fields.benefitsEn')}
           </label>
           <textarea
@@ -353,12 +353,12 @@ export function MembershipLevelModal({
             value={benefitsEnText}
             onChange={(event) => setBenefitsEnText(event.target.value)}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5 text-sm text-stone-900',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100',
               'focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
             )}
             placeholder={t('form.benefitsEnPlaceholder')}
           />
-          <p className="mt-1 text-xs text-stone-500">{t('form.benefitsEnHint')}</p>
+          <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">{t('form.benefitsEnHint')}</p>
         </div>
 
         <label className="inline-flex cursor-pointer items-center gap-2">
@@ -366,13 +366,13 @@ export function MembershipLevelModal({
             type="checkbox"
             checked={isActive}
             onChange={(event) => setIsActive(event.target.checked)}
-            className="h-4 w-4 rounded border-stone-300 text-aurora-purple focus:ring-aurora-purple/40"
+            className="h-4 w-4 rounded border-stone-300 dark:border-stone-700 text-aurora-purple focus:ring-aurora-purple/40"
           />
-          <span className="text-sm text-stone-700">{t('fields.isActive')}</span>
+          <span className="text-sm text-stone-700 dark:text-stone-300">{t('fields.isActive')}</span>
         </label>
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <div className="rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/30 px-3 py-2 text-sm text-red-700 dark:text-red-300">
             {error}
           </div>
         )}

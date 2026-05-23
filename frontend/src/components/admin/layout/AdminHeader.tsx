@@ -68,8 +68,8 @@ export const AdminHeader = () => {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 w-full border-b border-stone-200/70 bg-white/90 backdrop-blur-md',
-        'shadow-[0_8px_30px_rgba(0,0,0,0.04)]'
+        'sticky top-0 z-50 w-full border-b border-stone-200/70 dark:border-stone-800/70 bg-stone-50/90 dark:bg-stone-900/90 backdrop-blur-md',
+        'shadow-[0_8px_30px_rgb(68_64_60_/_0.04)] dark:shadow-[0_8px_30px_rgb(12_10_9_/_0.28)]'
       )}
     >
       <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
@@ -108,7 +108,7 @@ export const AdminHeader = () => {
                       'flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-medium transition-colors',
                       groupActive
                         ? 'bg-aurora-purple/10 text-aurora-purple'
-                        : 'text-stone-600 hover:bg-stone-100/80 hover:text-stone-900'
+                        : 'text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800/80 hover:text-stone-900 dark:hover:text-stone-100'
                     )}
                     onClick={() => {
                       clearCloseTimer()
@@ -120,7 +120,7 @@ export const AdminHeader = () => {
                       className={cn(
                         'h-3.5 w-3.5 transition-transform duration-200',
                         isOpen && '-rotate-180',
-                        groupActive ? 'text-aurora-purple/70' : 'text-stone-400'
+                        groupActive ? 'text-aurora-purple/70' : 'text-stone-400 dark:text-stone-500'
                       )}
                     />
                   </button>
@@ -134,7 +134,7 @@ export const AdminHeader = () => {
                         : 'pointer-events-none opacity-0'
                     )}
                   >
-                    <div className="w-56 rounded-xl border border-stone-200/80 bg-white/95 p-1.5 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.15)] backdrop-blur-xl">
+                    <div className="w-56 rounded-xl border border-stone-200/80 dark:border-stone-800/80 bg-stone-50/95 dark:bg-stone-900/95 p-1.5 shadow-[0_16px_40px_-12px_rgb(68_64_60_/_0.15)] dark:shadow-[0_16px_40px_-12px_rgb(12_10_9_/_0.45)] backdrop-blur-xl">
                       {group.items.map((item) => {
                         const active = isActive(item.href)
                         return (
@@ -149,7 +149,7 @@ export const AdminHeader = () => {
                               'block rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all',
                               active
                                 ? 'bg-aurora-purple/10 text-aurora-purple'
-                                : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                                : 'text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-stone-100'
                             )}
                           >
                             {tNav(item.key)}
@@ -167,7 +167,7 @@ export const AdminHeader = () => {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-stone-200 text-stone-600 transition-colors hover:bg-stone-100 md:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 transition-colors hover:bg-stone-100 dark:hover:bg-stone-800 md:hidden"
             onClick={() => setMobileExpanded((prev) => !prev)}
             title={tPortal('mobileToggle')}
           >
@@ -177,27 +177,27 @@ export const AdminHeader = () => {
           <Link
             href={`/${locale}`}
             className={cn(
-              'hidden h-9 items-center rounded-full border border-stone-200 bg-white px-4 text-[13px] font-medium text-stone-600 sm:inline-flex',
+              'hidden h-9 items-center rounded-full border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-4 text-[13px] font-medium text-stone-600 dark:text-stone-400 sm:inline-flex',
               'transition-colors hover:border-aurora-purple/40 hover:bg-aurora-purple/5 hover:text-aurora-purple'
             )}
           >
             {tNav('backToFrontend')}
           </Link>
-          <UserMenu forceLight />
+          <UserMenu />
         </div>
       </div>
 
       {/* Mobile Navigation */}
       <div
         className={cn(
-          'border-t border-stone-200/70 bg-stone-50/90 px-4 py-4 backdrop-blur-md md:hidden transition-all duration-300 overflow-hidden',
+          'border-t border-stone-200/70 dark:border-stone-800/70 bg-stone-50/90 dark:bg-stone-900/90 px-4 py-4 backdrop-blur-md md:hidden transition-all duration-300 overflow-hidden',
           mobileExpanded ? 'block' : 'hidden'
         )}
       >
         <div className="space-y-4">
           {navGroups.map((group) => (
             <div key={group.id} className="space-y-2">
-              <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-stone-500">
+              <p className="px-1 text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
                 {tPortal(`groups.${group.id}.title`)}
               </p>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -210,7 +210,7 @@ export const AdminHeader = () => {
                       'inline-flex items-center justify-center rounded-lg border px-3 py-2 text-[13px] font-medium',
                       isActive(item.href)
                         ? 'border-aurora-purple/30 bg-aurora-purple/10 text-aurora-purple'
-                        : 'border-stone-200/60 bg-white text-stone-600 shadow-sm'
+                        : 'border-stone-200/60 dark:border-stone-800/60 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400 shadow-sm'
                     )}
                   >
                     {tNav(item.key)}
@@ -224,7 +224,7 @@ export const AdminHeader = () => {
         <button
           type="button"
           onClick={() => setMobileExpanded(false)}
-          className="mx-auto mt-6 flex h-8 w-24 items-center justify-center rounded-full bg-stone-200/50 text-stone-500 transition-colors hover:bg-stone-200 hover:text-stone-700"
+          className="mx-auto mt-6 flex h-8 w-24 items-center justify-center rounded-full bg-stone-200/50 dark:bg-stone-700/50 text-stone-500 dark:text-stone-400 transition-colors hover:bg-stone-200 dark:hover:bg-stone-700 hover:text-stone-700 dark:hover:text-stone-200"
         >
           <ChevronDown className="h-4 w-4 shrink-0" />
         </button>

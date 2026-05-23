@@ -35,16 +35,16 @@ type AiCapabilitySiteSettings = Pick<
   | 'webSearchBlockedDomains'
 >
 
-const sectionTitleCls = 'mb-4 flex items-center gap-2 text-xl font-semibold text-stone-900'
+const sectionTitleCls = 'mb-4 flex items-center gap-2 text-xl font-semibold text-stone-900 dark:text-stone-100'
 const sectionAccentCls = 'inline-block h-5 w-1 rounded-full bg-aurora-purple'
-const labelCls = 'mb-2 block text-sm font-medium text-stone-700'
-const helpTextCls = 'mt-1 text-xs text-stone-500'
+const labelCls = 'mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300'
+const helpTextCls = 'mt-1 text-xs text-stone-500 dark:text-stone-400'
 const inputCls =
-  'w-full rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm text-stone-900 transition-colors placeholder:text-stone-400 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
+  'w-full rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-4 py-2 text-sm text-stone-900 dark:text-stone-100 transition-colors placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
 const textareaCls = `${inputCls} resize-y`
 const selectCls =
-  'w-full appearance-none rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm text-stone-900 transition-colors focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
-const switchCardCls = 'flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 p-4'
+  'w-full appearance-none rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-4 py-2 text-sm text-stone-900 dark:text-stone-100 transition-colors focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20'
+const switchCardCls = 'flex items-center justify-between rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4'
 
 const DEFAULT_AI_FORM_DATA = {
   apiBaseUrl: '',
@@ -202,7 +202,7 @@ export default function AdminAiSettingsPage() {
       maxWidthClassName="max-w-5xl"
     >
       <form onSubmit={handleSubmit}>
-        <Card className="space-y-6 border border-stone-200 !bg-white p-6 !shadow-sm">
+        <Card className="space-y-6 border border-stone-200 dark:border-stone-800 !bg-stone-50 dark:!bg-stone-900 p-6 !shadow-sm">
           <div>
             <h2 className={sectionTitleCls}>
               <span className={sectionAccentCls} />
@@ -247,7 +247,7 @@ export default function AdminAiSettingsPage() {
               </div>
             </div>
           </div>
-          <div className="border-t border-stone-200 pt-6">
+          <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
             <h2 className={sectionTitleCls}>
               <span className={sectionAccentCls} />
               提示词配置
@@ -270,7 +270,7 @@ export default function AdminAiSettingsPage() {
             </div>
           </div>
 
-          <div className="border-t border-stone-200 pt-6">
+          <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
             <h2 className={sectionTitleCls}>
               <span className={sectionAccentCls} />
               聊天文件配置
@@ -278,15 +278,15 @@ export default function AdminAiSettingsPage() {
             <div className="space-y-4">
               <div className={switchCardCls}>
                 <div>
-                  <p className="font-semibold text-stone-800">启用聊天文件上传</p>
-                  <p className="mt-0.5 text-xs text-stone-500">开启后聊天页面允许上传文档并注入上下文</p>
+                  <p className="font-semibold text-stone-800 dark:text-stone-200">启用聊天文件上传</p>
+                  <p className="mt-0.5 text-xs text-stone-500 dark:text-stone-400">开启后聊天页面允许上传文档并注入上下文</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSiteFormData({ ...siteFormData, chatFileUploadEnabled: !siteFormData.chatFileUploadEnabled })}
                   className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${siteFormData.chatFileUploadEnabled ? 'bg-aurora-purple' : 'bg-stone-300'}`}
                 >
-                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${siteFormData.chatFileUploadEnabled ? 'translate-x-8' : 'translate-x-1'}`} />
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-stone-50 dark:bg-stone-900 shadow transition-transform ${siteFormData.chatFileUploadEnabled ? 'translate-x-8' : 'translate-x-1'}`} />
                 </button>
               </div>
 
@@ -396,7 +396,7 @@ export default function AdminAiSettingsPage() {
             </div>
           </div>
 
-          <div className="border-t border-stone-200 pt-6">
+          <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
             <h2 className={sectionTitleCls}>
               <span className={sectionAccentCls} />
               联网搜索配置（SearXNG）
@@ -404,15 +404,15 @@ export default function AdminAiSettingsPage() {
             <div className="space-y-4">
               <div className={switchCardCls}>
                 <div>
-                  <p className="font-semibold text-stone-800">启用联网搜索</p>
-                  <p className="mt-0.5 text-xs text-stone-500">聊天可按模式调用 SearXNG 搜索最新信息并注入上下文</p>
+                  <p className="font-semibold text-stone-800 dark:text-stone-200">启用联网搜索</p>
+                  <p className="mt-0.5 text-xs text-stone-500 dark:text-stone-400">聊天可按模式调用 SearXNG 搜索最新信息并注入上下文</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSiteFormData({ ...siteFormData, webSearchEnabled: !siteFormData.webSearchEnabled })}
                   className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${siteFormData.webSearchEnabled ? 'bg-aurora-purple' : 'bg-stone-300'}`}
                 >
-                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${siteFormData.webSearchEnabled ? 'translate-x-8' : 'translate-x-1'}`} />
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-stone-50 dark:bg-stone-900 shadow transition-transform ${siteFormData.webSearchEnabled ? 'translate-x-8' : 'translate-x-1'}`} />
                 </button>
               </div>
 
@@ -528,11 +528,11 @@ export default function AdminAiSettingsPage() {
               </div>
             </div>
           </div>
-          <div className="border-t border-stone-200 pt-6">
+          <div className="border-t border-stone-200 dark:border-stone-800 pt-6">
             <Button
               type="submit"
               disabled={isSaving}
-              className="rounded-lg bg-aurora-purple px-6 py-2 text-white transition-colors hover:bg-aurora-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-aurora-purple px-6 py-2 text-stone-50 transition-colors hover:bg-aurora-purple/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSaving ? '保存中...' : '保存设置'}
             </Button>

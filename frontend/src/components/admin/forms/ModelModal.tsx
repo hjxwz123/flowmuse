@@ -522,7 +522,7 @@ export function ModelModal({
         {/* Model Name and Key */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               模型名称 <span className="text-red-500">*</span>
             </label>
             <input
@@ -531,9 +531,9 @@ export function ModelModal({
               onChange={(e) => setName(e.target.value)}
               placeholder="Stable Diffusion XL"
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
-                'placeholder:text-stone-400',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
+                'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
@@ -541,7 +541,7 @@ export function ModelModal({
             />
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               Model Key <span className="text-red-500">*</span>
             </label>
             <input
@@ -550,9 +550,9 @@ export function ModelModal({
               onChange={(e) => setModelKey(e.target.value)}
               placeholder="stable-diffusion-xl"
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-mono text-sm text-stone-900',
-                'placeholder:text-stone-400',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-mono text-sm text-stone-900 dark:text-stone-100',
+                'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
@@ -563,7 +563,7 @@ export function ModelModal({
 
         {/* Icon URL or Upload */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             图标
           </label>
           <div className="space-y-3">
@@ -574,9 +574,9 @@ export function ModelModal({
                 onChange={(e) => setIcon(e.target.value)}
                 placeholder="https://example.com/icon.png 或 data:image/..."
                 className={cn(
-                  'flex-1 rounded-lg border border-stone-200 px-4 py-2.5',
-                  'font-ui text-sm text-stone-900',
-                  'placeholder:text-stone-400',
+                  'flex-1 rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                  'font-ui text-sm text-stone-900 dark:text-stone-100',
+                  'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                   'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                   'transition-colors'
                 )}
@@ -586,9 +586,9 @@ export function ModelModal({
                   type="button"
                   onClick={() => setIcon('')}
                   className={cn(
-                    'px-4 py-2.5 rounded-lg border border-stone-200',
-                    'font-ui text-sm text-stone-600 hover:text-red-600',
-                    'hover:border-red-300 transition-colors'
+                    'px-4 py-2.5 rounded-lg border border-stone-200 dark:border-stone-800',
+                    'font-ui text-sm text-stone-600 dark:text-stone-400 hover:text-red-600 dark:hover:text-red-300',
+                    'hover:border-red-300 dark:hover:border-red-700 transition-colors'
                   )}
                 >
                   清除
@@ -600,8 +600,8 @@ export function ModelModal({
               <label
                 className={cn(
                   'flex items-center gap-2 px-4 py-2.5 rounded-lg',
-                  'border-2 border-dashed border-stone-300',
-                  'font-ui text-sm text-stone-600 cursor-pointer',
+                  'border-2 border-dashed border-stone-300 dark:border-stone-700',
+                  'font-ui text-sm text-stone-600 dark:text-stone-400 cursor-pointer',
                   'hover:border-aurora-purple hover:text-aurora-purple',
                   'transition-colors'
                 )}
@@ -655,7 +655,7 @@ export function ModelModal({
 
               {icon && (
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-lg border-2 border-stone-200 flex items-center justify-center overflow-hidden bg-white">
+                  <div className="w-10 h-10 rounded-lg border-2 border-stone-200 dark:border-stone-800 flex items-center justify-center overflow-hidden bg-stone-50 dark:bg-stone-900">
                     {icon.startsWith('data:image') || icon.startsWith('http') ? (
                       <img
                         src={icon}
@@ -666,12 +666,12 @@ export function ModelModal({
                       <span className="text-xl">{icon}</span>
                     )}
                   </div>
-                  <span className="font-ui text-xs text-stone-500">预览</span>
+                  <span className="font-ui text-xs text-stone-500 dark:text-stone-400">预览</span>
                 </div>
               )}
             </div>
 
-            <p className="font-ui text-xs text-stone-500">
+            <p className="font-ui text-xs text-stone-500 dark:text-stone-400">
               支持上传图片（PNG、JPG、SVG等，最大 500KB）或填写图标 URL
             </p>
           </div>
@@ -679,7 +679,7 @@ export function ModelModal({
 
         {/* Type */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             {t('fields.type')} <span className="text-red-500">*</span>
           </label>
           <div className={cn('grid gap-3', allowChatType ? 'grid-cols-3' : 'grid-cols-2')}>
@@ -695,8 +695,8 @@ export function ModelModal({
               className={cn(
                 'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all',
                 type === 'image'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-stone-200 bg-white text-stone-600 hover:border-blue-200'
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300'
+                  : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-blue-200 dark:hover:border-blue-800'
               )}
             >
               {t('types.image')}
@@ -713,8 +713,8 @@ export function ModelModal({
               className={cn(
                 'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all',
                 type === 'video'
-                  ? 'border-purple-500 bg-purple-50 text-purple-700'
-                  : 'border-stone-200 bg-white text-stone-600 hover:border-purple-200'
+                  ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300'
+                  : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-purple-200 dark:hover:border-purple-800'
               )}
             >
               {t('types.video')}
@@ -732,8 +732,8 @@ export function ModelModal({
                 className={cn(
                   'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all',
                   type === 'chat'
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                    : 'border-stone-200 bg-white text-stone-600 hover:border-emerald-200'
+                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300'
+                    : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:border-emerald-200 dark:hover:border-emerald-800'
                 )}
               >
                 {t('types.chat')}
@@ -745,7 +745,7 @@ export function ModelModal({
         {/* Provider and Channel */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.provider')} <span className="text-red-500">*</span>
             </label>
             <select
@@ -762,8 +762,8 @@ export function ModelModal({
                 setSupportsAutoMode(inferDefaultAutoMode(nextProvider, type))
               }}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors',
                 providersLoading && 'opacity-50'
@@ -780,15 +780,15 @@ export function ModelModal({
             </select>
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.channel')} <span className="text-red-500">*</span>
             </label>
             <select
               value={channelId}
               onChange={(e) => setChannelId(e.target.value)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors',
                 (channelsLoading || !provider) && 'opacity-50'
@@ -811,7 +811,7 @@ export function ModelModal({
         {/* Credits Cost, Sort, and Status */}
         <div className={cn('grid gap-4', showSpecialCredits ? 'grid-cols-4' : 'grid-cols-3')}>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.creditsCost')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -820,8 +820,8 @@ export function ModelModal({
               value={creditsPerUse}
               onChange={(e) => setCreditsPerUse(e.target.value)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
@@ -830,7 +830,7 @@ export function ModelModal({
           </div>
           {showSpecialCredits ? (
             <div>
-              <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+              <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                 {t('fields.specialCreditsCost')}
               </label>
               <input
@@ -840,9 +840,9 @@ export function ModelModal({
                 onChange={(e) => setSpecialCreditsPerUse(e.target.value)}
                 placeholder="可选，低于原价"
                 className={cn(
-                  'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                  'font-ui text-sm text-stone-900',
-                  'placeholder:text-stone-400',
+                  'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                  'font-ui text-sm text-stone-900 dark:text-stone-100',
+                  'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                   'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                   'transition-colors'
                 )}
@@ -850,7 +850,7 @@ export function ModelModal({
             </div>
           ) : null}
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               排序
             </label>
             <input
@@ -859,15 +859,15 @@ export function ModelModal({
               value={sortOrder}
               onChange={(e) => setSortOrder(e.target.value)}
               className={cn(
-                'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                'font-ui text-sm text-stone-900',
+                'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                'font-ui text-sm text-stone-900 dark:text-stone-100',
                 'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                 'transition-colors'
               )}
             />
           </div>
           <div>
-            <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
               {t('fields.enabled')}
             </label>
             <button
@@ -876,8 +876,8 @@ export function ModelModal({
               className={cn(
                 'w-full rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all',
                 isActive
-                  ? 'border-green-500 bg-green-50 text-green-700'
-                  : 'border-stone-300 bg-stone-50 text-stone-600'
+                  ? 'border-green-500 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300'
+                  : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400'
               )}
             >
               {isActive ? '启用' : '禁用'}
@@ -887,9 +887,9 @@ export function ModelModal({
 
         {/* Description */}
         <div>
-          <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
             模型描述
-            <span className="ml-2 text-xs text-stone-500 font-normal">（可选，展示给前端用户）</span>
+            <span className="ml-2 text-xs text-stone-500 dark:text-stone-400 font-normal">（可选，展示给前端用户）</span>
           </label>
           <textarea
             value={description}
@@ -897,9 +897,9 @@ export function ModelModal({
             placeholder="例如：擅长写实风格，推荐用于人物短视频或教学场景。"
             rows={3}
             className={cn(
-              'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-              'font-ui text-sm text-stone-900',
-              'placeholder:text-stone-400',
+              'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+              'font-ui text-sm text-stone-900 dark:text-stone-100',
+              'placeholder:text-stone-400 dark:placeholder:text-stone-500',
               'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
               'transition-colors resize-none'
             )}
@@ -908,13 +908,13 @@ export function ModelModal({
 
         {type === 'chat' && (
           <div className="space-y-3">
-            <label className="block font-ui text-sm font-medium text-stone-700">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300">
               每日提问上限
-              <span className="ml-2 text-xs text-stone-500 font-normal">（可选，留空表示不限制）</span>
+              <span className="ml-2 text-xs text-stone-500 dark:text-stone-400 font-normal">（可选，留空表示不限制）</span>
             </label>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   免费用户（非会员）
                 </label>
                 <input
@@ -925,16 +925,16 @@ export function ModelModal({
                   onChange={(e) => setFreeUserDailyQuestionLimit(e.target.value)}
                   placeholder="例如：20"
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                    'font-ui text-sm text-stone-900',
-                    'placeholder:text-stone-400',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
+                    'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
                 />
               </div>
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   会员用户
                 </label>
                 <input
@@ -945,9 +945,9 @@ export function ModelModal({
                   onChange={(e) => setMemberDailyQuestionLimit(e.target.value)}
                   placeholder="例如：200"
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                    'font-ui text-sm text-stone-900',
-                    'placeholder:text-stone-400',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
+                    'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -955,7 +955,7 @@ export function ModelModal({
               </div>
             </div>
             <div>
-              <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+              <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                 最大上下文轮数
               </label>
               <input
@@ -966,15 +966,15 @@ export function ModelModal({
                 onChange={(e) => setMaxContextRounds(e.target.value)}
                 placeholder="例如：20（留空使用默认）"
                 className={cn(
-                  'w-full rounded-lg border border-stone-200 px-4 py-2.5',
-                  'font-ui text-sm text-stone-900',
-                  'placeholder:text-stone-400',
+                  'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2.5',
+                  'font-ui text-sm text-stone-900 dark:text-stone-100',
+                  'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                   'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                   'transition-colors'
                 )}
               />
             </div>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-stone-500 dark:text-stone-400">
               会员按是否处于有效会员期判断，不区分会员等级。
             </p>
           </div>
@@ -982,7 +982,7 @@ export function ModelModal({
 
         {showModeToggleSection && (
           <div className="space-y-3">
-            <label className="block font-ui text-sm font-medium text-stone-700">
+            <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300">
               创作模式开关
             </label>
 
@@ -993,12 +993,12 @@ export function ModelModal({
                 className={cn(
                   'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all text-left',
                   supportsQuickMode
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                    : 'border-stone-300 bg-stone-50 text-stone-600'
+                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300'
+                    : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400'
                 )}
               >
                 支持快速模式
-                <span className="mt-1 block text-xs font-normal text-stone-500">
+                <span className="mt-1 block text-xs font-normal text-stone-500 dark:text-stone-400">
                   控制 create 页面是否显示该模型
                 </span>
               </button>
@@ -1013,13 +1013,13 @@ export function ModelModal({
                   'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all text-left',
                   isWanxAgentAutoModeLocked && 'cursor-not-allowed opacity-60',
                   supportsAgentMode
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-stone-300 bg-stone-50 text-stone-600'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300'
+                    : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400'
                 )}
                 disabled={isWanxAgentAutoModeLocked}
               >
                 支持 Agent 模式
-                <span className="mt-1 block text-xs font-normal text-stone-500">
+                <span className="mt-1 block text-xs font-normal text-stone-500 dark:text-stone-400">
                   {isWanxAgentAutoModeLocked ? '万相 t2v / i2v 不支持' : '控制聊天页 Agent 模式是否显示该模型'}
                 </span>
               </button>
@@ -1034,13 +1034,13 @@ export function ModelModal({
                   'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all text-left',
                   isWanxAgentAutoModeLocked && 'cursor-not-allowed opacity-60',
                   supportsAutoMode
-                    ? 'border-purple-500 bg-purple-50 text-purple-700'
-                    : 'border-stone-300 bg-stone-50 text-stone-600'
+                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300'
+                    : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400'
                 )}
                 disabled={isWanxAgentAutoModeLocked}
               >
                 支持全自动模式
-                <span className="mt-1 block text-xs font-normal text-stone-500">
+                <span className="mt-1 block text-xs font-normal text-stone-500 dark:text-stone-400">
                   {isWanxAgentAutoModeLocked ? '万相 t2v / i2v 不支持' : '控制聊天页全自动模式是否显示该模型'}
                 </span>
               </button>
@@ -1050,7 +1050,7 @@ export function ModelModal({
 
         {/* Capability Flags */}
         <div className="space-y-3">
-          <label className="block font-ui text-sm font-medium text-stone-700">
+          <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300">
             前端能力开关
           </label>
 
@@ -1061,8 +1061,8 @@ export function ModelModal({
               className={cn(
                 'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all text-left',
                 supportsImageInput
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-stone-300 bg-stone-50 text-stone-600'
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300'
+                  : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400'
               )}
             >
               {type === 'chat' ? '支持图片上传' : '支持垫图上传'}
@@ -1078,13 +1078,13 @@ export function ModelModal({
                 'rounded-lg border-2 px-4 py-2.5 font-ui text-sm font-medium transition-all text-left',
                 !allowResolutionAndSizeToggle && 'opacity-50 cursor-not-allowed',
                 supportsResolutionSelect && allowResolutionAndSizeToggle
-                  ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                  : 'border-stone-300 bg-stone-50 text-stone-600'
+                  ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300'
+                  : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400'
               )}
             >
               支持分辨率选择
               {!allowResolutionAndSizeToggle && (
-                <span className="block mt-1 text-xs font-normal text-stone-500">
+                <span className="block mt-1 text-xs font-normal text-stone-500 dark:text-stone-400">
                   仅图片模型且 nanobanana/gemini 可配置
                 </span>
               )}
@@ -1101,12 +1101,12 @@ export function ModelModal({
                 !allowResolutionAndSizeToggle && 'opacity-50 cursor-not-allowed',
                 supportsSizeSelect && allowResolutionAndSizeToggle
                   ? 'border-fuchsia-500 bg-fuchsia-50 text-fuchsia-700'
-                  : 'border-stone-300 bg-stone-50 text-stone-600'
+                  : 'border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 text-stone-600 dark:text-stone-400'
               )}
             >
               支持尺寸/比例选择
               {!allowResolutionAndSizeToggle && (
-                <span className="block mt-1 text-xs font-normal text-stone-500">
+                <span className="block mt-1 text-xs font-normal text-stone-500 dark:text-stone-400">
                   仅图片模型且 nanobanana/gemini 可配置
                 </span>
               )}
@@ -1122,8 +1122,8 @@ export function ModelModal({
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-3">
-            <p className="font-ui text-sm text-red-700">{error}</p>
+          <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/60 p-3">
+            <p className="font-ui text-sm text-red-700 dark:text-red-300">{error}</p>
           </div>
         )}
 

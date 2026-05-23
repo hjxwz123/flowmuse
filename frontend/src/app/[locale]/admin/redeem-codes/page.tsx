@@ -198,7 +198,7 @@ export default function AdminRedeemCodesPage() {
         label: t('fields.code'),
         width: '200px',
         render: (code) => (
-          <span className="font-mono text-sm text-stone-900">{code.code}</span>
+          <span className="font-mono text-sm text-stone-900 dark:text-stone-100">{code.code}</span>
         ),
       },
       {
@@ -210,8 +210,8 @@ export default function AdminRedeemCodesPage() {
             className={cn(
               'inline-flex items-center rounded-md border px-2.5 py-0.5 font-ui text-xs font-semibold',
               code.type === 'membership'
-                ? 'bg-purple-100 text-purple-700 border-purple-200'
-                : 'bg-blue-100 text-blue-700 border-blue-200'
+                ? 'bg-purple-100 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-900/60'
+                : 'bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-900/60'
             )}
           >
             {code.type === 'membership' ? '会员' : t('types.credits')}
@@ -223,7 +223,7 @@ export default function AdminRedeemCodesPage() {
         label: t('fields.value'),
         width: '230px',
         render: (code) => (
-          <span className="text-stone-900 text-sm">
+          <span className="text-stone-900 dark:text-stone-100 text-sm">
             {code.type === 'membership'
               ? `${getMembershipName(code) || '会员'}（${code.membershipPeriod === 'yearly' ? '年付' : '月付'} x ${code.membershipCycles ?? 1}期）`
               : `${code.credits} 点`}
@@ -236,7 +236,7 @@ export default function AdminRedeemCodesPage() {
         width: '120px',
         align: 'center',
         render: (code) => (
-          <span className="text-stone-900">
+          <span className="text-stone-900 dark:text-stone-100">
             {code.usedCount} / {code.maxUseCount}
           </span>
         ),
@@ -246,7 +246,7 @@ export default function AdminRedeemCodesPage() {
         label: t('fields.expireDate'),
         width: '180px',
         render: (code) => (
-          <span className="text-stone-600">
+          <span className="text-stone-600 dark:text-stone-400">
             {code.expireDate
               ? new Date(code.expireDate).toLocaleString('zh-CN', {
                   year: 'numeric',
@@ -287,8 +287,8 @@ export default function AdminRedeemCodesPage() {
               onClick={() => handleViewLogs(code)}
               className={cn(
                 'rounded-lg px-3 py-1.5 font-ui text-xs font-medium',
-                'bg-blue-100 text-blue-700',
-                'hover:bg-blue-200',
+                'bg-blue-100 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300',
+                'hover:bg-blue-200 dark:hover:bg-blue-900/50',
                 'transition-colors duration-300'
               )}
             >
@@ -310,8 +310,8 @@ export default function AdminRedeemCodesPage() {
               disabled={deletingId === code.id}
               className={cn(
                 'rounded-lg px-3 py-1.5 font-ui text-xs font-medium',
-                'bg-red-100 text-red-700',
-                'hover:bg-red-200',
+                'bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300',
+                'hover:bg-red-200 dark:hover:bg-red-900/50',
                 'disabled:opacity-50 disabled:cursor-not-allowed',
                 'transition-colors duration-300'
               )}
@@ -399,10 +399,10 @@ export default function AdminRedeemCodesPage() {
         )}
       >
         <FadeIn variant="fade" delay={0.05}>
-          <div className="rounded-2xl bg-white/80 backdrop-blur-sm border border-stone-200 shadow-canvas p-6">
+          <div className="rounded-2xl bg-stone-50/80 dark:bg-stone-900/80 backdrop-blur-sm border border-stone-200 dark:border-stone-800 shadow-canvas p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   {t('filters.search')}
                 </label>
                 <input
@@ -411,9 +411,9 @@ export default function AdminRedeemCodesPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="输入兑换码搜索"
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
-                    'placeholder:text-stone-400',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
+                    'placeholder:text-stone-400 dark:placeholder:text-stone-500',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -421,15 +421,15 @@ export default function AdminRedeemCodesPage() {
               </div>
 
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   {t('filters.type')}
                 </label>
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value as RedeemCodeType | '')}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -441,15 +441,15 @@ export default function AdminRedeemCodesPage() {
               </div>
 
               <div>
-                <label className="block font-ui text-sm font-medium text-stone-700 mb-2">
+                <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                   {t('filters.status')}
                 </label>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as RedeemCodeStatus | '')}
                   className={cn(
-                    'w-full rounded-lg border border-stone-200 px-4 py-2',
-                    'font-ui text-sm text-stone-900',
+                    'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
+                    'font-ui text-sm text-stone-900 dark:text-stone-100',
                     'focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/20',
                     'transition-colors'
                   )}
@@ -476,7 +476,7 @@ export default function AdminRedeemCodesPage() {
 
         {filteredCodes.length > 0 && (
           <FadeIn variant="fade" delay={0.2}>
-            <div className="text-sm text-stone-600 text-center">
+            <div className="text-sm text-stone-600 dark:text-stone-400 text-center">
               显示 {filteredCodes.length} 个兑换码
               {(typeFilter || statusFilter || searchQuery) && ` (共 ${codes.length} 个)`}
             </div>
