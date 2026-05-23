@@ -7,6 +7,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { AdjustCreditsDto } from './dto/adjust-credits.dto';
 import { GrantMembershipDto } from './dto/grant-membership.dto';
 import { SendUserMessageDto } from './dto/send-user-message.dto';
+import { UpdateUserMembershipDto } from './dto/update-user-membership.dto';
 import { UpdateUserStatusDto } from './dto/update-user-status.dto';
 import { AdminUsersService } from './admin-users.service';
 
@@ -42,6 +43,11 @@ export class AdminUsersController {
   @Post(':id/membership')
   grantMembership(@Param('id') id: string, @Body() dto: GrantMembershipDto) {
     return this.usersService.grantMembership(BigInt(id), dto);
+  }
+
+  @Put(':id/membership')
+  updateMembership(@Param('id') id: string, @Body() dto: UpdateUserMembershipDto) {
+    return this.usersService.updateMembership(BigInt(id), dto);
   }
 
   @Post(':id/messages')

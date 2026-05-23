@@ -49,6 +49,31 @@ export interface AdminUserInvitee {
   createdAt: string
 }
 
+export interface AdminUserMembership {
+  isActive: boolean
+  levelId: string
+  levelName: string
+  levelNameEn?: string | null
+  color: string
+  dailyCredits?: number
+  dailyCreditsRemaining?: number
+  dailyCreditsDate?: string | null
+  expireAt: string
+  daysLeft: number
+}
+
+export interface AdminUserScheduledMembership {
+  id: string
+  levelId: string
+  levelName: string
+  levelNameEn?: string | null
+  color: string
+  dailyCredits: number
+  isLevelActive: boolean
+  startsAt: string
+  expireAt: string
+}
+
 // 用户列表项
 export interface AdminUserListItem {
   id: string
@@ -72,14 +97,8 @@ export interface AdminUserDetail extends AdminUser {
   invitedBy: AdminUserInviter | null
   inviteesCount: number
   invitees: AdminUserInvitee[]
-  membership?: {
-    isActive: boolean
-    levelId: string
-    levelName: string
-    color: string
-    expireAt: string
-    daysLeft: number
-  } | null
+  membership?: AdminUserMembership | null
+  scheduledMemberships?: AdminUserScheduledMembership[]
   authEvents: AdminUserAuthEvent[]
   // 注意：后端暂不返回以下字段，前端显示时使用 permanentCredits
   // creditsTotal, creditsUsed, imagesCount, videosCount, tasksCount
@@ -139,14 +158,27 @@ export interface GrantMembershipResult {
   expireAt: string
   durationDays: number
   grantedPermanentCredits: number
-  membership: {
-    isActive: boolean
-    levelId: string
-    levelName: string
-    color: string
-    expireAt: string
-    daysLeft: number
-  } | null
+  membership: AdminUserMembership | null
+}
+
+export interface UpdateUserMembershipDto {
+  action: 'update' | 'remove'
+  levelId?: string
+  expireAt?: string
+  dailyCredits?: number
+  clearScheduledMemberships?: boolean
+  notifyUser?: boolean
+  reason?: string
+}
+
+export interface UpdateUserMembershipResult {
+  ok: boolean
+  action: 'update' | 'remove'
+  clearScheduledMemberships: boolean
+  levelName: string | null
+  expireAt: string | null
+  dailyCredits: number
+  membership: AdminUserMembership | null
 }
 
 export interface SendUserMessageDto {

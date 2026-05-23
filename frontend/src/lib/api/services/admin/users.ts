@@ -11,6 +11,8 @@ import type {
   AdjustCreditsDto,
   GrantMembershipDto,
   GrantMembershipResult,
+  UpdateUserMembershipDto,
+  UpdateUserMembershipResult,
   SendUserMessageDto,
   UserCreationListResponse,
   PaginatedResponse,
@@ -60,6 +62,16 @@ export const adminUserService = {
     dto: GrantMembershipDto
   ): Promise<GrantMembershipResult> => {
     return adminApiClient.post(`/users/${id}/membership`, dto)
+  },
+
+  /**
+   * 管理员修改或移除用户会员信息
+   */
+  updateMembership: async (
+    id: string,
+    dto: UpdateUserMembershipDto
+  ): Promise<UpdateUserMembershipResult> => {
+    return adminApiClient.put(`/users/${id}/membership`, dto)
   },
 
   /**

@@ -3,12 +3,14 @@ import { CreditLogType, CreditSource, GalleryTargetType, MembershipPeriod, Prism
 
 import { calculateBanExpireAt } from '../../auth/ban.utils';
 import { AuthUserCacheService } from '../../auth/auth-user-cache.service';
+import { dateKeyToDateOnlyValue, toBeijingDateKey } from '../../common/utils/date-only.util';
 import { InboxService } from '../../inbox/inbox.service';
 import { MembershipsService } from '../../memberships/memberships.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AdjustCreditsDto } from './dto/adjust-credits.dto';
 import { GrantMembershipDto } from './dto/grant-membership.dto';
 import { SendUserMessageDto } from './dto/send-user-message.dto';
+import { UpdateUserMembershipDto } from './dto/update-user-membership.dto';
 import { UpdateUserStatusDto } from './dto/update-user-status.dto';
 
 type AdminCreditTransaction = {
@@ -74,6 +76,7 @@ export class AdminUsersService {
   }
 
   async detail(userId: bigint) {
+    const membership = await this.memberships.getUserMembership(userId);
     const [user, invitees, inviteesCount] = await Promise.all([
       this.prisma.user.findUnique({
         where: { id: userId },
@@ -85,6 +88,8 @@ export class AdminUsersService {
           inviteCode: true,
           invitedAt: true,
           permanentCredits: true,
+          membershipDailyCredits: true,
+          membershipDailyDate: true,
           role: true,
           status: true,
           banReason: true,
@@ -112,6 +117,28 @@ export class AdminUsersService {
               createdAt: true,
             },
           },
+          membershipSchedules: {
+            orderBy: [
+              { startsAt: 'asc' },
+              { id: 'asc' },
+            ],
+            select: {
+              id: true,
+              membershipLevelId: true,
+              startsAt: true,
+              expireAt: true,
+              membershipLevel: {
+                select: {
+                  id: true,
+                  name: true,
+                  nameEn: true,
+                  color: true,
+                  dailyCredits: true,
+                  isActive: true,
+                },
+              },
+            },
+          },
         },
       }),
       this.prisma.user.findMany({
@@ -135,10 +162,32 @@ export class AdminUsersService {
     ]);
 
     if (!user) throw new NotFoundException('User not found');
-    const membership = await this.memberships.getUserMembership(userId);
+    const {
+      membershipSchedules,
+      membershipDailyCredits,
+      membershipDailyDate,
+      ...userPayload
+    } = user;
     return {
-      ...user,
-      membership,
+      ...userPayload,
+      membership: membership
+        ? {
+            ...membership,
+            dailyCreditsRemaining: membershipDailyCredits,
+            dailyCreditsDate: membershipDailyDate,
+          }
+        : null,
+      scheduledMemberships: membershipSchedules.map((schedule) => ({
+        id: schedule.id.toString(),
+        levelId: schedule.membershipLevelId.toString(),
+        levelName: schedule.membershipLevel.name,
+        levelNameEn: schedule.membershipLevel.nameEn,
+        color: schedule.membershipLevel.color,
+        dailyCredits: schedule.membershipLevel.dailyCredits,
+        isLevelActive: schedule.membershipLevel.isActive,
+        startsAt: schedule.startsAt,
+        expireAt: schedule.expireAt,
+      })),
       invitedBy: user.invitedBy
         ? {
             id: user.invitedBy.id.toString(),
@@ -252,6 +301,159 @@ export class AdminUsersService {
         grantedPermanentCredits: result.grantedPermanentCredits,
       } satisfies Prisma.JsonObject,
     });
+    await this.authUserCache.invalidate(userId);
+
+    return {
+      ok: true,
+      ...result,
+      membership,
+    };
+  }
+
+  async updateMembership(userId: bigint, dto: UpdateUserMembershipDto) {
+    const notifyUser = dto.notifyUser !== false;
+    const reason = dto.reason?.trim() || null;
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          membershipLevelId: true,
+          membershipExpireAt: true,
+          membershipDailyCredits: true,
+        },
+      });
+      if (!user) throw new NotFoundException('User not found');
+
+      if (dto.action === 'remove') {
+        const clearScheduledMemberships = dto.clearScheduledMemberships !== false;
+
+        if (clearScheduledMemberships) {
+          await tx.userMembershipSchedule.deleteMany({ where: { userId } });
+        }
+
+        await tx.user.update({
+          where: { id: userId },
+          data: {
+            membershipLevelId: null,
+            membershipExpireAt: null,
+            membershipRateFenPerDay: null,
+            membershipDailyCredits: 0,
+            membershipDailyDate: null,
+          },
+        });
+
+        return {
+          action: 'remove' as const,
+          clearScheduledMemberships,
+          levelName: null,
+          expireAt: null,
+          dailyCredits: 0,
+        };
+      }
+
+      if (!dto.levelId) {
+        throw new BadRequestException('Membership level id is required');
+      }
+      if (!dto.expireAt) {
+        throw new BadRequestException('Membership expireAt is required');
+      }
+
+      let membershipLevelId: bigint;
+      try {
+        membershipLevelId = BigInt(dto.levelId);
+      } catch {
+        throw new BadRequestException('Invalid membership level id');
+      }
+
+      const targetLevel = await tx.membershipLevel.findUnique({
+        where: { id: membershipLevelId },
+        select: {
+          id: true,
+          name: true,
+          dailyCredits: true,
+        },
+      });
+      if (!targetLevel) throw new NotFoundException('Membership level not found');
+
+      const expireAt = new Date(dto.expireAt);
+      if (Number.isNaN(expireAt.getTime())) {
+        throw new BadRequestException('Invalid membership expireAt');
+      }
+      if (expireAt <= new Date()) {
+        throw new BadRequestException('Membership expireAt must be in the future');
+      }
+
+      const dailyCredits = dto.dailyCredits !== undefined
+        ? Math.max(0, Math.floor(dto.dailyCredits))
+        : Math.max(0, Math.floor(targetLevel.dailyCredits ?? 0));
+
+      if (dto.clearScheduledMemberships === true) {
+        await tx.userMembershipSchedule.deleteMany({ where: { userId } });
+      } else if (user.membershipExpireAt) {
+        await this.shiftUserMembershipSchedules(
+          tx,
+          userId,
+          expireAt.getTime() - user.membershipExpireAt.getTime(),
+        );
+      }
+
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          membershipLevelId,
+          membershipExpireAt: expireAt,
+          membershipRateFenPerDay: null,
+          membershipDailyCredits: dailyCredits,
+          membershipDailyDate: dateKeyToDateOnlyValue(toBeijingDateKey(new Date())),
+        },
+      });
+
+      return {
+        action: 'update' as const,
+        clearScheduledMemberships: dto.clearScheduledMemberships === true,
+        levelName: targetLevel.name,
+        expireAt,
+        dailyCredits,
+      };
+    });
+
+    const membership = await this.memberships.getUserMembership(userId, false);
+    await this.authUserCache.invalidate(userId);
+
+    if (notifyUser) {
+      if (result.action === 'remove') {
+        await this.inbox.sendSystemMessage({
+          userId,
+          type: 'membership_updated',
+          level: 'info',
+          title: '会员状态已调整',
+          content: `管理员已移除你的会员权益${result.clearScheduledMemberships ? '，并清除了排队会员' : ''}${reason ? `。原因：${reason}` : '。'}`,
+          meta: {
+            action: 'admin_remove_membership',
+            clearScheduledMemberships: result.clearScheduledMemberships,
+            reason,
+          } satisfies Prisma.JsonObject,
+        });
+      } else {
+        await this.inbox.sendSystemMessage({
+          userId,
+          type: 'membership_updated',
+          level: 'success',
+          title: '会员信息已调整',
+          content: `管理员已将你的会员调整为${result.levelName ? `「${result.levelName}」` : '新的会员等级'}，到期时间：${result.expireAt?.toLocaleString('zh-CN')}，今日会员积分余额：${result.dailyCredits}${result.clearScheduledMemberships ? '，并清除了排队会员' : ''}${reason ? `。原因：${reason}` : '。'}`,
+          meta: {
+            action: 'admin_update_membership',
+            levelName: result.levelName,
+            expireAt: result.expireAt?.toISOString() ?? null,
+            dailyCredits: result.dailyCredits,
+            clearScheduledMemberships: result.clearScheduledMemberships,
+            reason,
+          } satisfies Prisma.JsonObject,
+        });
+      }
+    }
 
     return {
       ok: true,
@@ -693,5 +895,33 @@ export class AdminUsersService {
     const total = imageTotal + videoTotal;
     const totalPages = Math.ceil(total / pageSize);
     return { items, total, page, pageSize, totalPages };
+  }
+
+  private async shiftUserMembershipSchedules(
+    tx: Prisma.TransactionClient,
+    userId: bigint,
+    deltaMs: number,
+  ) {
+    if (!Number.isFinite(deltaMs) || deltaMs === 0) return;
+
+    const schedules = await tx.userMembershipSchedule.findMany({
+      where: { userId },
+      orderBy: [{ startsAt: 'asc' }, { id: 'asc' }],
+      select: {
+        id: true,
+        startsAt: true,
+        expireAt: true,
+      },
+    });
+
+    for (const schedule of schedules) {
+      await tx.userMembershipSchedule.update({
+        where: { id: schedule.id },
+        data: {
+          startsAt: new Date(schedule.startsAt.getTime() + deltaMs),
+          expireAt: new Date(schedule.expireAt.getTime() + deltaMs),
+        },
+      });
+    }
   }
 }
