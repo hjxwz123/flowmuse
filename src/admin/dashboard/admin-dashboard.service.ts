@@ -25,6 +25,11 @@ type DailyCreditsTrendRow = {
   used?: number | string | bigint | null;
 };
 
+type DailyRevenueTrendRow = {
+  metricDate: Date | string;
+  amountFen?: number | string | bigint | null;
+};
+
 @Injectable()
 export class AdminDashboardService {
   constructor(
@@ -35,7 +40,7 @@ export class AdminDashboardService {
 
   async getDashboardData(range: string = '30d'): Promise<DashboardDataDto> {
     const normalizedRange = this.normalizeRange(range);
-    const cacheKey = `admin:dashboard:v3:${normalizedRange}`;
+    const cacheKey = `admin:dashboard:v4:${normalizedRange}`;
 
     try {
       const cached = await this.redis.getJson<DashboardDataDto>(cacheKey);
@@ -51,10 +56,11 @@ export class AdminDashboardService {
     const startDate = this.addDays(today, -(days - 1));
     const metrics = await this.metrics.ensureRange(startDate, today);
 
-    const [overview, modelUsage, taskTrend, creditsConsumption] = await Promise.all([
+    const [overview, modelUsage, taskTrend, revenueTrend, creditsConsumption] = await Promise.all([
       this.getOverviewStats(today),
       this.getModelUsage(),
       this.getTaskTrendData(startDate, days),
+      this.getRevenueTrendData(startDate, days),
       this.getCreditsConsumptionData(startDate, days),
     ]);
 
@@ -63,7 +69,7 @@ export class AdminDashboardService {
       userGrowth: this.buildUserGrowth(metrics, startDate, days),
       taskTrend,
       modelUsage,
-      revenueTrend: this.buildRevenueTrend(metrics, startDate, days),
+      revenueTrend,
       creditsConsumption,
     };
 
@@ -152,25 +158,22 @@ export class AdminDashboardService {
     const totalCreditsIssued = creditIssued._sum.amount || 0;
     const totalCreditsUsed = Math.abs(creditUsed._sum.amount || 0);
 
-    const [totalRevenueAggregate, todayRevenueAggregate] = await Promise.all([
+    const [totalRevenueAggregate, todayRevenueRows] = await Promise.all([
       this.prisma.paymentOrder.aggregate({
         where: { status: 'paid' },
         _sum: { amount: true },
       }),
-      this.prisma.paymentOrder.aggregate({
-        where: {
-          status: 'paid',
-          paidAt: {
-            gte: today,
-            lt: tomorrow,
-          },
-        },
-        _sum: { amount: true },
-      }),
+      this.prisma.$queryRaw<Array<{ amountFen?: number | string | bigint | null }>>(Prisma.sql`
+        SELECT COALESCE(SUM(amount), 0) AS amountFen
+        FROM payment_orders
+        WHERE status = 'paid'
+          AND COALESCE(paid_at, updated_at, created_at) >= ${today}
+          AND COALESCE(paid_at, updated_at, created_at) < ${tomorrow}
+      `),
     ]);
 
     const totalRevenue = (totalRevenueAggregate._sum.amount || 0) / 100;
-    const todayRevenue = (todayRevenueAggregate._sum.amount || 0) / 100;
+    const todayRevenue = this.toSafeNumber(todayRevenueRows[0]?.amountFen) / 100;
 
     return {
       totalUsers,
@@ -256,14 +259,6 @@ export class AdminDashboardService {
       .filter((item) => item.count > 0);
   }
 
-  private buildRevenueTrend(rows: DashboardDailyMetric[], startDate: Date, days: number) {
-    const map = this.toMetricMap(rows);
-    return this.buildDateSeries(startDate, days, (dateKey) => ({
-      date: dateKey,
-      amount: (map.get(dateKey)?.revenueFen ?? 0) / 100,
-    }));
-  }
-
   private toMetricMap(rows: DashboardDailyMetric[]) {
     return new Map(rows.map((row) => [this.toStoredDateKey(row.date), row]));
   }
@@ -277,14 +272,14 @@ export class AdminDashboardService {
         SUM(failed_count) AS failedCount
       FROM (
         SELECT
-          DATE(completed_at) AS metric_date,
+          DATE(COALESCE(completed_at, created_at)) AS metric_date,
           COUNT(1) AS completed_count,
           0 AS failed_count
         FROM image_tasks
         WHERE status = 'completed'
-          AND completed_at >= ${startDate}
-          AND completed_at < ${endExclusive}
-        GROUP BY DATE(completed_at)
+          AND COALESCE(completed_at, created_at) >= ${startDate}
+          AND COALESCE(completed_at, created_at) < ${endExclusive}
+        GROUP BY DATE(COALESCE(completed_at, created_at))
 
         UNION ALL
 
@@ -301,14 +296,14 @@ export class AdminDashboardService {
         UNION ALL
 
         SELECT
-          DATE(completed_at) AS metric_date,
+          DATE(COALESCE(completed_at, created_at)) AS metric_date,
           COUNT(1) AS completed_count,
           0 AS failed_count
         FROM video_tasks
         WHERE status = 'completed'
-          AND completed_at >= ${startDate}
-          AND completed_at < ${endExclusive}
-        GROUP BY DATE(completed_at)
+          AND COALESCE(completed_at, created_at) >= ${startDate}
+          AND COALESCE(completed_at, created_at) < ${endExclusive}
+        GROUP BY DATE(COALESCE(completed_at, created_at))
 
         UNION ALL
 
@@ -325,14 +320,14 @@ export class AdminDashboardService {
         UNION ALL
 
         SELECT
-          DATE(completed_at) AS metric_date,
+          DATE(COALESCE(completed_at, created_at)) AS metric_date,
           COUNT(1) AS completed_count,
           0 AS failed_count
         FROM research_tasks
         WHERE status = 'completed'
-          AND completed_at >= ${startDate}
-          AND completed_at < ${endExclusive}
-        GROUP BY DATE(completed_at)
+          AND COALESCE(completed_at, created_at) >= ${startDate}
+          AND COALESCE(completed_at, created_at) < ${endExclusive}
+        GROUP BY DATE(COALESCE(completed_at, created_at))
 
         UNION ALL
 
@@ -360,6 +355,32 @@ export class AdminDashboardService {
       date: dateKey,
       completed: this.toSafeNumber(map.get(dateKey)?.completedCount),
       failed: this.toSafeNumber(map.get(dateKey)?.failedCount),
+    }));
+  }
+
+  private async getRevenueTrendData(startDate: Date, days: number) {
+    const endExclusive = this.addDays(startDate, days);
+    const rows = await this.prisma.$queryRaw<DailyRevenueTrendRow[]>(Prisma.sql`
+      SELECT
+        DATE(COALESCE(paid_at, updated_at, created_at)) AS metricDate,
+        COALESCE(SUM(amount), 0) AS amountFen
+      FROM payment_orders
+      WHERE status = 'paid'
+        AND COALESCE(paid_at, updated_at, created_at) >= ${startDate}
+        AND COALESCE(paid_at, updated_at, created_at) < ${endExclusive}
+      GROUP BY DATE(COALESCE(paid_at, updated_at, created_at))
+      ORDER BY DATE(COALESCE(paid_at, updated_at, created_at)) ASC
+    `);
+
+    const map = new Map(
+      rows
+        .map((row) => [this.normalizeRawDateKey(row.metricDate), row] as const)
+        .filter((entry): entry is [string, DailyRevenueTrendRow] => Boolean(entry[0]))
+    );
+
+    return this.buildDateSeries(startDate, days, (dateKey) => ({
+      date: dateKey,
+      amount: this.toSafeNumber(map.get(dateKey)?.amountFen) / 100,
     }));
   }
 
@@ -451,12 +472,27 @@ export class AdminDashboardService {
     return text.length >= 10 ? text.slice(0, 10) : text;
   }
 
-  private toSafeNumber(value: number | string | bigint | null | undefined) {
+  private toSafeNumber(value: unknown) {
     if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
     if (typeof value === 'bigint') return Number(value);
     if (typeof value === 'string' && value.trim().length > 0) {
       const parsed = Number(value);
       return Number.isFinite(parsed) ? parsed : 0;
+    }
+    if (value && typeof value === 'object') {
+      if (value instanceof Prisma.Decimal) {
+        return value.toNumber();
+      }
+
+      const maybeDecimal = value as { toNumber?: () => number; toString?: () => string };
+      if (typeof maybeDecimal.toNumber === 'function') {
+        const parsed = maybeDecimal.toNumber();
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+      if (typeof maybeDecimal.toString === 'function') {
+        const parsed = Number(maybeDecimal.toString());
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
     }
     return 0;
   }

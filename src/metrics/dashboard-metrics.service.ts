@@ -97,36 +97,36 @@ export class DashboardMetricsService {
       `),
       this.prisma.$queryRaw<DailyCountRow[]>(Prisma.sql`
         SELECT
-          DATE(completed_at) AS metricDate,
+          DATE(COALESCE(completed_at, created_at)) AS metricDate,
           SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completedCount,
           SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) AS failedCount
         FROM image_tasks
-        WHERE completed_at >= ${normalizedStart}
-          AND completed_at < ${endExclusive}
+        WHERE COALESCE(completed_at, created_at) >= ${normalizedStart}
+          AND COALESCE(completed_at, created_at) < ${endExclusive}
           AND status IN ('completed', 'failed')
-        GROUP BY DATE(completed_at)
+        GROUP BY DATE(COALESCE(completed_at, created_at))
       `),
       this.prisma.$queryRaw<DailyCountRow[]>(Prisma.sql`
         SELECT
-          DATE(completed_at) AS metricDate,
+          DATE(COALESCE(completed_at, created_at)) AS metricDate,
           SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) AS completedCount,
           SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) AS failedCount
         FROM video_tasks
-        WHERE completed_at >= ${normalizedStart}
-          AND completed_at < ${endExclusive}
+        WHERE COALESCE(completed_at, created_at) >= ${normalizedStart}
+          AND COALESCE(completed_at, created_at) < ${endExclusive}
           AND status IN ('completed', 'failed')
-        GROUP BY DATE(completed_at)
+        GROUP BY DATE(COALESCE(completed_at, created_at))
       `),
       this.prisma.$queryRaw<DailyCountRow[]>(Prisma.sql`
         SELECT
-          DATE(paid_at) AS metricDate,
+          DATE(COALESCE(paid_at, updated_at, created_at)) AS metricDate,
           COUNT(1) AS paidOrders,
           COALESCE(SUM(amount), 0) AS revenueFen
         FROM payment_orders
         WHERE status = 'paid'
-          AND paid_at >= ${normalizedStart}
-          AND paid_at < ${endExclusive}
-        GROUP BY DATE(paid_at)
+          AND COALESCE(paid_at, updated_at, created_at) >= ${normalizedStart}
+          AND COALESCE(paid_at, updated_at, created_at) < ${endExclusive}
+        GROUP BY DATE(COALESCE(paid_at, updated_at, created_at))
       `),
       this.prisma.$queryRaw<DailyCountRow[]>(Prisma.sql`
         SELECT
@@ -257,12 +257,27 @@ export class DashboardMetricsService {
     return text.length >= 10 ? text.slice(0, 10) : text;
   }
 
-  private toSafeNumber(value: bigint | number | string | null | undefined) {
+  private toSafeNumber(value: unknown) {
     if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
     if (typeof value === 'bigint') return Number(value);
     if (typeof value === 'string' && value.trim().length > 0) {
       const parsed = Number(value);
       return Number.isFinite(parsed) ? parsed : 0;
+    }
+    if (value && typeof value === 'object') {
+      if (value instanceof Prisma.Decimal) {
+        return value.toNumber();
+      }
+
+      const maybeDecimal = value as { toNumber?: () => number; toString?: () => string };
+      if (typeof maybeDecimal.toNumber === 'function') {
+        const parsed = maybeDecimal.toNumber();
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+      if (typeof maybeDecimal.toString === 'function') {
+        const parsed = Number(maybeDecimal.toString());
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
     }
     return 0;
   }
