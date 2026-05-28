@@ -4,7 +4,6 @@ import { LandingExploreGalleryButton } from './LandingExploreGalleryButton'
 import { LandingGalleryReveal } from './LandingGalleryReveal'
 import { LandingHeroForm } from './LandingHeroForm'
 import { LandingHomePageShellClient } from './LandingHomePageShellClient'
-import { LandingModelShowcase } from './LandingModelShowcase'
 import { LandingPublicGalleryClient } from './LandingPublicGalleryClient'
 import { LandingTopBarClient } from './LandingTopBarClient'
 import {
@@ -80,8 +79,6 @@ export function LandingHomePage({
 
         <LandingExploreGalleryButton label={copy.exploreGallery} />
       </section>
-
-      <LandingModelShowcase locale={locale} />
 
       <section id="landing-public-gallery" className={styles.gallerySection}>
         <LandingGalleryReveal>

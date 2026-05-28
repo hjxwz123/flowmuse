@@ -193,8 +193,7 @@ export function LandingHomePageShellClient({
   }, [isTransitioning, router])
 
   const scrollToGallery = useCallback(() => {
-    const target = document.getElementById('landing-model-showcase')
-      ?? document.getElementById('landing-public-gallery')
+    const target = document.getElementById('landing-public-gallery')
 
     target?.scrollIntoView({
       behavior: 'smooth',
