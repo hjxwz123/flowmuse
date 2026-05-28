@@ -304,6 +304,8 @@ function normalizeTaskRef(taskRef: unknown): ChatTaskRef | null {
     kind,
     taskId,
     taskNo: typeof source.taskNo === 'string' ? source.taskNo : undefined,
+    taskGroupId:
+      typeof source.taskGroupId === 'string' ? source.taskGroupId : source.taskGroupId === null ? null : undefined,
     status,
     shotId: typeof source.shotId === 'string' ? source.shotId : undefined,
     finalStoryboard: source.finalStoryboard === true ? true : undefined,
@@ -373,6 +375,10 @@ function normalizeMediaAgentMetadata(message: ChatMessage & { imageAgent?: unkno
       typeof mediaAgent.referenceAudioCount === 'number' && Number.isFinite(mediaAgent.referenceAudioCount)
         ? Math.max(0, Math.trunc(mediaAgent.referenceAudioCount))
         : 0,
+    generationCount:
+      typeof mediaAgent.generationCount === 'number' && Number.isFinite(mediaAgent.generationCount)
+        ? Math.min(9, Math.max(1, Math.trunc(mediaAgent.generationCount)))
+        : 1,
     autoCreated: mediaAgent.autoCreated === true,
   }
 }
@@ -982,6 +988,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
   const [selectedAgentAspectRatio, setSelectedAgentAspectRatio] = useState(AUTO_AGENT_OPTION_VALUE)
   const [selectedAgentResolution, setSelectedAgentResolution] = useState(AUTO_AGENT_OPTION_VALUE)
   const [selectedAgentDuration, setSelectedAgentDuration] = useState(AUTO_AGENT_OPTION_VALUE)
+  const [agentGenerationCount, setAgentGenerationCount] = useState(1)
 
   const [conversations, setConversations] = useState<ChatConversation[]>([])
   const [projects, setProjects] = useState<ProjectSummary[]>([])
@@ -1439,6 +1446,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
     [storyboardStatusByProjectId, storyboardStatusTargets]
   )
   const selectedAgentModelType = selectedAgentModel?.type === 'video' ? 'video' : 'image'
+  const showAgentGenerationCount = selectedAgentModelType === 'image'
   const researchModelId = activeConversation?.model.id || selectedModelId
 
   const supportsImageUpload = activeConversation
@@ -2104,6 +2112,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
     setSelectedAgentAspectRatio(AUTO_AGENT_OPTION_VALUE)
     setSelectedAgentResolution(AUTO_AGENT_OPTION_VALUE)
     setSelectedAgentDuration(AUTO_AGENT_OPTION_VALUE)
+    setAgentGenerationCount(1)
   }, [selectedAgentModelId])
 
   useEffect(() => {
@@ -3297,6 +3306,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
                 referenceVideos: videos.length > 0 ? videos : undefined,
                 referenceAudios: audios.length > 0 ? audios : undefined,
                 autoCreate: false,
+                generationCount: showAgentGenerationCount ? agentGenerationCount : 1,
               },
             }
           : useAutoMode
@@ -4022,6 +4032,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
               useConversationContextEdit: metadata.intent === 'edit',
               userMessageContent: confirmationMessageContent,
               sourceAssistantMessageId: assistantMessage.id,
+              generationCount: metadata.generationCount,
             })
 
       const normalizedUserMessage = normalizeMessageShape(result.userMessage)
@@ -4037,11 +4048,10 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
       ])
       appendOrReplaceConversation(result.conversation)
 
-      const firstTaskRef = normalizedAssistantMessage.taskRefs[0]
-      if (firstTaskRef) {
-        bootstrappedTaskIdsRef.current.add(`${firstTaskRef.kind}:${firstTaskRef.taskId}`)
-        void refreshTask(firstTaskRef.kind, firstTaskRef.taskId)
-      }
+      normalizedAssistantMessage.taskRefs.forEach((taskRef) => {
+        bootstrappedTaskIdsRef.current.add(`${taskRef.kind}:${taskRef.taskId}`)
+        void refreshTask(taskRef.kind, taskRef.taskId)
+      })
 
       const lastMessageId = messages[messages.length - 1]?.id
       if (assistantMessage.id === lastMessageId) {
@@ -5411,6 +5421,11 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
                                       : `${mediaAgentMetadata.referenceAudioCount} audio reference${mediaAgentMetadata.referenceAudioCount > 1 ? 's' : ''}`}
                                   </span>
                                 ) : null}
+                                {mediaAgentMetadata.modelType === 'image' && mediaAgentMetadata.generationCount > 1 ? (
+                                  <span className={styles.imageAgentMetaTag}>
+                                    {isZh ? `${mediaAgentMetadata.generationCount} 张` : `${mediaAgentMetadata.generationCount} images`}
+                                  </span>
+                                ) : null}
                               </div>
 
                               <p className={styles.imageAgentMetaPrompt}>
@@ -5987,6 +6002,24 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
                                 compact
                                 className={cn(styles.inlineModelSelect, styles.inlineModelSelectCompact)}
                               />
+
+                              {showAgentGenerationCount ? (
+                                <label className={styles.generationCountSelectWrap}>
+                                  <span>{isZh ? '张数' : 'Images'}</span>
+                                  <select
+                                    value={agentGenerationCount}
+                                    onChange={(event) => setAgentGenerationCount(Number(event.target.value))}
+                                    disabled={isSending || isSwitchingModel || isUploadingAgentReferences}
+                                    className={styles.generationCountSelect}
+                                  >
+                                    {Array.from({ length: 9 }, (_, index) => index + 1).map((count) => (
+                                      <option key={count} value={count}>
+                                        {count}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </label>
+                              ) : null}
 
                               <button
                                 type="button"

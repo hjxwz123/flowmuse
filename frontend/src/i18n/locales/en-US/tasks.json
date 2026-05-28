@@ -8,6 +8,10 @@
     "total": "{count} tasks",
     "visible": "{count} shown"
   },
+  "group": {
+    "title": "Same generation ({count} tasks)",
+    "badge": "Task group"
+  },
   "tabs": {
     "all": "All",
     "pending": "Pending",

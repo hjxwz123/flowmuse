@@ -18,6 +18,9 @@ export class ImagesController {
 
   @Post('generate')
   generate(@CurrentUser('id') userId: bigint, @Body() dto: ImageGenerateDto) {
+    if (dto.generationCount !== undefined) {
+      return this.imagesService.generateMany(userId, dto, dto.generationCount);
+    }
     return this.imagesService.generate(userId, dto);
   }
 

@@ -14,6 +14,7 @@ export interface VideoTask {
   channelId: string
   projectId?: string | null
   taskNo: string
+  taskGroupId: string | null
   provider: string
   providerTaskId: string | null
   prompt: string
@@ -48,6 +49,7 @@ export interface GenerateVideoDto {
   parameters?: Record<string, unknown>
   toolId?: string
   projectId?: string
+  taskGroupId?: string
 }
 
 export type SeedanceInputUploadKind = 'image' | 'video' | 'audio'

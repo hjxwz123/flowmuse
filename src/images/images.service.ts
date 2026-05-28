@@ -132,6 +132,15 @@ export class ImagesService {
     return model.creditsPerUse;
   }
 
+  private resolveTaskGroupId(input?: string | null) {
+    const normalized = typeof input === 'string' ? input.trim() : '';
+    if (!normalized) return `grp_${nanoid(24)}`;
+    if (!/^[a-zA-Z0-9_-]{1,64}$/.test(normalized)) {
+      throw new BadRequestException('Invalid taskGroupId');
+    }
+    return normalized;
+  }
+
   estimateTaskCredits(
     model: {
       creditsPerUse: number;
@@ -477,7 +486,12 @@ export class ImagesService {
     return Object.keys(targetParams).length > 0 ? targetParams : undefined;
   }
 
-  async generate(userId: bigint, dto: ImageGenerateDto) {
+  async generateMany(userId: bigint, dto: ImageGenerateDto, count = 1) {
+    const generationCount = Math.trunc(Number(count));
+    if (!Number.isInteger(generationCount) || generationCount < 1 || generationCount > 9) {
+      throw new BadRequestException('generationCount must be between 1 and 9');
+    }
+
     const modelId = BigInt(dto.modelId);
     let parsedProjectId: bigint | null = null;
     if (dto.projectId) {
@@ -506,7 +520,9 @@ export class ImagesService {
       },
     );
 
-    const task = await this.prisma.$transaction(async (tx) => {
+    const taskGroupId = this.resolveTaskGroupId(dto.taskGroupId);
+
+    const tasks = await this.prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({ where: { id: userId }, select: { status: true } });
       if (!user) throw new NotFoundException('User not found');
       if (user.status !== UserStatus.active) throw new ForbiddenException('User is banned');
@@ -538,38 +554,54 @@ export class ImagesService {
       // 计算总积分消耗：基础积分 + 额外积分（基于分辨率、时长等参数）
       const cost = this.estimateTaskCredits(model, dto.parameters as Record<string, unknown>);
       const available = await this.credits.getTotalAvailableCredits(tx, userId);
-      if (available.total < cost) throw new BadRequestException('Insufficient credits');
+      if (available.total < cost * generationCount) throw new BadRequestException('Insufficient credits');
       const projectId = await this.resolveProjectId(tx, userId, dto.projectId);
+      const createdTasks: ImageTask[] = [];
 
-      const task = await tx.imageTask.create({
-        data: {
-          userId,
-          modelId: model.id,
-          channelId: model.channelId,
-          ...(projectId ? { projectId } : {}),
-          taskNo: `img_${nanoid(24)}`,
-          provider: model.provider,
-          prompt: finalPrompt,
-          negativePrompt: dto.negativePrompt,
-          parameters: dto.parameters as Prisma.InputJsonValue,
-          status: TaskStatus.pending,
-          creditsCost: cost,
-          ...(dto.toolId ? { toolId: BigInt(dto.toolId) } : {}),
-        },
-      });
+      for (let index = 0; index < generationCount; index += 1) {
+        const task = await tx.imageTask.create({
+          data: {
+            userId,
+            modelId: model.id,
+            channelId: model.channelId,
+            ...(projectId ? { projectId } : {}),
+            taskNo: `img_${nanoid(24)}`,
+            taskGroupId,
+            provider: model.provider,
+            prompt: finalPrompt,
+            negativePrompt: dto.negativePrompt,
+            parameters: dto.parameters as Prisma.InputJsonValue,
+            status: TaskStatus.pending,
+            creditsCost: cost,
+            ...(dto.toolId ? { toolId: BigInt(dto.toolId) } : {}),
+          },
+        });
 
-      const consumption = await this.credits.consumeCredits(tx, userId, cost, task.id, `Image task ${task.taskNo}`);
+        const consumption = await this.credits.consumeCredits(tx, userId, cost, task.id, `Image task ${task.taskNo}`);
 
-      const updated = await tx.imageTask.update({
-        where: { id: task.id },
-        data: { creditSource: consumption.creditSource },
-      });
+        const updated = await tx.imageTask.update({
+          where: { id: task.id },
+          data: { creditSource: consumption.creditSource },
+        });
 
-      return updated;
+        createdTasks.push(updated);
+      }
+
+      return createdTasks;
     });
 
-    await this.imageQueue.add('generate', { taskId: task.id.toString() }, { jobId: `${task.id.toString()}-${task.retryCount}` });
-    return serializeImageTask(task);
+    await Promise.all(
+      tasks.map((task) =>
+        this.imageQueue.add('generate', { taskId: task.id.toString() }, { jobId: `${task.id.toString()}-${task.retryCount}` }),
+      ),
+    );
+
+    return tasks.map(serializeImageTask);
+  }
+
+  async generate(userId: bigint, dto: ImageGenerateDto) {
+    const [task] = await this.generateMany(userId, dto, 1);
+    return task;
   }
 
   async listTasks(userId: bigint, pagination: PaginationDto, status?: string): Promise<PaginatedResult<any>> {
@@ -750,6 +782,7 @@ export class ImagesService {
       modelId: targetModel.id.toString(),
       prompt: ownedTask.prompt,
       negativePrompt: ownedTask.negativePrompt ?? undefined,
+      taskGroupId: ownedTask.taskGroupId ?? undefined,
       ...(ownedTask.projectId ? { projectId: ownedTask.projectId.toString(), skipProjectPromptTransform: true } : {}),
       ...(parameters ? { parameters } : {}),
     });
@@ -789,6 +822,7 @@ export class ImagesService {
           channelId: ownedParent.channelId,
           ...(ownedParent.projectId ? { projectId: ownedParent.projectId } : {}),
           taskNo: `img_${nanoid(24)}`,
+          taskGroupId: ownedParent.taskGroupId ?? `task_${ownedParent.id.toString()}`,
           provider: ownedParent.provider,
           prompt: ownedParent.prompt,
           negativePrompt: ownedParent.negativePrompt,
@@ -949,6 +983,7 @@ export class ImagesService {
           channelId: ownedParent.channelId,
           ...(ownedParent.projectId ? { projectId: ownedParent.projectId } : {}),
           taskNo: `img_${nanoid(24)}`,
+          taskGroupId: ownedParent.taskGroupId ?? `task_${ownedParent.id.toString()}`,
           provider: ownedParent.provider,
           prompt: dto.prompt,
           negativePrompt: ownedParent.negativePrompt,

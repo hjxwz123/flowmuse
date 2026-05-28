@@ -54,6 +54,7 @@ type ChatTaskRef = {
   kind: 'image' | 'video';
   taskId: string;
   taskNo?: string;
+  taskGroupId?: string | null;
   status?: 'pending' | 'processing' | 'completed' | 'failed';
   shotId?: string;
   finalStoryboard?: boolean;
@@ -4022,6 +4023,7 @@ export class AutoProjectWorkflowService {
           currentImages: referenceImages,
           preferredAspectRatio: plan.preferredAspectRatio,
           preferredResolution: plan.preferredResolution,
+          taskGroupId: `chat_auto_${params.conversationId.toString()}`,
         });
 
         await this.attachAutoProjectAssetMetadataToTask({
@@ -4173,6 +4175,7 @@ export class AutoProjectWorkflowService {
           preferredResolution: params.autoProjectAgent.preferredResolution ?? shot.preferredResolution,
           preferredDuration: shot.duration,
           modelOverride: wanxT2vModelOverride,
+          taskGroupId: `chat_auto_${params.conversationId.toString()}`,
         });
 
         await this.attachAutoProjectAssetMetadataToTask({
@@ -5192,6 +5195,7 @@ export class AutoProjectWorkflowService {
     currentImages: string[];
     preferredAspectRatio?: string | null;
     preferredResolution?: string | null;
+    taskGroupId?: string;
   }) {
     const imageModelId = this.parseBigInt(params.imageModelIdRaw, 'modelId');
     const imageModel = await this.prisma.aiModel.findFirst({
@@ -5238,6 +5242,7 @@ export class AutoProjectWorkflowService {
       negativePrompt: params.negativePrompt,
       parameters: Object.keys(mergedParameters).length > 0 ? mergedParameters : undefined,
       projectId: params.projectId.toString(),
+      taskGroupId: params.taskGroupId,
     });
 
     return {
@@ -5259,6 +5264,7 @@ export class AutoProjectWorkflowService {
     preferredResolution?: string | null;
     preferredDuration?: string | null;
     modelOverride?: string | null;
+    taskGroupId?: string;
   }) {
     const videoModelId = this.parseBigInt(params.videoModelIdRaw, 'modelId');
     const videoModel = await this.prisma.aiModel.findFirst({
@@ -5333,6 +5339,7 @@ export class AutoProjectWorkflowService {
       prompt: params.prompt,
       parameters: Object.keys(mergedParameters).length > 0 ? mergedParameters : undefined,
       projectId: params.projectId.toString(),
+      taskGroupId: params.taskGroupId,
     });
 
     return {
@@ -5552,6 +5559,7 @@ export class AutoProjectWorkflowService {
   private toChatImageTaskRef(task: {
     id: string;
     taskNo: string;
+    taskGroupId?: string | null;
     status: 'pending' | 'processing' | 'completed' | 'failed';
     modelId: string;
     provider: string;
@@ -5567,6 +5575,7 @@ export class AutoProjectWorkflowService {
       kind: 'image',
       taskId: task.id,
       taskNo: task.taskNo,
+      taskGroupId: task.taskGroupId ?? null,
       status: task.status,
       modelId: task.modelId,
       provider: task.provider,
@@ -5583,6 +5592,7 @@ export class AutoProjectWorkflowService {
   private toChatVideoTaskRef(task: {
     id: string;
     taskNo: string;
+    taskGroupId?: string | null;
     status: 'pending' | 'processing' | 'completed' | 'failed';
     modelId: string;
     provider: string;
@@ -5603,6 +5613,7 @@ export class AutoProjectWorkflowService {
       kind: 'video',
       taskId: task.id,
       taskNo: task.taskNo,
+      taskGroupId: task.taskGroupId ?? null,
       status: task.status,
       modelId: task.modelId,
       provider: task.provider,

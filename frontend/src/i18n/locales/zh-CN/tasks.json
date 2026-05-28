@@ -8,6 +8,10 @@
     "total": "{count} 个任务",
     "visible": "显示 {count} 个"
   },
+  "group": {
+    "title": "同批生成（{count} 个任务）",
+    "badge": "同一任务组"
+  },
   "tabs": {
     "all": "全部",
     "pending": "等待中",

@@ -403,6 +403,7 @@ model ImageTask {
   channelId     BigInt     @map("channel_id") @db.BigInt
   projectId     BigInt?    @map("project_id") @db.BigInt
   taskNo        String     @unique @map("task_no") @db.VarChar(64)
+  taskGroupId   String?    @map("task_group_id") @db.VarChar(64)
   provider      String     @db.VarChar(50)
   providerTaskId String?   @map("provider_task_id") @db.VarChar(255)
   prompt        String     @db.Text
@@ -441,6 +442,7 @@ model ImageTask {
   @@index([publicModerationStatus, createdAt], name: "idx_public_moderation")
   @@index([provider, providerTaskId], name: "idx_provider_task")
   @@index([projectId, createdAt], name: "idx_project_time")
+  @@index([taskGroupId, createdAt], name: "image_task_idx_group_time")
   @@index([status, createdAt], name: "idx_status")
   @@index([userId, status, createdAt], name: "image_task_idx_user_status_created")
   @@index([channelId, status, completedAt], name: "image_task_idx_channel_status_completed")
@@ -455,6 +457,7 @@ model VideoTask {
   channelId     BigInt     @map("channel_id") @db.BigInt
   projectId     BigInt?    @map("project_id") @db.BigInt
   taskNo        String     @unique @map("task_no") @db.VarChar(64)
+  taskGroupId   String?    @map("task_group_id") @db.VarChar(64)
   provider      String     @db.VarChar(50)
   providerTaskId String?   @map("provider_task_id") @db.VarChar(255)
   prompt        String     @db.Text
@@ -494,6 +497,7 @@ model VideoTask {
   @@index([publicModerationStatus, createdAt], name: "idx_public_moderation")
   @@index([provider, providerTaskId], name: "idx_provider_task")
   @@index([projectId, createdAt], name: "idx_project_time")
+  @@index([taskGroupId, createdAt], name: "video_task_idx_group_time")
   @@index([projectId, autoProjectFinalStoryboard, autoProjectShotId, createdAt], name: "idx_project_storyboard_lookup")
   @@index([projectId, autoProjectWorkflowStage, createdAt], name: "idx_project_auto_stage_time")
   @@index([status, createdAt], name: "idx_status")

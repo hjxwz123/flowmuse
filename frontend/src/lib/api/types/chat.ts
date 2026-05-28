@@ -37,6 +37,7 @@ export interface ChatTaskRef {
   kind: 'image' | 'video'
   taskId: string
   taskNo?: string
+  taskGroupId?: string | null
   status?: 'pending' | 'processing' | 'completed' | 'failed'
   shotId?: string
   finalStoryboard?: boolean
@@ -71,6 +72,7 @@ export interface ChatMediaAgentMetadata {
   referenceImageCount: number
   referenceVideoCount: number
   referenceAudioCount: number
+  generationCount: number
   autoCreated: boolean
 }
 
@@ -216,6 +218,7 @@ export interface SendMessageRequest {
     referenceVideos?: string[]
     referenceAudios?: string[]
     autoCreate?: boolean
+    generationCount?: number
   }
   autoProjectAgent?: {
     enabled: boolean
@@ -238,6 +241,8 @@ export interface CreateChatImageTaskRequest {
   parameters?: Record<string, unknown>
   userMessageContent?: string
   sourceAssistantMessageId?: string
+  generationCount?: number
+  taskGroupId?: string
 }
 
 export interface CreateChatVideoTaskRequest {

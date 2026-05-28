@@ -100,6 +100,15 @@ type QuickStartDragState = {
 }
 
 const MENTIONED_MEDIA_PROMPT_REGEX = /@(?=(?:图|图片|视频|音频)\d+)/g
+const GENERATION_COUNT_OPTIONS = Array.from({ length: 9 }, (_, index) => index + 1)
+
+function createClientTaskGroupId(prefix: string) {
+  const randomPart =
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID().replace(/-/g, '').slice(0, 18)
+      : Math.random().toString(36).slice(2, 20)
+  return `${prefix}_${Date.now().toString(36)}_${randomPart}`.slice(0, 64)
+}
 
 function getMentionMediaTypeLabel(kind: MentionMediaKind) {
   if (kind === 'video') return '视频'
@@ -371,6 +380,7 @@ export function SimplifiedCreateContent() {
 
   // 创作参数
   const [selectedModelId, setSelectedModelId] = useState<string>('')
+  const [generationCount, setGenerationCount] = useState(1)
   const [prompt, setPrompt] = useState('')
   const promptEditorRef = useRef<HTMLDivElement | null>(null)
   const promptTextareaRef = useRef<HTMLDivElement | null>(null)
@@ -1584,6 +1594,9 @@ export function SimplifiedCreateContent() {
     supportsResolutionSelect,
     supportsSizeSelect,
   ])
+  const totalEstimatedCredits = activeTab === 'image'
+    ? estimatedCredits * generationCount
+    : estimatedCredits
 
   // 当切换模型时，重置尺寸选项为第一个
   useEffect(() => {
@@ -2434,6 +2447,12 @@ export function SimplifiedCreateContent() {
         prompt: requestPrompt,
         negativePrompt: negativePrompt.trim() || undefined,
         projectId: selectedProjectId || undefined,
+        ...(activeTab === 'image'
+          ? {
+              taskGroupId: createClientTaskGroupId('create_img'),
+              generationCount,
+            }
+          : {}),
         ...(activeTab === 'image' && selectedProjectId
           ? { skipProjectPromptTransform: true }
           : {}),
@@ -2441,12 +2460,14 @@ export function SimplifiedCreateContent() {
       }
 
       // 调用对应的生成服务
-      const createdTask =
+      const createdTasks =
         activeTab === 'image'
-          ? await imageService.generate(requestData)
-          : await videoService.generate(requestData)
+          ? await imageService.generateMany({ ...requestData, generationCount })
+          : [await videoService.generate(requestData)]
 
-      upsertTaskInTasksViewCache(user?.id ?? null, createdTask)
+      createdTasks.forEach((createdTask) => {
+        upsertTaskInTasksViewCache(user?.id ?? null, createdTask)
+      })
 
       toast.success(t('success.title'))
 
@@ -2651,10 +2672,10 @@ export function SimplifiedCreateContent() {
             <span className="inline-flex max-w-full truncate rounded-full border border-stone-200 bg-stone-50 px-2 py-0.5 text-[10px] font-medium text-stone-600 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300">
                 {modeBadgeLabel}
               </span>
-            {selectedModel && estimatedCredits > 0 ? (
+            {selectedModel && totalEstimatedCredits > 0 ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
                 <Coins className="h-3 w-3" />
-                {estimatedCredits} {t('cost.credits')}
+                {totalEstimatedCredits} {t('cost.credits')}
               </span>
             ) : null}
           </div>
@@ -2671,6 +2692,23 @@ export function SimplifiedCreateContent() {
               compact
             />
           </div>
+          {activeTab === 'image' ? (
+            <label className="flex h-11 w-full shrink-0 items-center justify-between gap-3 rounded-[16px] border border-stone-200 bg-stone-50 px-3 text-sm font-medium text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 sm:w-auto sm:min-w-[132px]">
+              <span className="whitespace-nowrap">{t('form.generationCount.label')}</span>
+              <select
+                value={generationCount}
+                onChange={(event) => setGenerationCount(Number(event.target.value))}
+                disabled={loading}
+                className="h-8 rounded-xl border border-stone-200 bg-stone-100 px-2 text-sm font-semibold text-stone-900 outline-none focus:border-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:focus:border-stone-500"
+              >
+                {GENERATION_COUNT_OPTIONS.map((count) => (
+                  <option key={count} value={count}>
+                    {count}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <Button
             onClick={handleSubmit}
             disabled={loading || !selectedModelId || !hasRequestPrompt}

@@ -40,6 +40,10 @@ export const imageService = {
     return apiClient.post('/images/generate', normalizeGenerateImagePayload(data))
   },
 
+  async generateMany(data: GenerateImageDto & { generationCount: number }): Promise<ApiTask[]> {
+    return apiClient.post('/images/generate', normalizeGenerateImagePayload(data))
+  },
+
   /**
    * 获取图片任务列表
    * GET /images/tasks

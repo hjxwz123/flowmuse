@@ -1,4 +1,5 @@
-import { ArrayMaxSize, IsArray, IsBoolean, IsObject, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ArrayMaxSize, IsArray, IsBoolean, IsInt, IsObject, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 export class CreateChatImageTaskDto {
   @IsString()
@@ -46,4 +47,16 @@ export class CreateChatImageTaskDto {
   @IsOptional()
   @IsString()
   sourceAssistantMessageId?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(9)
+  generationCount?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  taskGroupId?: string;
 }

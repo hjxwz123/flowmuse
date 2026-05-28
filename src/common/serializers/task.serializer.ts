@@ -12,6 +12,7 @@ export type ApiTask = {
   channelId: string;
   projectId: string | null;
   taskNo: string;
+  taskGroupId: string | null;
   provider: string;
   providerTaskId: string | null;
   prompt: string;
@@ -73,6 +74,7 @@ export function serializeImageTask(task: ImageTask & WithOptionalTool): ApiTask 
     channelId: task.channelId.toString(),
     projectId: (task as any).projectId?.toString() ?? null,
     taskNo: task.taskNo,
+    taskGroupId: (task as any).taskGroupId ?? null,
     provider: task.provider,
     providerTaskId: task.providerTaskId ?? null,
     prompt: toolId ? '' : task.prompt,
@@ -116,6 +118,7 @@ export function serializeVideoTask(
     channelId: task.channelId.toString(),
     projectId: (task as any).projectId?.toString() ?? null,
     taskNo: task.taskNo,
+    taskGroupId: (task as any).taskGroupId ?? null,
     provider: task.provider,
     providerTaskId: task.providerTaskId ?? null,
     prompt: toolId ? '' : task.prompt,
@@ -159,6 +162,7 @@ export function serializeImageTaskLite(task: ImageTask & WithOptionalTool): ApiT
     channelId: task.channelId.toString(),
     projectId: (task as any).projectId?.toString() ?? null,
     taskNo: task.taskNo,
+    taskGroupId: (task as any).taskGroupId ?? null,
     provider: task.provider,
     providerTaskId: task.providerTaskId ?? null,
     prompt: toolId ? '' : task.prompt,
@@ -198,6 +202,7 @@ export function serializeVideoTaskLite(task: VideoTask & WithOptionalTool): ApiT
     channelId: task.channelId.toString(),
     projectId: (task as any).projectId?.toString() ?? null,
     taskNo: task.taskNo,
+    taskGroupId: (task as any).taskGroupId ?? null,
     provider: task.provider,
     providerTaskId: task.providerTaskId ?? null,
     prompt: toolId ? '' : task.prompt,

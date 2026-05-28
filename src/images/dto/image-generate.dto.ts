@@ -1,4 +1,5 @@
-import { IsBoolean, IsObject, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsInt, IsObject, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 export class ImageGenerateDto {
   @IsString()
@@ -25,6 +26,18 @@ export class ImageGenerateDto {
   @IsOptional()
   @IsString()
   projectId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  taskGroupId?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(9)
+  generationCount?: number;
 
   @IsOptional()
   @IsBoolean()

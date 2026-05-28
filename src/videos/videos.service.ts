@@ -172,6 +172,15 @@ export class VideosService {
     return model.creditsPerUse;
   }
 
+  private resolveTaskGroupId(input?: string | null) {
+    const normalized = typeof input === 'string' ? input.trim() : '';
+    if (!normalized) return `grp_${nanoid(24)}`;
+    if (!/^[a-zA-Z0-9_-]{1,64}$/.test(normalized)) {
+      throw new BadRequestException('Invalid taskGroupId');
+    }
+    return normalized;
+  }
+
   private async resolveProjectId(tx: Prisma.TransactionClient, userId: bigint, projectId?: string) {
     if (!projectId) return undefined;
 
@@ -334,6 +343,7 @@ export class VideosService {
 
   async generate(userId: bigint, dto: VideoGenerateDto) {
     const modelId = BigInt(dto.modelId);
+    const taskGroupId = this.resolveTaskGroupId(dto.taskGroupId);
 
     const created = await this.prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({ where: { id: userId }, select: { status: true } });
@@ -378,6 +388,7 @@ export class VideosService {
           channelId: model.channelId,
           ...(projectId ? { projectId } : {}),
           taskNo: `vid_${nanoid(24)}`,
+          taskGroupId,
           provider: model.provider,
           prompt: dto.prompt,
           parameters: dto.parameters as Prisma.InputJsonValue,

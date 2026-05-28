@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { ArrayMaxSize, IsArray, IsBoolean, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsBoolean, IsInt, IsOptional, IsString, Max, MaxLength, Min, ValidateNested } from 'class-validator';
 
 class SendMessageMediaAgentDto {
   @IsBoolean()
@@ -44,6 +44,13 @@ class SendMessageMediaAgentDto {
   @IsOptional()
   @IsBoolean()
   autoCreate?: boolean;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(9)
+  generationCount?: number;
 }
 
 class SendMessageAutoProjectAgentDto {

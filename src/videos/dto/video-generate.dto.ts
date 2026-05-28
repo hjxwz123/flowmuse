@@ -25,4 +25,9 @@ export class VideoGenerateDto {
   @IsOptional()
   @IsString()
   projectId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  taskGroupId?: string;
 }

@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, HttpException, Injectable, Log
 import { AiModel, AiModelType, ApiChannelStatus, ChatFile, ChatMessageRole, Prisma, ProjectAssetKind, TaskStatus, UserRole, UserStatus } from '@prisma/client';
 import axios from 'axios';
 import { Response } from 'express';
+import { nanoid } from 'nanoid';
 
 import { AuthUserCacheService } from '../auth/auth-user-cache.service';
 import { buildBanErrorPayload, calculateBanExpireAt } from '../auth/ban.utils';
@@ -80,6 +81,7 @@ type ChatTaskRef = {
   kind: 'image' | 'video';
   taskId: string;
   taskNo?: string;
+  taskGroupId?: string | null;
   status?: 'pending' | 'processing' | 'completed' | 'failed';
   shotId?: string;
   finalStoryboard?: boolean;
@@ -169,6 +171,7 @@ type MediaAgentContext = {
   referenceVideos: string[];
   referenceAudios: string[];
   autoCreate: boolean;
+  generationCount: number;
 };
 
 type MediaAgentStatus = 'clarify' | 'ready';
@@ -192,6 +195,7 @@ type MediaAgentMetadata = {
   referenceImageCount: number;
   referenceVideoCount: number;
   referenceAudioCount: number;
+  generationCount: number;
   autoCreated: boolean;
 };
 
@@ -218,6 +222,16 @@ export class ChatService {
   private static readonly WEB_SEARCH_TASK_MAX_QUERY_COUNT = 6;
   private static readonly WEB_SEARCH_INJECT_PAGE_CHARS = 1600;
   private static readonly WEB_SEARCH_TASK_FILE_CONTEXT_MAX_CHARS = 5000;
+
+  private normalizeGenerationCount(value: unknown) {
+    const count = Number(value ?? 1);
+    if (!Number.isFinite(count)) return 1;
+    return Math.min(9, Math.max(1, Math.trunc(count)));
+  }
+
+  private createTaskGroupId(prefix: string, conversationId: bigint) {
+    return `${prefix}_${conversationId.toString()}_${nanoid(12)}`;
+  }
   private static readonly PROJECT_CONTEXT_MAX_ASSET_ITEMS = 20;
   private static readonly PROJECT_CONTEXT_MAX_DOCUMENT_ITEMS = 4;
   private static readonly PROJECT_CONTEXT_MAX_INSPIRATION_ITEMS = 8;
@@ -834,7 +848,9 @@ export class ChatService {
       throw new BadRequestException('prompt is required');
     }
 
-    const { createdTask } = await this.generateConversationImageTask({
+    const generationCount = this.normalizeGenerationCount(dto.generationCount);
+    const taskGroupId = dto.taskGroupId?.trim() || this.createTaskGroupId('chat_img', conversationId);
+    const { createdTasks } = await this.generateConversationImageTask({
       userId,
       conversationId,
       imageModelIdRaw: dto.modelId,
@@ -846,6 +862,8 @@ export class ChatService {
       preferredAspectRatio: dto.preferredAspectRatio ?? null,
       preferredResolution: dto.preferredResolution ?? null,
       parameters: dto.parameters && typeof dto.parameters === 'object' ? { ...dto.parameters } : {},
+      generationCount,
+      taskGroupId,
     });
 
     const now = new Date();
@@ -868,23 +886,22 @@ export class ChatService {
         role: ChatMessageRole.assistant,
         content: '已创建绘图任务，生成完成后会自动刷新。',
         providerData: {
-          taskRefs: [
-            {
-              kind: 'image',
-              taskId: createdTask.id,
-              taskNo: createdTask.taskNo,
-              status: createdTask.status,
-              modelId: createdTask.modelId,
-              provider: createdTask.provider,
-              prompt: createdTask.prompt,
-              thumbnailUrl: createdTask.thumbnailUrl,
-              resultUrl: createdTask.resultUrl,
-              errorMessage: createdTask.errorMessage,
-              creditsCost: createdTask.creditsCost,
-              createdAt: createdTask.createdAt,
-              completedAt: createdTask.completedAt,
-            },
-          ],
+          taskRefs: createdTasks.map((createdTask) => ({
+            kind: 'image',
+            taskId: createdTask.id,
+            taskNo: createdTask.taskNo,
+            taskGroupId: createdTask.taskGroupId,
+            status: createdTask.status,
+            modelId: createdTask.modelId,
+            provider: createdTask.provider,
+            prompt: createdTask.prompt,
+            thumbnailUrl: createdTask.thumbnailUrl,
+            resultUrl: createdTask.resultUrl,
+            errorMessage: createdTask.errorMessage,
+            creditsCost: createdTask.creditsCost,
+            createdAt: createdTask.createdAt,
+            completedAt: createdTask.completedAt,
+          })),
         } as Prisma.InputJsonValue,
       },
     });
@@ -3789,6 +3806,7 @@ export class ChatService {
       referenceVideos: this.normalizeStringList(source.referenceVideos, 10),
       referenceAudios: this.normalizeStringList(source.referenceAudios, 10),
       autoCreate: source.autoCreate === true,
+      generationCount: this.normalizeGenerationCount(source.generationCount),
     };
   }
 
@@ -4248,6 +4266,7 @@ export class ChatService {
   private toChatImageTaskRef(task: {
     id: string;
     taskNo: string;
+    taskGroupId?: string | null;
     status: 'pending' | 'processing' | 'completed' | 'failed';
     modelId: string;
     provider: string;
@@ -4263,6 +4282,7 @@ export class ChatService {
       kind: 'image',
       taskId: task.id,
       taskNo: task.taskNo,
+      taskGroupId: task.taskGroupId ?? null,
       status: task.status,
       modelId: task.modelId,
       provider: task.provider,
@@ -4279,6 +4299,7 @@ export class ChatService {
   private toChatVideoTaskRef(task: {
     id: string;
     taskNo: string;
+    taskGroupId?: string | null;
     status: 'pending' | 'processing' | 'completed' | 'failed';
     modelId: string;
     provider: string;
@@ -4299,6 +4320,7 @@ export class ChatService {
       kind: 'video',
       taskId: task.id,
       taskNo: task.taskNo,
+      taskGroupId: task.taskGroupId ?? null,
       status: task.status,
       modelId: task.modelId,
       provider: task.provider,
@@ -4458,7 +4480,7 @@ export class ChatService {
       (params.mediaAgent.autoCreate || autoCreateFromConversationEdit)
     ) {
       if (targetModel.type === AiModelType.image) {
-        const { createdTask } = await this.generateConversationImageTask({
+        const { createdTasks } = await this.generateConversationImageTask({
           userId: params.userId,
           conversationId: params.conversationId,
           imageModelIdRaw: params.mediaAgent.modelId,
@@ -4469,8 +4491,10 @@ export class ChatService {
           useConversationContextEdit: parsed.intent === 'edit',
           preferredAspectRatio: params.mediaAgent.preferredAspectRatio ?? null,
           preferredResolution: params.mediaAgent.preferredResolution ?? null,
+          generationCount: params.mediaAgent.generationCount,
+          taskGroupId: this.createTaskGroupId('chat_agent', params.conversationId),
         });
-        taskRefs = [this.toChatImageTaskRef(createdTask)];
+        taskRefs = createdTasks.map((createdTask) => this.toChatImageTaskRef(createdTask));
       } else {
         const { createdTask } = await this.generateConversationVideoTask({
           userId: params.userId,
@@ -4509,6 +4533,7 @@ export class ChatService {
       referenceImageCount: params.mediaAgent.referenceImages.length,
       referenceVideoCount: params.mediaAgent.referenceVideos.length,
       referenceAudioCount: params.mediaAgent.referenceAudios.length,
+      generationCount: targetModel.type === AiModelType.image ? params.mediaAgent.generationCount : 1,
       autoCreated,
     };
 
@@ -4777,6 +4802,8 @@ export class ChatService {
     preferredAspectRatio?: string | null;
     preferredResolution?: string | null;
     parameters?: Record<string, unknown>;
+    generationCount?: number;
+    taskGroupId?: string;
   }) {
     const imageModelId = this.parseBigInt(params.imageModelIdRaw, 'modelId');
     const imageModel = await this.prisma.aiModel.findFirst({
@@ -4837,16 +4864,18 @@ export class ChatService {
       );
     }
 
-    const createdTask = await this.imagesService.generate(params.userId, {
+    const createdTasks = await this.imagesService.generateMany(params.userId, {
       modelId: params.imageModelIdRaw,
       prompt: params.prompt,
       negativePrompt: params.negativePrompt,
       parameters: Object.keys(mergedParameters).length > 0 ? mergedParameters : undefined,
       projectId: params.projectId ? params.projectId.toString() : undefined,
-    });
+      taskGroupId: params.taskGroupId,
+    }, this.normalizeGenerationCount(params.generationCount));
 
     return {
-      createdTask,
+      createdTask: createdTasks[0],
+      createdTasks,
       imageModel,
       imageModelCapabilities,
     };
@@ -4866,6 +4895,7 @@ export class ChatService {
     preferredResolution?: string | null;
     preferredDuration?: string | null;
     parameters?: Record<string, unknown>;
+    taskGroupId?: string;
   }) {
     const videoModelId = this.parseBigInt(params.videoModelIdRaw, 'modelId');
     const videoModel = await this.prisma.aiModel.findFirst({
@@ -4962,6 +4992,7 @@ export class ChatService {
       prompt: params.prompt,
       parameters: Object.keys(mergedParameters).length > 0 ? mergedParameters : undefined,
       projectId: params.projectId ? params.projectId.toString() : undefined,
+      taskGroupId: params.taskGroupId,
     });
 
     return {
@@ -5143,6 +5174,7 @@ export class ChatService {
             select: {
               id: true,
               taskNo: true,
+              taskGroupId: true,
               status: true,
               modelId: true,
               provider: true,
@@ -5168,6 +5200,7 @@ export class ChatService {
             select: {
               id: true,
               taskNo: true,
+              taskGroupId: true,
               status: true,
               modelId: true,
               provider: true,
@@ -5196,6 +5229,7 @@ export class ChatService {
       const taskRef = this.toChatImageTaskRef({
         id: task.id.toString(),
         taskNo: task.taskNo,
+        taskGroupId: task.taskGroupId,
         status:
           task.status === TaskStatus.pending
             ? 'pending'
@@ -5233,6 +5267,7 @@ export class ChatService {
       const taskRef = this.toChatVideoTaskRef({
         id: task.id.toString(),
         taskNo: task.taskNo,
+        taskGroupId: task.taskGroupId,
         status:
           task.status === TaskStatus.pending
             ? 'pending'
@@ -5389,6 +5424,11 @@ export class ChatService {
 
       if (typeof obj.taskNo === 'string' && obj.taskNo.trim()) {
         taskRef.taskNo = obj.taskNo.trim();
+      }
+      if (typeof obj.taskGroupId === 'string' && obj.taskGroupId.trim()) {
+        taskRef.taskGroupId = obj.taskGroupId.trim();
+      } else {
+        taskRef.taskGroupId = null;
       }
       if (
         typeof obj.status === 'string' &&
@@ -5554,6 +5594,7 @@ export class ChatService {
         typeof raw.referenceAudioCount === 'number' && Number.isFinite(raw.referenceAudioCount)
           ? Math.max(0, Math.trunc(raw.referenceAudioCount))
           : 0,
+      generationCount: this.normalizeGenerationCount(raw.generationCount),
       autoCreated: raw.autoCreated === true,
     };
   }

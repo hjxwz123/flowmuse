@@ -17,6 +17,7 @@ export interface ApiTask {
   channelId: string
   projectId?: string | null
   taskNo: string
+  taskGroupId: string | null
   provider: string
   modelName?: string | null
   providerTaskId: string | null
@@ -56,6 +57,8 @@ export interface GenerateImageDto {
   parameters?: Record<string, unknown>
   toolId?: string
   projectId?: string
+  taskGroupId?: string
+  generationCount?: number
 }
 
 // 生成视频 DTO
@@ -66,6 +69,7 @@ export interface GenerateVideoDto {
   parameters?: Record<string, unknown>
   toolId?: string
   projectId?: string
+  taskGroupId?: string
 }
 
 // Midjourney 操作 DTO

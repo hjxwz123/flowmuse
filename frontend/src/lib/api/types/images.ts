@@ -25,6 +25,7 @@ export interface ImageTask {
   channelId: string
   projectId?: string | null
   taskNo: string
+  taskGroupId: string | null
   provider: string
   providerTaskId: string | null
   prompt: string
@@ -60,6 +61,8 @@ export interface GenerateImageDto {
   parameters?: Record<string, unknown>
   toolId?: string
   projectId?: string
+  taskGroupId?: string
+  generationCount?: number
   skipProjectPromptTransform?: boolean
 }
 

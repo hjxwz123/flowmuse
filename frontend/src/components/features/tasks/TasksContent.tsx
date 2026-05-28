@@ -27,6 +27,10 @@ import { FadeIn } from '@/components/shared/FadeIn'
 
 type TaskFilter = 'all' | TaskStatus
 type UnifiedTask = ApiTask | ApiResearchTask
+type MediaTask = ApiTask
+type TaskListEntry =
+  | { kind: 'single'; key: string; task: UnifiedTask }
+  | { kind: 'group'; key: string; taskGroupId: string; tasks: MediaTask[] }
 
 const TASKS_CACHE_MAX_AGE_MS = 5 * 60 * 1000
 const TASKS_CACHE_FRESH_MS = 20 * 1000
@@ -47,6 +51,48 @@ function appendTasksStable(prev: UnifiedTask[], incoming: UnifiedTask[]) {
   })
 
   return [...prev, ...dedupedIncoming]
+}
+
+function isMediaTask(task: UnifiedTask): task is MediaTask {
+  return task.type === 'image' || task.type === 'video'
+}
+
+function groupTasksForDisplay(items: UnifiedTask[]): TaskListEntry[] {
+  const entries: TaskListEntry[] = []
+  const groupedIndexes = new Map<string, number>()
+
+  for (const task of items) {
+    if (!isMediaTask(task) || !task.taskGroupId) {
+      entries.push({ kind: 'single', key: `${task.type}-${task.id}`, task })
+      continue
+    }
+
+    const existingIndex = groupedIndexes.get(task.taskGroupId)
+    if (existingIndex === undefined) {
+      groupedIndexes.set(task.taskGroupId, entries.length)
+      entries.push({
+        kind: 'group',
+        key: `group-${task.taskGroupId}`,
+        taskGroupId: task.taskGroupId,
+        tasks: [task],
+      })
+      continue
+    }
+
+    const existingEntry = entries[existingIndex]
+    if (existingEntry.kind === 'group') {
+      existingEntry.tasks.push(task)
+    }
+  }
+
+  return entries.map((entry) => {
+    if (entry.kind !== 'group' || entry.tasks.length > 1) return entry
+    return {
+      kind: 'single',
+      key: `${entry.tasks[0].type}-${entry.tasks[0].id}`,
+      task: entry.tasks[0],
+    }
+  })
 }
 
 export function TasksContent() {
@@ -246,6 +292,7 @@ export function TasksContent() {
     () => (activeFilter === 'all' ? tasks : tasks.filter((task) => task.status === activeFilter)),
     [activeFilter, tasks],
   )
+  const taskEntries = useMemo(() => groupTasksForDisplay(filteredTasks), [filteredTasks])
 
   if (!isAuthenticated) {
     return (
@@ -336,33 +383,68 @@ export function TasksContent() {
           <>
             <FadeIn variant="fade" delay={0.2}>
               <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                {filteredTasks.map((task, index) => (
-                  <div key={`${task.type}-${task.id}`}>
+                {taskEntries.map((entry, index) => (
+                  <div key={entry.key} className={entry.kind === 'group' ? 'xl:col-span-2' : undefined}>
                     <FadeIn variant="scale" delay={Math.min(index, 6) * 0.04}>
-                      {task.type === 'research' ? (
+                      {entry.kind === 'group' ? (
+                        <div className="space-y-3">
+                          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200/80 pb-2 dark:border-stone-800/80">
+                            <div>
+                              <p className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+                                {t('group.title', { count: entry.tasks.length })}
+                              </p>
+                              <p className="mt-0.5 font-mono text-[11px] text-stone-500 dark:text-stone-400">
+                                {entry.taskGroupId}
+                              </p>
+                            </div>
+                            <span className="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-medium text-stone-600 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300">
+                              {t('group.badge')}
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                            {entry.tasks.map((task) => (
+                              <TaskCard
+                                key={`${task.type}-${task.id}`}
+                                task={task}
+                                onUpdate={(nextTask) => {
+                                  if (nextTask) {
+                                    applyTaskUpdate(nextTask)
+                                    return
+                                  }
+                                  void updateTask(task.type, task.id)
+                                }}
+                                onDelete={() => {
+                                  setTasks((prev) => prev.filter((item) => !(item.type === task.type && item.id === task.id)))
+                                  removeTaskFromTasksViewCache(userId, task.type, task.id)
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ) : entry.task.type === 'research' ? (
                         <ResearchTaskCard
-                          task={task}
+                          task={entry.task}
                           onRefresh={() => {
-                            void updateTask(task.type, task.id)
+                            void updateTask(entry.task.type, entry.task.id)
                           }}
                           onDelete={() => {
-                            setTasks((prev) => prev.filter((item) => !(item.type === task.type && item.id === task.id)))
-                            removeTaskFromTasksViewCache(userId, task.type, task.id)
+                            setTasks((prev) => prev.filter((item) => !(item.type === entry.task.type && item.id === entry.task.id)))
+                            removeTaskFromTasksViewCache(userId, entry.task.type, entry.task.id)
                           }}
                         />
                       ) : (
                         <TaskCard
-                          task={task}
+                          task={entry.task}
                           onUpdate={(nextTask) => {
                             if (nextTask) {
                               applyTaskUpdate(nextTask)
                               return
                             }
-                            void updateTask(task.type, task.id)
+                            void updateTask(entry.task.type, entry.task.id)
                           }}
                           onDelete={() => {
-                            setTasks((prev) => prev.filter((item) => !(item.type === task.type && item.id === task.id)))
-                            removeTaskFromTasksViewCache(userId, task.type, task.id)
+                            setTasks((prev) => prev.filter((item) => !(item.type === entry.task.type && item.id === entry.task.id)))
+                            removeTaskFromTasksViewCache(userId, entry.task.type, entry.task.id)
                           }}
                         />
                       )}

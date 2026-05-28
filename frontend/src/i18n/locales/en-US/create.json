@@ -113,6 +113,9 @@
       "label": "Select Model",
       "placeholder": "Please select a model"
     },
+    "generationCount": {
+      "label": "Images"
+    },
     "prompt": {
       "label": "Creation Description",
       "placeholder": "e.g., A young woman in professional attire, confident smile, office background...",
