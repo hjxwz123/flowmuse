@@ -361,7 +361,7 @@ export function ExtraCreditsConfigEditor({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/60 p-4">
+      <div className="flex flex-col gap-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/60 dark:bg-stone-900/70 p-4">
         <div className="flex items-center justify-between gap-3">
           <div>
             <label className="block font-ui text-sm font-medium text-stone-700 dark:text-stone-300">
@@ -377,7 +377,7 @@ export function ExtraCreditsConfigEditor({
             disabled={disabled}
             className={cn(
               'rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-1.5 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors',
-              'hover:border-aurora-purple hover:text-aurora-purple',
+              'hover:border-stone-300 hover:text-stone-900 dark:hover:border-stone-600 dark:hover:text-stone-100',
               disabled && 'cursor-not-allowed opacity-50',
             )}
           >
@@ -412,7 +412,7 @@ export function ExtraCreditsConfigEditor({
       {groups.map((group, groupIndex) => (
         <div
           key={`extra-credit-group-${groupIndex}`}
-          className="space-y-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 shadow-[0_14px_36px_-32px_rgba(15,23,42,0.35)]"
+          className="space-y-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 shadow-sm dark:shadow-none"
         >
           <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1 space-y-1">
@@ -436,7 +436,7 @@ export function ExtraCreditsConfigEditor({
                 disabled={disabled}
                 className={cn(
                   'rounded-lg border border-stone-200 dark:border-stone-800 px-3 py-1.5 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors',
-                  'hover:border-aurora-purple hover:text-aurora-purple',
+                  'hover:border-stone-300 hover:text-stone-900 dark:hover:border-stone-600 dark:hover:text-stone-100',
                   disabled && 'cursor-not-allowed opacity-50',
                 )}
               >
@@ -458,7 +458,7 @@ export function ExtraCreditsConfigEditor({
           </div>
 
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1.9fr)]">
-            <div className="min-w-0 space-y-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 p-4">
+            <div className="min-w-0 space-y-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 dark:bg-stone-950/35 p-4">
               <div>
                 <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
                   浮动参数
@@ -470,7 +470,7 @@ export function ExtraCreditsConfigEditor({
                   onChange={(event) => handleVariableParameterChange(groupIndex, event.target.value)}
                   disabled={disabled}
                   placeholder="例如：duration"
-                  className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                  className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-stone-400 dark:focus:border-stone-600 focus:outline-none focus:ring-0"
                 />
               </div>
 
@@ -485,7 +485,7 @@ export function ExtraCreditsConfigEditor({
                     disabled={disabled}
                     className={cn(
                       'rounded-lg border border-stone-200 dark:border-stone-800 px-3 py-1.5 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors',
-                      'hover:border-aurora-purple hover:text-aurora-purple',
+                      'hover:border-stone-300 hover:text-stone-900 dark:hover:border-stone-600 dark:hover:text-stone-100',
                       disabled && 'cursor-not-allowed opacity-50',
                     )}
                   >
@@ -513,7 +513,7 @@ export function ExtraCreditsConfigEditor({
                       }
                       disabled={disabled}
                       placeholder="参数名"
-                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-stone-400 dark:focus:border-stone-600 focus:outline-none focus:ring-0"
                     />
                     <input
                       type="text"
@@ -523,7 +523,7 @@ export function ExtraCreditsConfigEditor({
                       }
                       disabled={disabled}
                       placeholder="参数值"
-                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-stone-400 dark:focus:border-stone-600 focus:outline-none focus:ring-0"
                     />
                     <button
                       type="button"
@@ -542,7 +542,7 @@ export function ExtraCreditsConfigEditor({
               </div>
             </div>
 
-            <div className="min-w-0 space-y-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 p-4">
+            <div className="min-w-0 space-y-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 dark:bg-stone-950/35 p-4">
               <div className="flex min-w-0 flex-wrap items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-stone-700 dark:text-stone-300">
@@ -558,7 +558,7 @@ export function ExtraCreditsConfigEditor({
                   disabled={disabled}
                   className={cn(
                     'rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-1.5 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors',
-                    'hover:border-aurora-purple hover:text-aurora-purple',
+                    'hover:border-stone-300 hover:text-stone-900 dark:hover:border-stone-600 dark:hover:text-stone-100',
                     disabled && 'cursor-not-allowed opacity-50',
                   )}
                 >
@@ -567,7 +567,7 @@ export function ExtraCreditsConfigEditor({
               </div>
 
               {group.variableParameter.trim() === 'duration' ? (
-                <div className="rounded-xl border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/60 dark:bg-indigo-950/20 p-4">
+                <div className="rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 dark:bg-stone-950/40 p-4">
                   <div className="flex min-w-0 flex-col gap-3 xl:flex-row xl:items-end">
                     <div className="grid min-w-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-3">
                       <div>
@@ -583,7 +583,7 @@ export function ExtraCreditsConfigEditor({
                             handleDurationPricingFieldChange(groupIndex, 'start', event.target.value)
                           }
                           disabled={disabled}
-                          className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                          className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-stone-400 dark:focus:border-stone-600 focus:outline-none focus:ring-0"
                         />
                       </div>
                       <div>
@@ -599,7 +599,7 @@ export function ExtraCreditsConfigEditor({
                             handleDurationPricingFieldChange(groupIndex, 'end', event.target.value)
                           }
                           disabled={disabled}
-                          className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                          className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-stone-400 dark:focus:border-stone-600 focus:outline-none focus:ring-0"
                         />
                       </div>
                       <div>
@@ -616,7 +616,7 @@ export function ExtraCreditsConfigEditor({
                           }
                           disabled={disabled}
                           placeholder="例如：2"
-                          className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                          className="w-full rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-stone-400 dark:focus:border-stone-600 focus:outline-none focus:ring-0"
                         />
                       </div>
                     </div>
@@ -625,8 +625,8 @@ export function ExtraCreditsConfigEditor({
                       onClick={() => handleGenerateDurationItems(groupIndex)}
                       disabled={disabled || !isDurationPricingReady(group)}
                       className={cn(
-                        'rounded-lg border border-indigo-200 dark:border-indigo-900/60 bg-stone-50 dark:bg-stone-900 px-4 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 transition-colors',
-                        'hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-100 dark:hover:bg-indigo-900/40/70',
+                        'rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 transition-colors',
+                        'hover:border-stone-300 hover:bg-stone-100 hover:text-stone-900 dark:hover:border-stone-600 dark:hover:bg-stone-800 dark:hover:text-stone-100',
                         (disabled || !isDurationPricingReady(group)) && 'cursor-not-allowed opacity-50',
                       )}
                     >
@@ -657,7 +657,7 @@ export function ExtraCreditsConfigEditor({
                       onChange={(event) => handleItemChange(groupIndex, itemIndex, 'value', event.target.value)}
                       disabled={disabled}
                       placeholder={resolveValuePlaceholder(group.variableParameter)}
-                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-stone-400 dark:focus:border-stone-600 focus:outline-none focus:ring-0"
                     />
                     <input
                       type="number"
@@ -666,7 +666,7 @@ export function ExtraCreditsConfigEditor({
                       value={Number.isFinite(item.credits) ? item.credits : 0}
                       onChange={(event) => handleItemChange(groupIndex, itemIndex, 'credits', event.target.value)}
                       disabled={disabled}
-                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-aurora-purple focus:outline-none focus:ring-2 focus:ring-aurora-purple/20"
+                      className="min-w-0 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 px-3 py-2 text-sm text-stone-900 dark:text-stone-100 focus:border-stone-400 dark:focus:border-stone-600 focus:outline-none focus:ring-0"
                     />
                     <div className="flex flex-wrap items-center gap-2">
                       <button
@@ -675,7 +675,7 @@ export function ExtraCreditsConfigEditor({
                         disabled={disabled}
                         className={cn(
                           'rounded-lg border border-stone-200 dark:border-stone-800 px-2.5 py-2 text-xs font-medium text-stone-600 dark:text-stone-400 transition-colors',
-                          'hover:border-aurora-purple hover:text-aurora-purple',
+                          'hover:border-stone-300 hover:text-stone-900 dark:hover:border-stone-600 dark:hover:text-stone-100',
                           disabled && 'cursor-not-allowed opacity-50',
                         )}
                       >

@@ -181,6 +181,31 @@
     color: rgb(var(--aurora-purple) / 1);
   }
 
+  :where(.dark, html[data-darkreader-scheme='dark'])
+    :where(.admin-theme, [role='dialog'])
+    :where(.theme-solid-shadow, .theme-toggle-active, .theme-tab-trigger[data-state='active'], [class*='shadow-aurora'], [class*='shadow-glow']) {
+    box-shadow: none !important;
+  }
+
+  :where(.dark, html[data-darkreader-scheme='dark'])
+    :where(.admin-theme, [role='dialog'])
+    :where(input:not([type='checkbox']):not([type='radio']):not([type='color']), select, textarea, button, [role='button']):focus,
+  :where(.dark, html[data-darkreader-scheme='dark'])
+    :where(.admin-theme, [role='dialog'])
+    :where(input:not([type='checkbox']):not([type='radio']):not([type='color']), select, textarea, button, [role='button']):focus-visible {
+    --tw-ring-offset-shadow: 0 0 transparent !important;
+    --tw-ring-shadow: 0 0 transparent !important;
+    box-shadow: none !important;
+    outline: 1px solid rgb(var(--admin-muted-rgb) / 0.72) !important;
+    outline-offset: 2px !important;
+  }
+
+  :where(.dark, html[data-darkreader-scheme='dark'])
+    :where(.admin-theme, [role='dialog'])
+    :where(input:not([type='checkbox']):not([type='radio']):not([type='color']), select, textarea):focus {
+    border-color: rgb(var(--admin-border-rgb) / 1) !important;
+  }
+
   /* 极光背景 */
   .aurora-bg {
     @apply fixed inset-0 -z-10 overflow-hidden pointer-events-none;
