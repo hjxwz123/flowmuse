@@ -3209,37 +3209,35 @@
   height: 18px;
 }
 
-.generationCountSelectWrap {
-  height: 34px;
-  border: 1px solid var(--chat-border-light);
+.generationCountListbox {
+  width: 112px;
+  min-width: 112px;
+  flex: 0 0 auto;
+}
+
+.generationCountListbox :global(button) {
+  min-height: 36px;
   border-radius: 9999px;
+  border-color: var(--chat-border-light);
   background: color-mix(in srgb, var(--chat-surface-panel) 88%, transparent 12%);
-  color: var(--chat-text-muted);
-  padding: 0 8px 0 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  box-shadow: none;
+  padding: 6px 10px 6px 12px;
   font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
 }
 
-.generationCountSelect {
-  height: 26px;
-  min-width: 42px;
-  border: 0;
-  border-radius: 9999px;
-  background: var(--chat-surface-input);
-  color: var(--chat-text-main);
-  padding: 0 7px;
-  font-size: 12px;
-  font-weight: 700;
-  outline: none;
+.generationCountListbox :global(button:hover) {
+  border-color: color-mix(in srgb, var(--chat-primary) 24%, var(--chat-border-light) 76%);
+  background: color-mix(in srgb, var(--chat-primary) 8%, var(--chat-surface-panel) 92%);
+  box-shadow: none;
 }
 
-.generationCountSelect:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.generationCountListbox :global(button > div) {
+  gap: 4px;
+}
+
+.generationCountListbox :global(button svg) {
+  width: 16px;
+  height: 16px;
 }
 
 .preferenceChip {

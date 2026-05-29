@@ -90,6 +90,8 @@ type AgentReferenceItem = {
   name: string
 }
 
+const GENERATION_COUNT_OPTIONS = Array.from({ length: 9 }, (_, index) => index + 1)
+
 const PLACEHOLDER_CONVERSATION_TITLES = new Set([
   'New Chat',
   'AI Chat',
@@ -1140,6 +1142,14 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
         meta: buildCreditsMeta(model.creditsPerUse, model.specialCreditsPerUse),
       })),
     [agentModels, buildCreditsMeta]
+  )
+  const generationCountOptions = useMemo<EnhancedSelectOption[]>(
+    () =>
+      GENERATION_COUNT_OPTIONS.map((count) => ({
+        value: count.toString(),
+        label: isZh ? `${count} 张` : `${count} image${count > 1 ? 's' : ''}`,
+      })),
+    [isZh]
   )
   const autoImageModelOptions = useMemo<EnhancedSelectOption[]>(
     () =>
@@ -6004,21 +6014,15 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
                               />
 
                               {showAgentGenerationCount ? (
-                                <label className={styles.generationCountSelectWrap}>
-                                  <span>{isZh ? '张数' : 'Images'}</span>
-                                  <select
-                                    value={agentGenerationCount}
-                                    onChange={(event) => setAgentGenerationCount(Number(event.target.value))}
-                                    disabled={isSending || isSwitchingModel || isUploadingAgentReferences}
-                                    className={styles.generationCountSelect}
-                                  >
-                                    {Array.from({ length: 9 }, (_, index) => index + 1).map((count) => (
-                                      <option key={count} value={count}>
-                                        {count}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </label>
+                                <EnhancedSelect
+                                  value={agentGenerationCount.toString()}
+                                  onChange={(value) => setAgentGenerationCount(Number(value))}
+                                  options={generationCountOptions}
+                                  placeholder={isZh ? '张数' : 'Images'}
+                                  disabled={isSending || isSwitchingModel || isUploadingAgentReferences}
+                                  compact
+                                  className={styles.generationCountListbox}
+                                />
                               ) : null}
 
                               <button

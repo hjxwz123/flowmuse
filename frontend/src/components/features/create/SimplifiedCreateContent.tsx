@@ -9,6 +9,7 @@ import type {
 } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { EnhancedSelect, type EnhancedSelectOption } from '@/components/ui/EnhancedSelect'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
@@ -344,6 +345,14 @@ export function SimplifiedCreateContent() {
   const searchParams = useSearchParams()
   const { isAuthenticated, user } = useAuthStore()
   const quickStartSourceOptions = ['system', 'presets'] as const
+  const generationCountOptions = useMemo<EnhancedSelectOption[]>(
+    () =>
+      GENERATION_COUNT_OPTIONS.map((count) => ({
+        value: count.toString(),
+        label: locale.toLowerCase().startsWith('zh') ? `${count} 张` : `${count} image${count > 1 ? 's' : ''}`,
+      })),
+    [locale]
+  )
 
   // 基础状态
   const [activeTab, setActiveTab] = useState<CreationType>('image')
@@ -2693,21 +2702,15 @@ export function SimplifiedCreateContent() {
             />
           </div>
           {activeTab === 'image' ? (
-            <label className="flex h-11 w-full shrink-0 items-center justify-between gap-3 rounded-[16px] border border-stone-200 bg-stone-50 px-3 text-sm font-medium text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 sm:w-auto sm:min-w-[132px]">
-              <span className="whitespace-nowrap">{t('form.generationCount.label')}</span>
-              <select
-                value={generationCount}
-                onChange={(event) => setGenerationCount(Number(event.target.value))}
-                disabled={loading}
-                className="h-8 rounded-xl border border-stone-200 bg-stone-100 px-2 text-sm font-semibold text-stone-900 outline-none focus:border-stone-400 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100 dark:focus:border-stone-500"
-              >
-                {GENERATION_COUNT_OPTIONS.map((count) => (
-                  <option key={count} value={count}>
-                    {count}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <EnhancedSelect
+              value={generationCount.toString()}
+              onChange={(value) => setGenerationCount(Number(value))}
+              options={generationCountOptions}
+              placeholder={t('form.generationCount.label')}
+              disabled={loading}
+              compact
+              className="w-full shrink-0 sm:w-[136px]"
+            />
           ) : null}
           <Button
             onClick={handleSubmit}
