@@ -12,6 +12,7 @@ import { MobileTabBar } from './MobileTabBar'
 import { SiteTopNoticeBar } from './SiteTopNoticeBar'
 import { RouteLoadingBar } from '@/components/shared/RouteLoadingBar'
 import { ToastProvider } from '@/components/shared/ToastProvider'
+import { ConfirmProvider } from '@/components/shared/ConfirmProvider'
 import { AnnouncementModal } from '@/components/features/announcements/AnnouncementModal'
 import { StartupPopupOverlay } from './StartupPopupOverlay'
 import { useInboxStream } from '@/lib/hooks/useInboxStream'
@@ -255,7 +256,8 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
   }
 
   return (
-    <div className={isFixedViewportRoute ? 'flex min-w-0 h-[100dvh] min-h-[100dvh] flex-col overflow-hidden bg-canvas dark:bg-canvas-dark' : 'flex min-w-0 min-h-screen flex-col overflow-x-clip bg-canvas dark:bg-canvas-dark'}>
+    <ConfirmProvider>
+      <div className={isFixedViewportRoute ? 'flex min-w-0 h-[100dvh] min-h-[100dvh] flex-col overflow-hidden bg-canvas dark:bg-canvas-dark' : 'flex min-w-0 min-h-screen flex-col overflow-x-clip bg-canvas dark:bg-canvas-dark'}>
       {/* 全局路由加载进度条 */}
       <RouteLoadingBar />
       <ToastProvider />
@@ -315,6 +317,7 @@ export function ConditionalLayout({ children }: ConditionalLayoutProps) {
           onClose={handleCloseStartupPopup}
         />
       )}
-    </div>
+      </div>
+    </ConfirmProvider>
   )
 }

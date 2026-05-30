@@ -411,6 +411,8 @@
     "create": "创建兑换码",
     "batchCreate": "批量生成",
     "export": "导出",
+    "void": "作废",
+    "voiding": "作废中...",
     "viewLogs": "查看使用记录",
     "fields": {
       "code": "兑换码",
@@ -429,7 +431,7 @@
     },
     "status": {
       "active": "活跃",
-      "disabled": "已禁用",
+      "disabled": "已作废",
       "expired": "已过期"
     },
     "filters": {
@@ -456,7 +458,8 @@
       "empty": "暂无使用记录"
     },
     "confirm": {
-      "delete": "确认删除此兑换码吗？"
+      "delete": "确认删除此兑换码吗？",
+      "void": "确认作废此兑换码吗？作废后用户将不能再使用它。"
     }
   },
   "site": {

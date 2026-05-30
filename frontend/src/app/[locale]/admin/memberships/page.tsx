@@ -10,13 +10,16 @@ import { DataTable, DataTableColumn } from '@/components/admin/tables/DataTable'
 import { FadeIn } from '@/components/shared/FadeIn'
 import { AdminPageShell } from '@/components/admin/layout/AdminPageShell'
 import { Button } from '@/components/ui/Button'
+import { useConfirm } from '@/components/shared/ConfirmProvider'
 import { adminMembershipService } from '@/lib/api/services/admin/memberships'
 import type { AdminMembershipLevel } from '@/lib/api/types/admin/memberships'
 import { cn } from '@/lib/utils/cn'
+import { toast } from 'sonner'
 
 export default function AdminMembershipsPage() {
   const t = useTranslations('admin.memberships')
   const tCommon = useTranslations('admin.common')
+  const confirmDialog = useConfirm()
 
   const [levels, setLevels] = useState<AdminMembershipLevel[]>([])
   const [loading, setLoading] = useState(true)
@@ -38,7 +41,7 @@ export default function AdminMembershipsPage() {
       setLevels(sorted)
     } catch (error) {
       console.error('Failed to load membership levels:', error)
-      alert(t('error.load'))
+      toast.error(t('error.load'))
     } finally {
       setLoading(false)
     }
@@ -79,7 +82,13 @@ export default function AdminMembershipsPage() {
   }
 
   const handleDelete = async (level: AdminMembershipLevel) => {
-    if (!window.confirm(t('confirm.delete', { name: level.name }))) return
+    const confirmed = await confirmDialog({
+      title: tCommon('actions.delete'),
+      description: t('confirm.delete', { name: level.name }),
+      confirmText: tCommon('actions.delete'),
+      variant: 'danger',
+    })
+    if (!confirmed) return
 
     setDeletingId(level.id)
     try {
@@ -90,7 +99,7 @@ export default function AdminMembershipsPage() {
         error as { response?: { data?: { message?: string | string[] } } }
       )?.response?.data?.message
       const message = Array.isArray(maybeMessage) ? maybeMessage.join('；') : maybeMessage
-      alert(message || t('error.delete'))
+      toast.error(message || t('error.delete'))
     } finally {
       setDeletingId(null)
     }
@@ -105,7 +114,7 @@ export default function AdminMembershipsPage() {
       await fetchLevels()
     } catch (error) {
       console.error('Failed to toggle membership level status:', error)
-      alert(t('error.save'))
+      toast.error(t('error.save'))
     } finally {
       setUpdatingId(null)
     }

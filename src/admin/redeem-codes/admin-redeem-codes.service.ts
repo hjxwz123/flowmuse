@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { MembershipPeriod, RedeemCodeStatus, RedeemCodeType } from '@prisma/client';
+import { MembershipPeriod, Prisma, RedeemCodeStatus, RedeemCodeType } from '@prisma/client';
 import { nanoid } from 'nanoid';
 
 import { PrismaService } from '../../prisma/prisma.service';
@@ -26,22 +26,77 @@ function normalizeCycles(value?: number | null) {
   return Math.max(1, Math.floor(Number(value)));
 }
 
+function isCodeConflict(error: unknown) {
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError)) return false;
+  if (error.code !== 'P2002') return false;
+
+  const target = error.meta?.target;
+  return Array.isArray(target)
+    ? target.some((item) => String(item).includes('code'))
+    : typeof target === 'string' && target.includes('code');
+}
+
 @Injectable()
 export class AdminRedeemCodesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  list() {
-    return this.prisma.redeemCode.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        membershipLevel: {
-          select: {
-            id: true,
-            name: true,
+  async list(options: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    type?: string;
+    status?: string;
+  } = {}) {
+    const page = Number.isFinite(options.page) && Number(options.page) > 0
+      ? Math.floor(Number(options.page))
+      : 1;
+    const pageSize = Number.isFinite(options.pageSize)
+      ? Math.min(Math.max(Math.floor(Number(options.pageSize)), 1), 100)
+      : 20;
+    const search = options.search?.trim();
+    const where: Prisma.RedeemCodeWhereInput = {};
+
+    if (options.type === RedeemCodeType.membership || options.type === RedeemCodeType.credits) {
+      where.type = options.type;
+    }
+
+    if (
+      options.status === RedeemCodeStatus.active ||
+      options.status === RedeemCodeStatus.disabled ||
+      options.status === RedeemCodeStatus.expired
+    ) {
+      where.status = options.status;
+    }
+
+    if (search) {
+      where.code = { contains: search };
+    }
+
+    const [total, items] = await this.prisma.$transaction([
+      this.prisma.redeemCode.count({ where }),
+      this.prisma.redeemCode.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        include: {
+          membershipLevel: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
         },
-      },
-    });
+      }),
+    ]);
+
+    return {
+      page,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize),
+      items,
+    };
   }
 
   private async assertMembershipLevel(levelId: bigint | undefined) {
@@ -69,29 +124,38 @@ export class AdminRedeemCodesService {
       throw new BadRequestException('credits required');
     }
 
-    return this.prisma.redeemCode.create({
-      data: {
-        code: dto.code ?? nanoid(20),
-        type,
-        membershipLevelId: type === RedeemCodeType.membership ? membershipLevelId : undefined,
-        membershipPeriod: type === RedeemCodeType.membership ? membershipPeriod : undefined,
-        membershipCycles: type === RedeemCodeType.membership ? membershipCycles : undefined,
-        credits: type === RedeemCodeType.credits ? dto.credits : undefined,
-        maxUseCount: dto.maxUseCount ?? 1,
-        usedCount: 0,
-        expireDate: dto.expireDate ? new Date(dto.expireDate) : undefined,
-        status,
-        description: dto.description,
-      },
-      include: {
-        membershipLevel: {
-          select: {
-            id: true,
-            name: true,
+    const code = dto.code?.trim() || nanoid(20);
+
+    try {
+      return await this.prisma.redeemCode.create({
+        data: {
+          code,
+          type,
+          membershipLevelId: type === RedeemCodeType.membership ? membershipLevelId : undefined,
+          membershipPeriod: type === RedeemCodeType.membership ? membershipPeriod : undefined,
+          membershipCycles: type === RedeemCodeType.membership ? membershipCycles : undefined,
+          credits: type === RedeemCodeType.credits ? dto.credits : undefined,
+          maxUseCount: dto.maxUseCount ?? 1,
+          usedCount: 0,
+          expireDate: dto.expireDate ? new Date(dto.expireDate) : undefined,
+          status,
+          description: dto.description,
+        },
+        include: {
+          membershipLevel: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      if (isCodeConflict(error)) {
+        throw new BadRequestException(`兑换码「${code}」已存在，请更换后再创建`);
+      }
+      throw error;
+    }
   }
 
   async batch(dto: BatchRedeemCodeDto) {
@@ -141,8 +205,15 @@ export class AdminRedeemCodesService {
       );
     }
 
-    const codes = await this.prisma.$transaction(created);
-    return { count: codes.length, codes };
+    try {
+      const codes = await this.prisma.$transaction(created);
+      return { count: codes.length, codes };
+    } catch (error) {
+      if (isCodeConflict(error)) {
+        throw new BadRequestException('生成的兑换码与现有兑换码重复，请重试');
+      }
+      throw error;
+    }
   }
 
   async update(id: bigint, dto: UpdateRedeemCodeDto) {
@@ -172,35 +243,54 @@ export class AdminRedeemCodesService {
       throw new BadRequestException('credits required');
     }
 
-    return this.prisma.redeemCode.update({
-      where: { id },
-      data: {
-        code: dto.code,
-        type: nextType,
-        membershipLevelId: nextType === RedeemCodeType.membership ? membershipLevelId : null,
-        membershipPeriod: nextType === RedeemCodeType.membership ? membershipPeriod : null,
-        membershipCycles: nextType === RedeemCodeType.membership ? membershipCycles : null,
-        credits: nextType === RedeemCodeType.credits ? credits : null,
-        maxUseCount: dto.maxUseCount,
-        expireDate: dto.expireDate === undefined
-          ? undefined
-          : (dto.expireDate ? new Date(dto.expireDate) : null),
-        status: dto.status ? (dto.status as RedeemCodeStatus) : undefined,
-        description: dto.description,
-      },
-      include: {
-        membershipLevel: {
-          select: {
-            id: true,
-            name: true,
+    const code = dto.code?.trim();
+
+    try {
+      return await this.prisma.redeemCode.update({
+        where: { id },
+        data: {
+          code,
+          type: nextType,
+          membershipLevelId: nextType === RedeemCodeType.membership ? membershipLevelId : null,
+          membershipPeriod: nextType === RedeemCodeType.membership ? membershipPeriod : null,
+          membershipCycles: nextType === RedeemCodeType.membership ? membershipCycles : null,
+          credits: nextType === RedeemCodeType.credits ? credits : null,
+          maxUseCount: dto.maxUseCount,
+          expireDate: dto.expireDate === undefined
+            ? undefined
+            : (dto.expireDate ? new Date(dto.expireDate) : null),
+          status: dto.status ? (dto.status as RedeemCodeStatus) : undefined,
+          description: dto.description,
+        },
+        include: {
+          membershipLevel: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      if (isCodeConflict(error)) {
+        throw new BadRequestException(`兑换码「${code}」已存在，请更换后再保存`);
+      }
+      throw error;
+    }
   }
 
   async remove(id: bigint) {
-    await this.prisma.redeemCode.delete({ where: { id } });
+    try {
+      await this.prisma.redeemCode.update({
+        where: { id },
+        data: { status: RedeemCodeStatus.disabled },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new NotFoundException('Redeem code not found');
+      }
+      throw error;
+    }
     return { ok: true };
   }
 
@@ -209,6 +299,13 @@ export class AdminRedeemCodesService {
       where: { codeId },
       orderBy: { redeemedAt: 'desc' },
       include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+          },
+        },
         membershipLevel: {
           select: {
             id: true,

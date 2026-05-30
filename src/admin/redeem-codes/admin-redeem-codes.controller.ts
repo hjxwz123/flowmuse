@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -15,8 +15,20 @@ export class AdminRedeemCodesController {
   constructor(private readonly redeemCodesService: AdminRedeemCodesService) {}
 
   @Get()
-  list() {
-    return this.redeemCodesService.list();
+  list(
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+    @Query('search') search?: string,
+    @Query('type') type?: string,
+    @Query('status') status?: string,
+  ) {
+    return this.redeemCodesService.list({
+      page: page ? Number(page) : 1,
+      pageSize: pageSize ? Number(pageSize) : 20,
+      search,
+      type,
+      status,
+    });
   }
 
   @Post()
@@ -49,4 +61,3 @@ export class AdminRedeemCodesController {
     return this.redeemCodesService.exportAll();
   }
 }
-

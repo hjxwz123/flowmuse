@@ -9,6 +9,7 @@ import { useState, useCallback, useRef } from 'react'
 import { Upload, X, Image as ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { compressImage } from '@/lib/utils/image-compress'
+import { toast } from 'sonner'
 
 interface ImageDropzoneProps {
   value: File[]
@@ -86,7 +87,7 @@ export function ImageDropzone({
       const newFiles = [...value, ...filesToAdd]
 
       if (newFiles.length > maxFiles) {
-        alert(`最多只能上传 ${maxFiles} 张图片`)
+        toast.error(`最多只能上传 ${maxFiles} 张图片`)
         return
       }
 

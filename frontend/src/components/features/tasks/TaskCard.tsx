@@ -151,7 +151,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
     if (task.type !== 'image') return
     if (isMjActionPending || isActionLoading) return
     if (isOperationExpired) {
-      alert('生成时间超过24小时，无法继续操作')
+      toast.error('生成时间超过24小时，无法继续操作')
       return
     }
 
@@ -210,7 +210,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
       console.error('[TaskCard] Failed to submit mask:', err)
       const errorMessage = err instanceof Error ? err.message : String(err)
       if (tryShowPurchaseGuide(errorMessage)) return
-      alert(`提交失败：${errorMessage}`)
+      toast.error(`提交失败：${errorMessage}`)
       throw err
     } finally {
       setIsSubmitting(false)
@@ -256,7 +256,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
       console.error('Failed to submit GPT Image edit:', err)
       const errorMessage = err instanceof Error ? err.message : String(err)
       if (tryShowPurchaseGuide(errorMessage)) return
-      alert(`编辑失败：${errorMessage}`)
+      toast.error(`编辑失败：${errorMessage}`)
       throw err
     } finally {
       setIsSubmitting(false)
@@ -291,7 +291,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
       console.error('Failed to submit nanobanana remix:', err)
       const errorMessage = err instanceof Error ? err.message : String(err)
       if (tryShowPurchaseGuide(errorMessage)) return
-      alert(`重绘失败：${errorMessage}`)
+      toast.error(`重绘失败：${errorMessage}`)
       throw err
     }
   }
@@ -332,7 +332,7 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
       }
     } catch (err) {
       console.error('Failed to download:', err)
-      alert('下载失败，请在新标签页中打开并手动保存')
+      toast.error('下载失败，请在新标签页中打开并手动保存')
       // 最后的备选方案：在新标签页中打开
       window.open(task.resultUrl, '_blank', 'noopener,noreferrer')
     }

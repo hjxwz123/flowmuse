@@ -15,6 +15,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Textarea } from '@/components/ui/Textarea'
+import { useConfirm } from '@/components/shared/ConfirmProvider'
 import { projectsService } from '@/lib/api/services'
 import type {
   CreateProjectPromptDto,
@@ -58,6 +59,7 @@ export function ProjectPromptWorkspace({
 }: ProjectPromptWorkspaceProps) {
   const t = useTranslations('projects')
   const locale = useLocale()
+  const confirmDialog = useConfirm()
 
   const [prompts, setPrompts] = useState<ProjectPrompt[]>([])
   const [loading, setLoading] = useState(true)
@@ -169,7 +171,13 @@ export function ProjectPromptWorkspace({
   }
 
   const handleDeletePrompt = async (prompt: ProjectPrompt) => {
-    if (!window.confirm(t('confirm.deleteProjectPrompt'))) return
+    const confirmed = await confirmDialog({
+      title: t('confirm.deleteProjectPrompt'),
+      description: t('confirm.deleteProjectPrompt'),
+      confirmText: locale.toLowerCase().startsWith('zh') ? '删除' : 'Delete',
+      variant: 'danger',
+    })
+    if (!confirmed) return
 
     setDeletingPromptId(prompt.id)
     try {

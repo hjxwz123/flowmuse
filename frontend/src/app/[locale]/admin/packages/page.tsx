@@ -12,13 +12,16 @@ import { DataTable, DataTableColumn } from '@/components/admin/tables/DataTable'
 import { StatusBadge } from '@/components/admin/shared/StatusBadge'
 import { Button } from '@/components/ui/Button'
 import { PackageModal } from '@/components/admin/forms/PackageModal'
+import { useConfirm } from '@/components/shared/ConfirmProvider'
 import { adminPackageService } from '@/lib/api/services/admin/packages'
 import type { AdminPackage } from '@/lib/api/types/admin/packages'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 export default function AdminPackagesPage() {
   const t = useTranslations('admin.packages')
   const tCommon = useTranslations('admin.common')
+  const confirmDialog = useConfirm()
 
   // State
   const [packages, setPackages] = useState<AdminPackage[]>([])
@@ -65,7 +68,13 @@ export default function AdminPackagesPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm(t('confirm.delete'))) {
+    const confirmed = await confirmDialog({
+      title: tCommon('actions.delete'),
+      description: t('confirm.delete'),
+      confirmText: tCommon('actions.delete'),
+      variant: 'danger',
+    })
+    if (!confirmed) {
       return
     }
 
@@ -75,7 +84,7 @@ export default function AdminPackagesPage() {
       await fetchPackages()
     } catch (error) {
       console.error('Failed to delete package:', error)
-      alert('删除失败，请重试')
+      toast.error('删除失败，请重试')
     } finally {
       setDeletingId(null)
     }
@@ -89,7 +98,7 @@ export default function AdminPackagesPage() {
       await fetchPackages()
     } catch (error) {
       console.error('Failed to toggle status:', error)
-      alert('状态切换失败，请重试')
+      toast.error('状态切换失败，请重试')
     }
   }
 

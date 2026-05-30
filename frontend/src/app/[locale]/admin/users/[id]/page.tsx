@@ -16,6 +16,7 @@ import { Loading } from '@/components/ui/Loading'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { AdjustCreditsModal } from '@/components/admin/forms/AdjustCreditsModal'
+import { useConfirm } from '@/components/shared/ConfirmProvider'
 import { adminUserService } from '@/lib/api/services/admin/users'
 import { adminMembershipService } from '@/lib/api/services/admin/memberships'
 import { useAuthStore } from '@/lib/store'
@@ -63,6 +64,7 @@ export default function UserDetailPage({
   const t = useTranslations('admin.users')
   const tCommon = useTranslations('admin.common')
   const router = useRouter()
+  const confirmDialog = useConfirm()
   const currentAdminId = useAuthStore((state) => state.user?.id)
 
   const [user, setUser] = useState<AdminUserDetail | null>(null)
@@ -134,7 +136,13 @@ export default function UserDetailPage({
       return
     }
 
-    if (!confirm(`确定要${actionText}该用户吗？`)) {
+    const confirmed = await confirmDialog({
+      title: actionText,
+      description: `确定要${actionText}该用户吗？`,
+      confirmText: actionText,
+      variant: 'default',
+    })
+    if (!confirmed) {
       return
     }
 

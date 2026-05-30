@@ -8,6 +8,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button, Modal } from '@/components/ui'
+import { toast } from 'sonner'
 
 interface MaskEditorProps {
   isOpen: boolean
@@ -86,7 +87,7 @@ export function MaskEditor({ isOpen, imageUrl, onClose, onSubmit, mode = 'midjou
 
     loadImage().catch((err) => {
       console.error('[MaskEditor] Failed to initialize canvas:', err)
-      alert('图片加载失败，请检查图片 URL 和 CORS 配置')
+      toast.error('图片加载失败，请检查图片 URL 和 CORS 配置')
     })
   }, [isOpen, imageUrl])
 
@@ -309,7 +310,7 @@ export function MaskEditor({ isOpen, imageUrl, onClose, onSubmit, mode = 'midjou
       }
     } catch (err) {
       console.error('Failed to submit mask:', err)
-      alert(t('error'))
+      toast.error(t('error'))
     } finally {
       setIsSubmitting(false)
     }

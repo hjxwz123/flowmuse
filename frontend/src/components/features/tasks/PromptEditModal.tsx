@@ -7,6 +7,7 @@
 
 import { useState } from 'react'
 import { Modal, Button, Textarea } from '@/components/ui'
+import { toast } from 'sonner'
 
 interface PromptEditModalProps {
   isOpen: boolean
@@ -36,7 +37,7 @@ export function PromptEditModal({
 
   const handleSubmit = async () => {
     if (!prompt.trim()) {
-      alert('请输入描述')
+      toast.error('请输入描述')
       return
     }
 

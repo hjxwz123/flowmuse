@@ -13,6 +13,7 @@ import { galleryService } from '@/lib/api/services/gallery'
 import { useAuthStore } from '@/lib/store/authStore'
 import type { GalleryComment, GalleryItemDetail } from '@/lib/api/types/gallery'
 import styles from './GalleryDetail.module.css'
+import { toast } from 'sonner'
 
 interface GalleryDetailProps {
   type: 'image' | 'video'
@@ -239,7 +240,7 @@ export function GalleryDetailContent({ type, id }: GalleryDetailProps) {
       document.body.removeChild(link)
       window.URL.revokeObjectURL(url)
     } catch {
-      window.alert(t('downloadFailed'))
+      toast.error(t('downloadFailed'))
     }
   }
 

@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { FadeIn } from '@/components/shared/FadeIn'
 import { AdminPageShell } from '@/components/admin/layout/AdminPageShell'
 import { Button } from '@/components/ui/Button'
+import { useConfirm } from '@/components/shared/ConfirmProvider'
 import { adminChatService } from '@/lib/api/services/admin/chat'
 import type {
   AdminChatConversationDetailResponse,
@@ -23,6 +24,7 @@ function formatDate(value: string) {
 
 export default function AdminChatPage() {
   const t = useTranslations('admin.chat')
+  const confirmDialog = useConfirm()
 
   const [loadingList, setLoadingList] = useState(false)
   const [loadingDetail, setLoadingDetail] = useState(false)
@@ -90,9 +92,12 @@ export default function AdminChatPage() {
   const handleDeleteConversation = useCallback(async () => {
     if (!activeConversation) return
 
-    const confirmed = window.confirm(
-      t('deleteConfirm', { title: activeConversation.title || activeConversation.id })
-    )
+    const confirmed = await confirmDialog({
+      title: t('delete'),
+      description: t('deleteConfirm', { title: activeConversation.title || activeConversation.id }),
+      confirmText: t('delete'),
+      variant: 'danger',
+    })
     if (!confirmed) return
 
     try {
@@ -116,7 +121,7 @@ export default function AdminChatPage() {
     } finally {
       setDeletingConversationId(null)
     }
-  }, [activeConversation, activeConversationId, fetchList, items.length, page, t])
+  }, [activeConversation, activeConversationId, confirmDialog, fetchList, items.length, page, t])
 
   useEffect(() => {
     void fetchList()

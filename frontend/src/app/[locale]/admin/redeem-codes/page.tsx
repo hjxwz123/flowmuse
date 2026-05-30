@@ -9,13 +9,16 @@ import { useTranslations } from 'next-intl'
 import { FadeIn } from '@/components/shared/FadeIn'
 import { AdminPageShell } from '@/components/admin/layout/AdminPageShell'
 import { DataTable, DataTableColumn } from '@/components/admin/tables/DataTable'
+import { Pagination } from '@/components/admin/shared/Pagination'
 import { StatusBadge } from '@/components/admin/shared/StatusBadge'
 import { Button } from '@/components/ui/Button'
 import { RedeemCodeModal } from '@/components/admin/forms/RedeemCodeModal'
 import { BatchRedeemCodeModal } from '@/components/admin/forms/BatchRedeemCodeModal'
 import { RedeemLogsModal } from '@/components/admin/forms/RedeemLogsModal'
+import { useConfirm } from '@/components/shared/ConfirmProvider'
 import { adminRedeemCodeService } from '@/lib/api/services/admin/redeemCodes'
 import { adminMembershipService } from '@/lib/api/services/admin/memberships'
+import { toast } from 'sonner'
 import type {
   AdminRedeemCode,
   RedeemCodeType,
@@ -27,10 +30,14 @@ import { cn } from '@/lib/utils'
 export default function AdminRedeemCodesPage() {
   const t = useTranslations('admin.redeemCodes')
   const tCommon = useTranslations('admin.common')
+  const confirmDialog = useConfirm()
 
   const [codes, setCodes] = useState<AdminRedeemCode[]>([])
   const [membershipLevels, setMembershipLevels] = useState<AdminMembershipLevel[]>([])
   const [loading, setLoading] = useState(true)
+  const [total, setTotal] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize] = useState(20)
 
   const [typeFilter, setTypeFilter] = useState<RedeemCodeType | ''>('')
   const [statusFilter, setStatusFilter] = useState<RedeemCodeStatus | ''>('')
@@ -45,15 +52,23 @@ export default function AdminRedeemCodesPage() {
     code: string
   } | null>(null)
 
-  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [voidingId, setVoidingId] = useState<string | null>(null)
 
   const fetchRedeemCodes = async () => {
     setLoading(true)
     try {
-      const data = await adminRedeemCodeService.getRedeemCodes()
-      setCodes(data)
+      const response = await adminRedeemCodeService.getRedeemCodes({
+        page: currentPage,
+        pageSize,
+        search: searchQuery.trim() || undefined,
+        type: typeFilter || undefined,
+        status: statusFilter || undefined,
+      })
+      setCodes(response.items)
+      setTotal(response.total)
     } catch (error) {
       console.error('Failed to fetch redeem codes:', error)
+      toast.error('加载兑换码失败')
     } finally {
       setLoading(false)
     }
@@ -70,20 +85,12 @@ export default function AdminRedeemCodesPage() {
 
   useEffect(() => {
     fetchRedeemCodes()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, pageSize, searchQuery, typeFilter, statusFilter])
+
+  useEffect(() => {
     fetchMembershipLevels()
   }, [])
-
-  const filteredCodes = useMemo(() => {
-    return codes.filter((code) => {
-      if (typeFilter && code.type !== typeFilter) return false
-      if (statusFilter && code.status !== statusFilter) return false
-      if (
-        searchQuery &&
-        !code.code.toLowerCase().includes(searchQuery.toLowerCase())
-      ) return false
-      return true
-    })
-  }, [codes, typeFilter, statusFilter, searchQuery])
 
   const handleCreate = () => {
     setSelectedCode(undefined)
@@ -104,20 +111,26 @@ export default function AdminRedeemCodesPage() {
     setIsLogsModalOpen(true)
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('confirm.delete'))) {
+  const handleVoid = async (id: string) => {
+    const confirmed = await confirmDialog({
+      title: t('void'),
+      description: t('confirm.void'),
+      confirmText: t('void'),
+      variant: 'danger',
+    })
+    if (!confirmed) {
       return
     }
 
-    setDeletingId(id)
+    setVoidingId(id)
     try {
-      await adminRedeemCodeService.deleteRedeemCode(id)
+      await adminRedeemCodeService.voidRedeemCode(id)
       await fetchRedeemCodes()
     } catch (error) {
-      console.error('Failed to delete redeem code:', error)
-      alert('删除失败，请重试')
+      console.error('Failed to void redeem code:', error)
+      toast.error(error instanceof Error && error.message ? error.message : '作废失败，请重试')
     } finally {
-      setDeletingId(null)
+      setVoidingId(null)
     }
   }
 
@@ -167,7 +180,7 @@ export default function AdminRedeemCodesPage() {
       URL.revokeObjectURL(url)
     } catch (error) {
       console.error('Export failed:', error)
-      alert('导出失败，请重试')
+      toast.error('导出失败，请重试')
     }
   }
 
@@ -306,8 +319,8 @@ export default function AdminRedeemCodesPage() {
               {tCommon('actions.edit')}
             </button>
             <button
-              onClick={() => handleDelete(code.id)}
-              disabled={deletingId === code.id}
+              onClick={() => handleVoid(code.id)}
+              disabled={voidingId === code.id || code.status === 'disabled'}
               className={cn(
                 'rounded-lg px-3 py-1.5 font-ui text-xs font-medium',
                 'bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300',
@@ -316,13 +329,13 @@ export default function AdminRedeemCodesPage() {
                 'transition-colors duration-300'
               )}
             >
-              {deletingId === code.id ? '删除中...' : tCommon('actions.delete')}
+              {voidingId === code.id ? t('voiding') : t('void')}
             </button>
           </div>
         ),
       },
     ],
-    [t, tCommon, deletingId, membershipLevels]
+    [t, tCommon, voidingId, membershipLevels, currentPage, pageSize, searchQuery, typeFilter, statusFilter, confirmDialog]
   )
 
   return (
@@ -408,7 +421,10 @@ export default function AdminRedeemCodesPage() {
                 <input
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                    setCurrentPage(1)
+                  }}
                   placeholder="输入兑换码搜索"
                   className={cn(
                     'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
@@ -426,7 +442,10 @@ export default function AdminRedeemCodesPage() {
                 </label>
                 <select
                   value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value as RedeemCodeType | '')}
+                  onChange={(e) => {
+                    setTypeFilter(e.target.value as RedeemCodeType | '')
+                    setCurrentPage(1)
+                  }}
                   className={cn(
                     'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
                     'font-ui text-sm text-stone-900 dark:text-stone-100',
@@ -446,7 +465,10 @@ export default function AdminRedeemCodesPage() {
                 </label>
                 <select
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as RedeemCodeStatus | '')}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value as RedeemCodeStatus | '')
+                    setCurrentPage(1)
+                  }}
                   className={cn(
                     'w-full rounded-lg border border-stone-200 dark:border-stone-800 px-4 py-2',
                     'font-ui text-sm text-stone-900 dark:text-stone-100',
@@ -466,7 +488,7 @@ export default function AdminRedeemCodesPage() {
 
         <FadeIn variant="fade" delay={0.1}>
           <DataTable
-            data={filteredCodes}
+            data={codes}
             columns={columns}
             keyExtractor={(code) => code.id}
             loading={loading}
@@ -474,12 +496,15 @@ export default function AdminRedeemCodesPage() {
           />
         </FadeIn>
 
-        {filteredCodes.length > 0 && (
+        {total > 0 && (
           <FadeIn variant="fade" delay={0.2}>
-            <div className="text-sm text-stone-600 dark:text-stone-400 text-center">
-              显示 {filteredCodes.length} 个兑换码
-              {(typeFilter || statusFilter || searchQuery) && ` (共 ${codes.length} 个)`}
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(total / pageSize)}
+              totalItems={total}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+            />
           </FadeIn>
         )}
       </AdminPageShell>

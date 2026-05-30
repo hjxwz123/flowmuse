@@ -5,7 +5,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
+import Link from 'next/link'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { Loading } from '@/components/ui/Loading'
@@ -27,6 +28,7 @@ export function RedeemLogsModal({
 }: RedeemLogsModalProps) {
   const t = useTranslations('admin.redeemCodes')
   const tCommon = useTranslations('admin.common')
+  const locale = useLocale()
 
   const [logs, setLogs] = useState<RedeemLog[]>([])
   const [loading, setLoading] = useState(false)
@@ -120,8 +122,20 @@ export function RedeemLogsModal({
               <tbody className="bg-stone-50 dark:bg-stone-900 divide-y divide-stone-100 dark:divide-stone-800">
                 {logs.map((log) => (
                   <tr key={log.id} className="hover:bg-stone-50 dark:hover:bg-stone-800">
-                    <td className="px-4 py-3 font-ui text-sm text-stone-900 dark:text-stone-100">
-                      User {log.userId}
+                    <td className="px-4 py-3 font-ui text-sm">
+                      <Link
+                        href={`/${locale}/admin/users/${log.userId}`}
+                        className="inline-flex flex-col rounded-md px-1 py-0.5 text-left transition-colors hover:bg-aurora-purple/10"
+                      >
+                        <span className="font-medium text-aurora-purple">
+                          {log.user?.username?.trim() || log.user?.email || '用户'}
+                        </span>
+                        {log.user?.username?.trim() && log.user.email ? (
+                          <span className="text-xs text-stone-500 dark:text-stone-400">
+                            {log.user.email}
+                          </span>
+                        ) : null}
+                      </Link>
                     </td>
                     <td className="px-4 py-3 font-ui text-sm text-stone-600 dark:text-stone-400">
                       {log.type === 'membership' ? '会员' : '点数'}

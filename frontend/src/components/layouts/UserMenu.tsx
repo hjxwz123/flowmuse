@@ -18,7 +18,6 @@ import {
   Image as ImageIcon,
   LogOut,
   Mail,
-  Package,
   Receipt,
   User,
   type LucideIcon,
@@ -278,12 +277,6 @@ export const UserMenu = ({
       label: t('orders'),
       icon: Receipt,
       href: `/${locale}/dashboard/orders`,
-    },
-    {
-      key: 'packages',
-      label: tMenu('packages'),
-      icon: Package,
-      href: `/${locale}/packages`,
     },
   ]
 

@@ -28,6 +28,22 @@ export interface AdminRedeemCode {
   updatedAt: string
 }
 
+export interface RedeemCodeListParams {
+  page?: number
+  pageSize?: number
+  search?: string
+  type?: RedeemCodeType
+  status?: RedeemCodeStatus
+}
+
+export interface RedeemCodeListResponse {
+  items: AdminRedeemCode[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
 export interface CreateRedeemCodeDto {
   code?: string
   type: RedeemCodeType
@@ -75,6 +91,11 @@ export interface UpdateRedeemCodeDto {
 export interface RedeemLog {
   id: string
   userId: string
+  user?: {
+    id: string
+    email: string
+    username: string | null
+  } | null
   codeId: string
   code: string
   type: RedeemCodeType

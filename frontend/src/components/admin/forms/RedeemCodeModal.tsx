@@ -162,7 +162,8 @@ export function RedeemCodeModal({
       onSuccess?.()
       handleClose()
     } catch (err) {
-      setError(isEditMode ? '更新失败，请重试' : '创建失败，请重试')
+      const fallbackMessage = isEditMode ? '更新失败，请重试' : '创建失败，请重试'
+      setError(err instanceof Error && err.message ? err.message : fallbackMessage)
       console.error('Failed to save redeem code:', err)
     } finally {
       setLoading(false)

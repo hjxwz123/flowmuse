@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils/cn'
 import { PageTransition } from '@/components/shared/PageTransition'
 import { FadeIn } from '@/components/shared/FadeIn'
 import Image from 'next/image'
+import { toast } from 'sonner'
 
 export function ProfileContent() {
   const t = useTranslations('dashboard.profile')
@@ -83,7 +84,7 @@ export function ProfileContent() {
       setProfile(updatedProfile)
       // 更新全局状态
       updateUser({ username: updatedProfile.username })
-      alert(t('saveSuccess'))
+      toast.success(t('saveSuccess'))
     } catch (err: unknown) {
       setEditError(err instanceof Error ? err.message : 'Failed to save profile')
     } finally {
@@ -100,7 +101,7 @@ export function ProfileContent() {
 
     // 检查文件大小（5MB）
     if (file.size > 5 * 1024 * 1024) {
-      alert('文件大小不能超过 5MB')
+      toast.error('文件大小不能超过 5MB')
       return
     }
 
@@ -113,9 +114,9 @@ export function ProfileContent() {
       }
       // 更新全局状态，让头像立即在导航栏显示
       updateUser({ avatar: result.avatar })
-      alert(t('uploadSuccess'))
+      toast.success(t('uploadSuccess'))
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'Failed to upload avatar')
+      toast.error(err instanceof Error ? err.message : 'Failed to upload avatar')
     } finally {
       setIsUploadingAvatar(false)
       if (avatarInputRef.current) {
@@ -150,7 +151,7 @@ export function ProfileContent() {
         oldPassword,
         newPassword,
       })
-      alert(t('passwordChanged'))
+      toast.success(t('passwordChanged'))
       setOldPassword('')
       setNewPassword('')
       setConfirmPassword('')

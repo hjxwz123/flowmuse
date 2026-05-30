@@ -14,8 +14,8 @@ import {
   ClipboardList,
   Compass,
   FolderKanban,
-  PenTool,
   Sparkles,
+  Store,
 } from 'lucide-react'
 import Image from 'next/image'
 
@@ -207,6 +207,7 @@ export function Sidebar({ forceCollapsed: _forceCollapsed = false }: SidebarProp
         active:
           pathname.startsWith(`/${locale}/create`) ||
           pathname.startsWith(`/${locale}/chat`) ||
+          pathname.startsWith(`/${locale}/canvas`) ||
           pathname.startsWith(`/${locale}/templates`) ||
           pathname.startsWith(`/${locale}/tools`),
         icon: <Sparkles className="h-5 w-5 stroke-[2]" />,
@@ -221,13 +222,12 @@ export function Sidebar({ forceCollapsed: _forceCollapsed = false }: SidebarProp
             label: t('creationMenu.workflowMode'),
             active: pathname.startsWith(`/${locale}/chat`),
           },
+          {
+            href: `/${locale}/canvas`,
+            label: t('rail.canvas'),
+            active: pathname.startsWith(`/${locale}/canvas`),
+          },
         ],
-      },
-      {
-        href: `/${locale}/canvas`,
-        label: t('rail.canvas'),
-        active: pathname.startsWith(`/${locale}/canvas`),
-        icon: <PenTool className="h-5 w-5 stroke-[2]" />,
       },
       {
         href: `/${locale}/projects`,
@@ -240,6 +240,12 @@ export function Sidebar({ forceCollapsed: _forceCollapsed = false }: SidebarProp
         label: t('tasks'),
         active: pathname.startsWith(`/${locale}/tasks`),
         icon: <ClipboardList className="h-5 w-5 stroke-[2]" />,
+      },
+      {
+        href: `/${locale}/packages`,
+        label: t('packages'),
+        active: pathname.startsWith(`/${locale}/packages`),
+        icon: <Store className="h-5 w-5 stroke-[2]" />,
       },
     ],
     [locale, pathname, t],

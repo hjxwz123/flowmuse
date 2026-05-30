@@ -5,6 +5,8 @@
 import { adminApiClient } from '@/lib/api/adminClient'
 import type {
   AdminRedeemCode,
+  RedeemCodeListParams,
+  RedeemCodeListResponse,
   CreateRedeemCodeDto,
   BatchCreateRedeemCodeDto,
   BatchCreateResult,
@@ -17,8 +19,8 @@ export const adminRedeemCodeService = {
    * 获取兑换码列表
    * GET /admin/redeem-codes
    */
-  async getRedeemCodes(): Promise<AdminRedeemCode[]> {
-    return adminApiClient.get('/redeem-codes')
+  async getRedeemCodes(params?: RedeemCodeListParams): Promise<RedeemCodeListResponse> {
+    return adminApiClient.get('/redeem-codes', { params })
   },
 
   /**
@@ -51,10 +53,10 @@ export const adminRedeemCodeService = {
   },
 
   /**
-   * 删除兑换码
+   * 作废兑换码
    * DELETE /admin/redeem-codes/:id
    */
-  async deleteRedeemCode(id: string): Promise<{ ok: boolean }> {
+  async voidRedeemCode(id: string): Promise<{ ok: boolean }> {
     return adminApiClient.delete(`/redeem-codes/${id}`)
   },
 

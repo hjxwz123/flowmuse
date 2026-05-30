@@ -8,13 +8,16 @@ import { DataTable, DataTableColumn } from '@/components/admin/tables/DataTable'
 import { StatusBadge } from '@/components/admin/shared/StatusBadge'
 import { Button } from '@/components/ui/Button'
 import { ToolAdminModal } from '@/components/admin/tools/ToolAdminModal'
+import { useConfirm } from '@/components/shared/ConfirmProvider'
 import { adminToolService } from '@/lib/api/services/admin/tools'
 import type { Tool } from '@/lib/api/types/tools'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 export default function AdminToolsPage() {
   const t = useTranslations('admin.tools')
   const tCommon = useTranslations('admin.common')
+  const confirmDialog = useConfirm()
 
   const [tools, setTools] = useState<Tool[]>([])
   const [loading, setLoading] = useState(true)
@@ -43,13 +46,20 @@ export default function AdminToolsPage() {
   }, [tools, typeFilter])
 
   const handleDelete = async (id: string) => {
-    if (!confirm(t('confirm.delete'))) return
+    const confirmed = await confirmDialog({
+      title: tCommon('actions.delete'),
+      description: t('confirm.delete'),
+      confirmText: tCommon('actions.delete'),
+      variant: 'danger',
+    })
+    if (!confirmed) return
+
     setDeletingId(id)
     try {
       await adminToolService.deleteTool(id)
       await fetchTools()
     } catch {
-      alert(t('error.delete'))
+      toast.error(t('error.delete'))
     } finally {
       setDeletingId(null)
     }

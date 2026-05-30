@@ -12,13 +12,16 @@ import { DataTable, DataTableColumn } from '@/components/admin/tables/DataTable'
 import { StatusBadge } from '@/components/admin/shared/StatusBadge'
 import { Button } from '@/components/ui/Button'
 import { TemplateModal } from '@/components/admin/templates/TemplateModal'
+import { useConfirm } from '@/components/shared/ConfirmProvider'
 import { adminTemplateService } from '@/lib/api/services/admin/templates'
 import type { Template } from '@/lib/api/types/templates'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 export default function AdminTemplatesPage() {
   const t = useTranslations('admin.templates')
   const tCommon = useTranslations('admin.common')
+  const confirmDialog = useConfirm()
 
   const [templates, setTemplates] = useState<Template[]>([])
   const [loading, setLoading] = useState(true)
@@ -59,13 +62,20 @@ export default function AdminTemplatesPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm(t('confirm.delete'))) return
+    const confirmed = await confirmDialog({
+      title: tCommon('actions.delete'),
+      description: t('confirm.delete'),
+      confirmText: tCommon('actions.delete'),
+      variant: 'danger',
+    })
+    if (!confirmed) return
+
     setDeletingId(id)
     try {
       await adminTemplateService.deleteTemplate(id)
       await fetchTemplates()
     } catch {
-      alert(t('error.delete'))
+      toast.error(t('error.delete'))
     } finally {
       setDeletingId(null)
     }

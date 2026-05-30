@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 import { adminRedeemCodeService } from '@/lib/api/services/admin/redeemCodes'
 import { adminMembershipService } from '@/lib/api/services/admin/memberships'
+import { toast } from 'sonner'
 import type {
   BatchCreateRedeemCodeDto,
   RedeemCodeType,
@@ -158,7 +159,7 @@ export function BatchRedeemCodeModal({
     if (!result) return
     const codes = result.map((r) => r.code).join('\n')
     navigator.clipboard.writeText(codes)
-    alert('已复制所有兑换码到剪贴板')
+    toast.success('已复制所有兑换码到剪贴板')
   }
 
   if (result && result.length > 0) {

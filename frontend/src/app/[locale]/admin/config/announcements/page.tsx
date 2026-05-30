@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { AdminPageShell } from '@/components/admin/layout/AdminPageShell'
 import { AdminPageLoading } from '@/components/admin/layout/AdminPageLoading'
+import { useConfirm } from '@/components/shared/ConfirmProvider'
 import { adminAnnouncementsService } from '@/lib/api/services/admin/announcements'
 import { AnnouncementEditor } from '@/components/admin/forms/AnnouncementEditor'
 import type {
@@ -19,6 +20,7 @@ import { Plus, Edit, Trash2, Pin, Check, X } from 'lucide-react'
 
 export default function AdminAnnouncementsPage() {
   const t = useTranslations('admin')
+  const confirmDialog = useConfirm()
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showEditor, setShowEditor] = useState(false)
@@ -79,7 +81,13 @@ export default function AdminAnnouncementsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('确定要删除这条公告吗？')) return
+    const confirmed = await confirmDialog({
+      title: '删除公告',
+      description: '确定要删除这条公告吗？',
+      confirmText: '删除',
+      variant: 'danger',
+    })
+    if (!confirmed) return
 
     try {
       await adminAnnouncementsService.delete(id)

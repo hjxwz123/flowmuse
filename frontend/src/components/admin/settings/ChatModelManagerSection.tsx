@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
+import { useConfirm } from '@/components/shared/ConfirmProvider'
 import {
   adminAiService,
   type ChatModelItem,
@@ -175,6 +176,7 @@ function readImageAsDataUrl(file: File) {
 }
 
 export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: boolean }) {
+  const confirmDialog = useConfirm()
   const [models, setModels] = useState<ChatModelItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -387,7 +389,12 @@ export function ChatModelManagerSection({ apiConfigured }: { apiConfigured: bool
   }
 
   const handleDelete = async (model: ChatModelItem) => {
-    const confirmed = window.confirm(`确认删除对话模型「${model.name}」吗？`)
+    const confirmed = await confirmDialog({
+      title: '删除对话模型',
+      description: `确认删除对话模型「${model.name}」吗？`,
+      confirmText: '删除',
+      variant: 'danger',
+    })
     if (!confirmed) return
 
     try {
