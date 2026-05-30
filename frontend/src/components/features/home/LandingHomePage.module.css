@@ -152,6 +152,8 @@
   transform: scale(1.012);
   transition: opacity 2s ease-in-out, transform 10s linear;
   will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 :global(.light) .carouselImage {
@@ -1535,7 +1537,7 @@
   z-index: 10;
   margin-top: 0;
   color: var(--text-primary);
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(3,3,3,0.6) 8%, #030303 22%, #000000 100%) !important;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(3,3,3,0.45) 12%, #030303 30%, #000000 100%) !important;
   padding: 0 4vw 120px;
   display: flex;
   flex-direction: column;
@@ -2228,6 +2230,22 @@
 @media (prefers-reduced-motion: reduce) {
   .modelMatrixTrack {
     animation: none;
+  }
+
+  /* Drop the perpetual full-screen blur zoom and card blur-ins, which are the
+     heaviest per-frame work on low-power machines. */
+  .carouselImage,
+  .carouselImageActive,
+  .videoLayer {
+    transition: opacity 0.6s ease-in-out;
+    transform: none;
+  }
+
+  .galleryCard {
+    animation: none;
+    opacity: 1;
+    filter: none;
+    transform: none;
   }
 }
 

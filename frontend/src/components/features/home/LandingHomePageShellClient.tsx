@@ -44,6 +44,8 @@ export function LandingHomePageShellClient({
   const heroContentRef = useRef<HTMLElement | null>(null)
   const [mode, setMode] = useState<LandingMode>('image')
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [isHeroVisible, setIsHeroVisible] = useState(true)
+  const heroVisibleRef = useRef(true)
   const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0)
   const [activeBackgroundLayer, setActiveBackgroundLayer] = useState<'primary' | 'secondary'>('primary')
   const [primaryBackgroundSrc, setPrimaryBackgroundSrc] = useState(() => backgroundImages[0] || '')
@@ -87,7 +89,10 @@ export function LandingHomePageShellClient({
   ])
 
   useEffect(() => {
-    if (mode !== 'image' || backgroundImages.length <= 1) return
+    // Pause the carousel while the hero is scrolled out of view: the background
+    // is faded out behind the gallery, so swapping/animating it there only burns
+    // GPU cycles and drops frames during gallery scroll.
+    if (mode !== 'image' || backgroundImages.length <= 1 || !isHeroVisible) return
 
     const timer = window.setInterval(() => {
       const nextBackgroundIndex = (currentBackgroundIndex + 1) % backgroundImages.length
@@ -96,7 +101,7 @@ export function LandingHomePageShellClient({
     }, 8000)
 
     return () => window.clearInterval(timer)
-  }, [backgroundImages.length, currentBackgroundIndex, mode])
+  }, [backgroundImages.length, currentBackgroundIndex, isHeroVisible, mode])
 
   useEffect(() => {
     const video = backgroundVideoRef.current
@@ -133,22 +138,33 @@ export function LandingHomePageShellClient({
       window.requestAnimationFrame(() => {
         const scrollY = window.scrollY
 
-        if (heroContent || backgroundParallax) {
-          const clampedScrollY = Math.min(scrollY, cachedViewportHeight)
-          const progress = clampedScrollY / cachedViewportHeight
+        const clampedScrollY = Math.min(scrollY, cachedViewportHeight)
+        const progress = clampedScrollY / cachedViewportHeight
 
-          if (backgroundParallax) {
-            const backgroundShift = -(clampedScrollY * 0.08)
-            backgroundParallax.style.transform = `translate3d(0, ${backgroundShift.toFixed(2)}px, 0)`
-          }
+        // Edge-triggered: only flip React state when we actually cross the
+        // hero/gallery boundary, so we don't re-render on every scroll frame.
+        const nextHeroVisible = progress < 1
+        if (nextHeroVisible !== heroVisibleRef.current) {
+          heroVisibleRef.current = nextHeroVisible
+          setIsHeroVisible(nextHeroVisible)
+        }
 
-          if (heroContent) {
-            const opacity = Math.max(0, 1 - progress * 1.45)
-            const translateY = clampedScrollY * 0.44
-            const scale = 1 - progress * 0.065
-            heroContent.style.opacity = opacity.toFixed(3)
-            heroContent.style.transform = `translate3d(0, ${translateY.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`
-          }
+        if (backgroundParallax) {
+          const backgroundShift = -(clampedScrollY * 0.08)
+          backgroundParallax.style.transform = `translate3d(0, ${backgroundShift.toFixed(2)}px, 0)`
+          // Fade the blurred background out as the hero leaves: this hands off
+          // smoothly to the (dark) gallery instead of a hard cut, and lets the
+          // compositor drop the animating blur layer once it is invisible.
+          const backgroundOpacity = Math.max(0, 1 - progress * 1.2)
+          backgroundParallax.style.opacity = backgroundOpacity.toFixed(3)
+        }
+
+        if (heroContent) {
+          const opacity = Math.max(0, 1 - progress * 1.15)
+          const translateY = clampedScrollY * 0.44
+          const scale = 1 - progress * 0.065
+          heroContent.style.opacity = opacity.toFixed(3)
+          heroContent.style.transform = `translate3d(0, ${translateY.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`
         }
 
         ticking = false
@@ -179,6 +195,7 @@ export function LandingHomePageShellClient({
       if (backgroundParallax) {
         backgroundParallax.style.willChange = ''
         backgroundParallax.style.transform = ''
+        backgroundParallax.style.opacity = ''
       }
     }
   }, [])
