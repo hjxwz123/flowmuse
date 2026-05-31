@@ -285,6 +285,7 @@ export function LandingHomePageShellClient({
             ) : null}
           </div>
 
+          <div className={styles.backgroundVeil} />
           <div className={styles.noiseOverlay} />
           <div className={styles.vignette} />
         </div>

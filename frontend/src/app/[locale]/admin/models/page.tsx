@@ -469,7 +469,7 @@ export default function AdminModelsPage() {
 
   return (
     <>
-      <AdminPageShell title={t('title')} description="管理 AI 提供商、API 渠道和模型配置">
+      <AdminPageShell title={t('title')}>
         {/* Tabs */}
         <FadeIn variant="fade" delay={0.05}>
           <Tabs

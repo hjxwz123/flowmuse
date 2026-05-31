@@ -207,7 +207,6 @@ export default function AdminTemplatesPage() {
     <>
       <AdminPageShell
         title={t('title')}
-        description={t('description')}
         actions={(
           <Button type="button" variant="primary" onClick={handleCreate} className="flex items-center gap-2">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

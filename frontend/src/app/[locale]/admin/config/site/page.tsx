@@ -252,7 +252,6 @@ export default function AdminSiteSettingsPage() {
   return (
     <AdminPageShell
       title="系统配置"
-      description="管理站点基础能力、支付能力与统一审核配置"
       maxWidthClassName="max-w-5xl"
     >
       <form onSubmit={handleSubmit}>
@@ -326,9 +325,7 @@ export default function AdminSiteSettingsPage() {
                     </button>
                   )}
                 </div>
-                <p className={helpTextCls}>
-                  网站的主题强调色，影响按钮、标签页、交互元素颜色。留空使用默认紫色（#B794F6）。
-                </p>
+
               </div>
 
               <div>
@@ -489,9 +486,7 @@ export default function AdminSiteSettingsPage() {
               <div className={switchCardCls}>
                 <div>
                   <p className="font-semibold text-stone-800 dark:text-stone-200">启用登录 / 注册人机验证</p>
-                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-                    开启后，登录和注册表单会显示 Turnstile，后端也会强制校验 token。
-                  </p>
+
                 </div>
                 <button
                   type="button"
@@ -513,9 +508,7 @@ export default function AdminSiteSettingsPage() {
                   className={inputCls}
                   placeholder="0x4AAAA..."
                 />
-                <p className={helpTextCls}>
-                  这是前端公开使用的 Key，会下发到登录和注册页面。
-                </p>
+
               </div>
 
               <div>
@@ -529,14 +522,9 @@ export default function AdminSiteSettingsPage() {
                   className={inputCls}
                   placeholder="0x4AAAA..."
                 />
-                <p className={helpTextCls}>
-                  已保存的 Secret Key 会脱敏显示，重新输入即可更新；不会通过公开接口暴露给前端。
-                </p>
+
               </div>
 
-              <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 text-xs leading-6 text-stone-500 dark:text-stone-400">
-                Turnstile 官方前端脚本会从 Cloudflare 加载。只有在后台开启并且配置了 Site Key / Secret Key 后，登录和注册页面才会真正启用验证。
-              </div>
             </div>
           </div>
 
@@ -595,12 +583,6 @@ export default function AdminSiteSettingsPage() {
           </div>
 
           <div className="pt-6 border-t border-stone-200 dark:border-stone-800">
-            <div className="rounded-xl border border-dashed border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 px-4 py-3 text-sm text-stone-600 dark:text-stone-400">
-              聊天文件配置与联网搜索配置（SearXNG）已迁移至「AI 能力 → AI 配置」页面统一管理。
-            </div>
-          </div>
-
-          <div className="pt-6 border-t border-stone-200 dark:border-stone-800">
             <h2 className={sectionTitleCls}>
               <span className={sectionAccentCls} />
               内容审核配置
@@ -646,7 +628,6 @@ export default function AdminSiteSettingsPage() {
                   className={inputCls}
                   placeholder="sk-..."
                 />
-                <p className={helpTextCls}>已保存的 Key 会脱敏显示，重新输入即可更新</p>
               </div>
 
               <div>
@@ -762,9 +743,6 @@ export default function AdminSiteSettingsPage() {
               <span className={sectionAccentCls} />
               页面内容
             </h2>
-            <p className="mb-4 text-sm text-stone-500 dark:text-stone-400">
-              首页支持顶部滚动消息条，其余页面内容支持 Markdown 格式并显示在对应公开页面中
-            </p>
             <div className="space-y-4">
               <div>
                 <label className={labelCls}>
@@ -780,14 +758,14 @@ export default function AdminSiteSettingsPage() {
                   placeholder="例如：新用户注册即送积分，会员限时优惠进行中，点击右上角进入商城查看。"
                 />
                 <p className={helpTextCls}>
-                  仅在首页顶部展示，为滚动消息条样式；留空则不显示。
+                  留空则不显示。
                 </p>
               </div>
 
               <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
                 <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">首页背景轮播</h3>
                 <p className="mt-1 text-xs leading-6 text-stone-500 dark:text-stone-400">
-                  用于首页首屏背景。图片 URL 每行一个，也支持英文逗号分隔；留空时使用系统内置公开网络资源，不会使用私有 COS 地址。
+                  用于首页首屏背景。图片 URL 每行一个
                 </p>
 
                 <div className="mt-4 space-y-4">
@@ -819,7 +797,7 @@ export default function AdminSiteSettingsPage() {
                       placeholder="https://example.com/background.mp4"
                     />
                     <p className={helpTextCls}>
-                      视频模式下使用；留空时使用系统内置公开演示视频。
+                      留空时使用系统内置公开演示视频。
                     </p>
                   </div>
                 </div>
@@ -827,9 +805,6 @@ export default function AdminSiteSettingsPage() {
 
               <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4">
                 <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">页面启动遮罩广告 / 消息弹层</h3>
-                <p className="mt-1 text-xs leading-6 text-stone-500 dark:text-stone-400">
-                  进入站点首次加载或刷新后弹出一次；同一次页面访问中切换到创作、对话等路由不会重复弹出。用户手动关闭后，30 分钟内不会再次弹出。
-                </p>
 
                 <div className="mt-4 space-y-4">
                   <div>
@@ -849,9 +824,6 @@ export default function AdminSiteSettingsPage() {
                       <option value="image">图片弹窗</option>
                       <option value="html">HTML 弹窗</option>
                     </select>
-                    <p className={helpTextCls}>
-                      图片模式适合海报广告；HTML 模式适合自定义活动卡片、消息面板、按钮布局等内容。
-                    </p>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
@@ -983,9 +955,6 @@ export default function AdminSiteSettingsPage() {
   <a href="/packages">立即查看</a>
 </div>`}
                         />
-                        <p className={helpTextCls}>
-                          支持自定义结构和样式。HTML 模式下如果需要跳转链接，建议直接在代码内使用 a 标签或按钮。
-                        </p>
                       </div>
 
                       {startupPopupHtml.trim() ? (

@@ -130,7 +130,7 @@ export default function AdminChatModerationPage() {
   )
 
   return (
-    <AdminPageShell title={t('title')} description={t('description')}>
+    <AdminPageShell title={t('title')}>
       <FadeIn variant="fade" delay={0.05}>
         <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-2 shadow-sm">
           <div className="grid gap-2 sm:grid-cols-2">

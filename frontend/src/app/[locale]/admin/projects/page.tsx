@@ -196,7 +196,7 @@ export default function AdminProjectsPage() {
   )
 
   return (
-    <AdminPageShell title="项目管理" description="管理所有用户的项目，设置免费用户的项目创建上限">
+    <AdminPageShell title="项目管理">
       {/* Free Quota Config */}
       <FadeIn variant="fade" delay={0.05}>
         <div className="rounded-xl bg-stone-50 dark:bg-stone-900 p-6 border border-stone-200 dark:border-stone-800 shadow-sm">

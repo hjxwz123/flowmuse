@@ -198,7 +198,6 @@ export default function AdminAiSettingsPage() {
   return (
     <AdminPageShell
       title="AI 配置中心"
-      description="管理全局 AI 参数、提示词优化、聊天文件上传与 SearXNG 联网搜索能力"
       maxWidthClassName="max-w-5xl"
     >
       <form onSubmit={handleSubmit}>

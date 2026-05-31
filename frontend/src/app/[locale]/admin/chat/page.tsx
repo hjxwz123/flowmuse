@@ -133,7 +133,7 @@ export default function AdminChatPage() {
   }, [activeConversationId, fetchDetail])
 
   return (
-    <AdminPageShell title={t('title')} description={t('description')}>
+    <AdminPageShell title={t('title')}>
       <FadeIn variant="fade" delay={0.05}>
           <div className="grid gap-4 rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 p-4 shadow-sm md:grid-cols-[1fr_auto]">
             <div className="relative">

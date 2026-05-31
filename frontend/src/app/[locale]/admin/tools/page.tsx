@@ -163,7 +163,6 @@ export default function AdminToolsPage() {
     <>
       <AdminPageShell
         title={t('title')}
-        description={t('description')}
         actions={(
           <Button
             type="button"

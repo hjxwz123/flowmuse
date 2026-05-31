@@ -88,7 +88,6 @@ export default function AdminEmailWhitelistPage() {
   return (
     <AdminPageShell
       title="邮箱域名白名单"
-      description="限制只有特定邮箱域名的用户才能注册"
       maxWidthClassName="max-w-5xl"
     >
       <form onSubmit={handleSubmit}>

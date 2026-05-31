@@ -241,7 +241,6 @@ export default function AdminPackagesPage() {
     <>
       <AdminPageShell
         title={t('title')}
-        description="管理永久积分包和价格"
         actions={(
           <Button
             type="button"

@@ -241,7 +241,7 @@ export default function AdminTasksPage() {
 
   return (
     <>
-      <AdminPageShell title={t('title')} description="管理和监控所有 AI 生成任务">
+      <AdminPageShell title={t('title')}>
         {/* Stats Cards */}
         {stats && stats.totals && stats.byStatus && (
           <FadeIn variant="fade" delay={0.05}>

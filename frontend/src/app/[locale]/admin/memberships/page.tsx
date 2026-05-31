@@ -283,7 +283,6 @@ export default function AdminMembershipsPage() {
     <>
       <AdminPageShell
         title={t('title')}
-        description={t('description')}
         actions={(
           <Button type="button" variant="primary" onClick={handleCreate}>
             {t('add')}

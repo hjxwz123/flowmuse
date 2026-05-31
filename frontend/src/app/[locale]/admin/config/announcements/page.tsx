@@ -123,7 +123,6 @@ export default function AdminAnnouncementsPage() {
   return (
     <AdminPageShell
       title="公告管理"
-      description="管理系统公告和通知"
       actions={
         <Button
           onClick={handleCreate}

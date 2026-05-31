@@ -67,7 +67,6 @@ export default function AdminPaymentConfigPage() {
   return (
     <AdminPageShell
       title="支付配置"
-      description="配置微信 Native 扫码支付（微信支付 V3 API）"
       maxWidthClassName="max-w-4xl"
     >
       <form onSubmit={handleSubmit}>

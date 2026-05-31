@@ -342,7 +342,6 @@ export default function AdminRedeemCodesPage() {
     <>
       <AdminPageShell
         title={t('title')}
-        description="管理兑换码和批量生成"
         actions={(
           <div className="flex gap-3">
             <Button

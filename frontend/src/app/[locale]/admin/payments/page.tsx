@@ -67,7 +67,7 @@ export default function AdminPaymentsPage() {
   useEffect(() => { load(1, statusFilter) }, [statusFilter])
 
   return (
-    <AdminPageShell title="支付记录" description="查看所有微信支付订单">
+    <AdminPageShell title="支付记录">
       {/* 统计卡片 */}
       {stats && (
         <FadeIn variant="fade" delay={0.05}>
