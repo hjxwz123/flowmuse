@@ -1,8 +1,13 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import styles from './LandingHomePage.module.css'
+
+gsap.registerPlugin(useGSAP, ScrollTrigger)
 
 type LandingGalleryRevealProps = {
   children: React.ReactNode
@@ -11,25 +16,29 @@ type LandingGalleryRevealProps = {
 export function LandingGalleryReveal({ children }: LandingGalleryRevealProps) {
   const headerRef = useRef<HTMLDivElement | null>(null)
 
-  useEffect(() => {
-    const header = headerRef.current
-    if (!header) return
+  useGSAP(
+    () => {
+      const header = headerRef.current
+      if (!header) return
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            header.dataset.visible = 'true'
-            observer.unobserve(header)
-          }
-        }
-      },
-      { root: null, rootMargin: '0px 0px -80px 0px', threshold: 0.01 },
-    )
+      const mm = gsap.matchMedia()
 
-    observer.observe(header)
-    return () => observer.disconnect()
-  }, [])
+      mm.add('(prefers-reduced-motion: reduce)', () => {
+        gsap.set(header, { autoAlpha: 1, y: 0 })
+      })
+
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.to(header, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.95,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: header, start: 'top 85%', once: true },
+        })
+      })
+    },
+    { scope: headerRef },
+  )
 
   return (
     <div ref={headerRef} className={styles.galleryHeader}>

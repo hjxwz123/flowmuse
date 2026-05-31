@@ -593,7 +593,10 @@
   color: var(--headline-color);
   text-shadow: var(--headline-shadow);
   -webkit-text-stroke: 0.012em var(--headline-stroke);
-  animation: headlineReveal 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  /* Entrance now driven by GSAP (LandingHeroAnimator) — the hidden initial
+     state below is kept so GSAP can reveal it via `.to({ autoAlpha: 1 })`
+     without a flash; the CSS keyframe `animation` was removed to avoid
+     double-animating. */
   opacity: 0;
   transform: translateY(20px);
   filter: blur(8px);
@@ -661,9 +664,9 @@
   color: var(--text-secondary);
   font-weight: 400;
   letter-spacing: -0.01em;
+  /* Hidden initial state kept for the GSAP entrance (see .headline). */
   opacity: 0;
   transform: translateY(20px);
-  animation: slideUpBlur 1s var(--ease-out-expo) 0.2s forwards;
 }
 
 .interactionArea {
@@ -672,9 +675,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Hidden initial state kept for the GSAP entrance (see .headline). */
   opacity: 0;
   transform: translateY(20px);
-  animation: slideUpBlur 1s var(--ease-out-expo) 0.4s forwards;
 }
 
 .modeSwitcher {
@@ -962,7 +965,9 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  animation: fadeSlideDown 1s var(--ease-out-expo) 0.8s both;
+  /* Hidden initial state kept for the GSAP entrance (see .headline). */
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 :global(.light) .scrollIndicator {
@@ -1598,14 +1603,11 @@
   padding-top: clamp(64px, 10vh, 120px);
   margin-bottom: 48px;
   text-shadow: 0 18px 54px rgba(0, 0, 0, 0.22);
+  /* Hidden initial state kept for the GSAP ScrollTrigger reveal
+     (LandingGalleryReveal). The CSS transition was removed so it doesn't
+     fight GSAP writing the transform inline each frame. */
   opacity: 0;
   transform: translate3d(0, 48px, 0);
-  transition: opacity 0.85s var(--ease-out-expo), transform 0.85s var(--ease-out-expo);
-}
-
-.galleryHeader[data-visible='true'] {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
 }
 
 .galleryTitle {
@@ -1900,28 +1902,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes headlineReveal {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.985);
-    filter: blur(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-@keyframes slideUpBlur {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
   }
 }
 
@@ -2287,6 +2267,21 @@
     animation: none;
     opacity: 1;
     transform: none;
+  }
+}
+
+/* No-JS fallback: the hero/gallery entrance is now revealed by GSAP, which
+   needs JavaScript. If scripting is unavailable, force the hidden initial
+   states back to visible so content is never stuck invisible. */
+@media (scripting: none) {
+  .headline,
+  .subHeadline,
+  .interactionArea,
+  .scrollIndicator,
+  .galleryHeader {
+    opacity: 1;
+    transform: none;
+    filter: none;
   }
 }
 

@@ -2,6 +2,7 @@ import Link from 'next/link'
 
 import { LandingExploreGalleryButton } from './LandingExploreGalleryButton'
 import { LandingGalleryReveal } from './LandingGalleryReveal'
+import { LandingHeroAnimator } from './LandingHeroAnimator'
 import { LandingHeroForm } from './LandingHeroForm'
 import { LandingHomePageShellClient } from './LandingHomePageShellClient'
 import { LandingPublicGalleryClient } from './LandingPublicGalleryClient'
@@ -65,20 +66,20 @@ export function LandingHomePage({
         copy={copy}
       />
 
-      <section className={styles.heroSection}>
+      <LandingHeroAnimator>
         <div id="landing-hero-content" className={styles.heroContent}>
           <div className={styles.textContent}>
-            <h1 className={styles.headline} data-text={copy.title}>
+            <h1 className={styles.headline} data-text={copy.title} data-hero-reveal="headline">
               {copy.title}
             </h1>
-            <p className={styles.subHeadline}>{copy.subtitle}</p>
+            <p className={styles.subHeadline} data-hero-reveal="subtitle">{copy.subtitle}</p>
           </div>
 
           <LandingHeroForm locale={locale} copy={copy} />
         </div>
 
         <LandingExploreGalleryButton label={copy.exploreGallery} />
-      </section>
+      </LandingHeroAnimator>
 
       <section id="landing-public-gallery" className={styles.gallerySection}>
         <LandingGalleryReveal>

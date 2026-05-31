@@ -35,6 +35,7 @@ export function LandingHeroForm({ locale, copy }: LandingHeroFormProps) {
       action={`/${locale}/create`}
       method="get"
       className={styles.interactionArea}
+      data-hero-reveal="form"
       onSubmit={handleSubmit}
     >
       <input type="hidden" name="mode" value={mode} />

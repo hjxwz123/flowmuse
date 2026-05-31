@@ -11,7 +11,7 @@ export function LandingExploreGalleryButton({ label }: LandingExploreGalleryButt
   const { scrollToGallery } = useLandingHomePageShell()
 
   return (
-    <button type="button" className={styles.scrollIndicator} onClick={scrollToGallery}>
+    <button type="button" className={styles.scrollIndicator} data-hero-reveal="scroll" onClick={scrollToGallery}>
       <span>{label}</span>
       <span className={styles.scrollLine} />
     </button>
