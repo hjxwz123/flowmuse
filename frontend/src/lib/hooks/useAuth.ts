@@ -7,10 +7,12 @@
 
 import { useAuthStore } from '@/lib/store/authStore'
 import { useRouter } from 'next/navigation'
+import { useLocale } from 'next-intl'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export const useAuth = () => {
   const router = useRouter()
+  const locale = useLocale()
   const {
     user,
     isAuthenticated,
@@ -44,12 +46,12 @@ export const useAuth = () => {
       }
 
       if (!isAuthenticated) {
-        router.push(redirectTo || '/auth/login')
+        router.push(redirectTo || `/${locale}/auth/login`)
         return false
       }
       return true
     },
-    [isAuthenticated, isReady, router]
+    [isAuthenticated, isReady, locale, router]
   )
 
   return {

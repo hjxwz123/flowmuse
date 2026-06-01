@@ -440,6 +440,16 @@ export function SimplifiedCreateContent() {
   const [includeImagesInOptimize, setIncludeImagesInOptimize] = useState(false)
   const [purchaseGuideReason, setPurchaseGuideReason] = useState<PurchaseGuideReason | null>(null)
 
+  const redirectToLogin = () => {
+    router.push(`/${locale}/auth/login`)
+  }
+
+  const requireLogin = () => {
+    if (isAuthenticated) return false
+    redirectToLogin()
+    return true
+  }
+
   // 获取模型列表
   useEffect(() => {
     const fetchModels = async () => {
@@ -616,10 +626,7 @@ export function SimplifiedCreateContent() {
 
   // 保存为个人预设
   const handleSavePreset = async () => {
-    if (!isAuthenticated) {
-      toast.error(t('featuredTemplates.loginRequired'))
-      return
-    }
+    if (requireLogin()) return
     if (!presetName.trim()) return
     setSavingPreset(true)
     try {
@@ -1971,6 +1978,8 @@ export function SimplifiedCreateContent() {
 
   // AI 提示词优化
   const handleOptimizePrompt = async () => {
+    if (requireLogin()) return
+
     const requestPrompt = buildRequestPrompt()
     if (!requestPrompt) {
       toast.error(t('errors.promptRequired'))
@@ -2033,6 +2042,8 @@ export function SimplifiedCreateContent() {
 
   // 处理提交
   const handleSubmit = async () => {
+    if (requireLogin()) return
+
     const requestPrompt = buildRequestPrompt()
     const hasImageReferenceInputs = inputImages.length > 0 || selectedProjectImageAssets.length > 0
     const totalImageReferenceCount = inputImages.length + selectedProjectImageAssets.length
@@ -2500,6 +2511,11 @@ export function SimplifiedCreateContent() {
 
   const requestPromptPreview = buildRequestPrompt()
   const hasRequestPrompt = Boolean(requestPromptPreview)
+  const handleQuickStartSourceSelect = (source: (typeof quickStartSourceOptions)[number]) => {
+    if (source === 'presets' && requireLogin()) return
+    setQuickStartSource(source)
+  }
+
   const applyPromptDraft = (nextPrompt: string) => {
     setPrompt(nextPrompt)
     setShowOptimizeResult(false)
@@ -2791,7 +2807,7 @@ export function SimplifiedCreateContent() {
                         <button
                           key={source}
                           type="button"
-                          onClick={() => setQuickStartSource(source)}
+                          onClick={() => handleQuickStartSourceSelect(source)}
                           className={cn(
                             'min-w-0 flex-1 rounded-full px-2 py-1.5 text-[11px] font-medium transition-colors whitespace-nowrap',
                             quickStartSource === source
@@ -2841,7 +2857,7 @@ export function SimplifiedCreateContent() {
                         <button
                           key={source}
                           type="button"
-                          onClick={() => setQuickStartSource(source)}
+                          onClick={() => handleQuickStartSourceSelect(source)}
                           className={cn(
                             'rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
                             quickStartSource === source
@@ -3031,6 +3047,7 @@ export function SimplifiedCreateContent() {
               <VideoCreateWorkspace
                 locale={locale}
                 isAuthenticated={isAuthenticated}
+                onRequireAuth={redirectToLogin}
                 prompt={prompt}
                 applyPromptDraft={applyPromptDraft}
                 promptEditorRef={promptEditorRef}

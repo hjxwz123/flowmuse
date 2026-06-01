@@ -96,7 +96,9 @@
     "actions": {
       "view": "查看作品",
       "download": "下载作品",
-      "downloadVideo": "下载视频"
+      "downloadVideo": "下载视频",
+      "loadMore": "加载更多",
+      "loadingMore": "加载中..."
     },
     "empty": {
       "worksTitle": "还没有作品",

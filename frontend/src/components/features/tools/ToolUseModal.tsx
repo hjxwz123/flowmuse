@@ -76,7 +76,8 @@ export function ToolUseModal({ tool, onClose }: ToolUseModalProps) {
 
   const handleSubmit = async () => {
     if (!isAuthenticated) {
-      toast.error(t('error.loginRequired'))
+      onClose()
+      router.push(`/${locale}/auth/login`)
       return
     }
     const filled = images.filter(Boolean)

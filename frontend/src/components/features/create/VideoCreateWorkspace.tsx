@@ -62,6 +62,7 @@ type VideoAssistantAudio = 'immersive' | 'narration' | 'ambience' | 'silent'
 export interface VideoCreateWorkspaceProps {
   locale: string
   isAuthenticated: boolean
+  onRequireAuth: () => void
   prompt: string
   applyPromptDraft: (nextPrompt: string) => void
   promptEditorRef: RefObject<HTMLDivElement | null>
@@ -189,6 +190,7 @@ function joinPromptParts(parts: Array<string | null | undefined>) {
 export function VideoCreateWorkspace({
   locale,
   isAuthenticated,
+  onRequireAuth,
   prompt,
   applyPromptDraft,
   promptEditorRef,
@@ -402,7 +404,7 @@ export function VideoCreateWorkspace({
     }
 
     if (!isAuthenticated) {
-      toast.error(t('videoAssistant.loginRequired'))
+      onRequireAuth()
       return
     }
 

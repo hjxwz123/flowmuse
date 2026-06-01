@@ -45,6 +45,10 @@ type CenterTab = 'works' | 'favorites' | 'profile'
 type WorkFilter = 'all' | 'image' | 'video' | 'public' | 'private' | 'pending'
 type FavoriteFilter = 'all' | 'image' | 'video'
 type SortOption = 'newest' | 'oldest'
+type PageState = {
+  page: number
+  hasMore: boolean
+}
 
 type GalleryMetrics = {
   worksTotal: number
@@ -53,6 +57,9 @@ type GalleryMetrics = {
   imageTotal: number
   videoTotal: number
 }
+
+const PROFILE_PAGE_LIMIT = 24
+const INITIAL_PAGE_STATE: PageState = { page: 1, hasMore: false }
 
 function formatDate(value: string | null | undefined, locale: string) {
   if (!value) return '-'
@@ -99,14 +106,37 @@ function sortByDate<T extends { createdAt: string }>(items: T[], sort: SortOptio
   return sort === 'oldest' ? sorted.reverse() : sorted
 }
 
+function toPageState(pagination: { page: number; hasMore: boolean }): PageState {
+  return {
+    page: pagination.page,
+    hasMore: pagination.hasMore,
+  }
+}
+
+function mergeTasks(prev: ApiTask[], next: ApiTask[]) {
+  const taskMap = new Map(prev.map((task) => [`${task.type}-${task.id}`, task]))
+
+  for (const task of next) {
+    taskMap.set(`${task.type}-${task.id}`, task)
+  }
+
+  return sortByDate(Array.from(taskMap.values()), 'newest')
+}
+
+function mergeFavorites(prev: FavoriteRecord[], next: FavoriteRecord[]) {
+  const favoriteMap = new Map(prev.map((favorite) => [`${favorite.targetType}-${favorite.targetId}`, favorite]))
+
+  for (const favorite of next) {
+    favoriteMap.set(`${favorite.targetType}-${favorite.targetId}`, favorite)
+  }
+
+  return sortByDate(Array.from(favoriteMap.values()), 'newest')
+}
+
 function CenterSkeleton() {
   return (
     <PageTransition className="min-h-screen w-full max-w-full overflow-x-hidden bg-canvas px-3 py-6 text-stone-950 dark:bg-canvas-dark dark:text-stone-100 sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto w-full max-w-[1600px] min-w-0 space-y-6 sm:space-y-8">
-        <div className="space-y-3">
-          <Skeleton className="h-9 w-44" />
-          <Skeleton className="h-4 w-full max-w-72" />
-        </div>
         <div className="grid min-w-0 gap-5 sm:gap-8 lg:grid-cols-12">
           <div className="min-w-0 lg:col-span-3">
             <div className="max-w-full rounded-2xl border border-stone-200 bg-stone-50/80 p-4 dark:border-white/10 dark:bg-stone-900/90 sm:p-6">
@@ -355,6 +385,14 @@ export function ProfileContent() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [works, setWorks] = useState<ApiTask[]>([])
   const [favorites, setFavorites] = useState<FavoriteRecord[]>([])
+  const [worksPageState, setWorksPageState] = useState<{
+    images: PageState
+    videos: PageState
+  }>({
+    images: INITIAL_PAGE_STATE,
+    videos: INITIAL_PAGE_STATE,
+  })
+  const [favoritesPageState, setFavoritesPageState] = useState<PageState>(INITIAL_PAGE_STATE)
   const [metrics, setMetrics] = useState<GalleryMetrics>({
     worksTotal: 0,
     favoritesTotal: 0,
@@ -363,6 +401,8 @@ export function ProfileContent() {
     videoTotal: 0,
   })
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingMoreWorks, setIsLoadingMoreWorks] = useState(false)
+  const [isLoadingMoreFavorites, setIsLoadingMoreFavorites] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
@@ -393,9 +433,9 @@ export function ProfileContent() {
     try {
       const [profileData, imagePage, videoPage, favoritePage] = await Promise.all([
         userService.getProfile(),
-        galleryService.getMyImages({ page: 1, limit: 12 }),
-        galleryService.getMyVideos({ page: 1, limit: 12 }),
-        galleryService.getMyFavorites({ page: 1, limit: 12 }),
+        galleryService.getMyImages({ page: 1, limit: PROFILE_PAGE_LIMIT }),
+        galleryService.getMyVideos({ page: 1, limit: PROFILE_PAGE_LIMIT }),
+        galleryService.getMyFavorites({ page: 1, limit: PROFILE_PAGE_LIMIT }),
       ])
 
       const completedImages = imagePage.data.filter((item) => item.status === 'completed')
@@ -407,6 +447,11 @@ export function ProfileContent() {
       setUsername(profileData.username)
       setWorks(nextWorks)
       setFavorites(nextFavorites)
+      setWorksPageState({
+        images: toPageState(imagePage.pagination),
+        videos: toPageState(videoPage.pagination),
+      })
+      setFavoritesPageState(toPageState(favoritePage.pagination))
       setMetrics({
         worksTotal: imagePage.pagination.total + videoPage.pagination.total,
         favoritesTotal: favoritePage.pagination.total,
@@ -425,6 +470,67 @@ export function ProfileContent() {
   useEffect(() => {
     void loadData()
   }, [loadData])
+
+  const hasMoreWorks = worksPageState.images.hasMore || worksPageState.videos.hasMore
+
+  const loadMoreWorks = useCallback(async () => {
+    if (!isAuthenticated || isLoadingMoreWorks || !hasMoreWorks) return
+
+    setIsLoadingMoreWorks(true)
+    try {
+      const [imagePage, videoPage] = await Promise.all([
+        worksPageState.images.hasMore
+          ? galleryService.getMyImages({
+              page: worksPageState.images.page + 1,
+              limit: PROFILE_PAGE_LIMIT,
+            })
+          : Promise.resolve(null),
+        worksPageState.videos.hasMore
+          ? galleryService.getMyVideos({
+              page: worksPageState.videos.page + 1,
+              limit: PROFILE_PAGE_LIMIT,
+            })
+          : Promise.resolve(null),
+      ])
+
+      const nextWorks = [
+        ...(imagePage?.data.filter((item) => item.status === 'completed') ?? []),
+        ...(videoPage?.data.filter((item) => item.status === 'completed') ?? []),
+      ]
+
+      setWorks((prev) => mergeTasks(prev, nextWorks))
+      setWorksPageState((prev) => ({
+        images: imagePage ? toPageState(imagePage.pagination) : prev.images,
+        videos: videoPage ? toPageState(videoPage.pagination) : prev.videos,
+      }))
+    } catch (err) {
+      console.error('Failed to load more works:', err)
+      toast.error(t('loadFailed'))
+    } finally {
+      setIsLoadingMoreWorks(false)
+    }
+  }, [hasMoreWorks, isAuthenticated, isLoadingMoreWorks, t, worksPageState])
+
+  const loadMoreFavorites = useCallback(async () => {
+    if (!isAuthenticated || isLoadingMoreFavorites || !favoritesPageState.hasMore) return
+
+    setIsLoadingMoreFavorites(true)
+    try {
+      const favoritePage = await galleryService.getMyFavorites({
+        page: favoritesPageState.page + 1,
+        limit: PROFILE_PAGE_LIMIT,
+      })
+      const nextFavorites = favoritePage.data.filter((item) => item.item?.status === 'completed')
+
+      setFavorites((prev) => mergeFavorites(prev, nextFavorites))
+      setFavoritesPageState(toPageState(favoritePage.pagination))
+    } catch (err) {
+      console.error('Failed to load more favorites:', err)
+      toast.error(t('loadFailed'))
+    } finally {
+      setIsLoadingMoreFavorites(false)
+    }
+  }, [favoritesPageState, isAuthenticated, isLoadingMoreFavorites, t])
 
   const filteredWorks = useMemo(() => {
     const query = searchQuery.trim().toLowerCase()
@@ -564,20 +670,6 @@ export function ProfileContent() {
   return (
     <PageTransition className="min-h-screen w-full max-w-full overflow-x-hidden bg-canvas px-3 py-6 text-stone-950 dark:bg-canvas-dark dark:text-stone-100 sm:px-6 sm:py-8 lg:px-8">
       <div className="mx-auto w-full max-w-[1600px] min-w-0 space-y-6 sm:space-y-8">
-        <FadeIn variant="slide">
-          <div className="min-w-0">
-            <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <h1 className="min-w-0 break-words font-display text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 sm:text-4xl">
-                {t('centerTitle')}
-              </h1>
-              <span className="rounded-full border border-stone-200 bg-stone-100 px-2.5 py-1 text-xs font-medium text-stone-500 dark:border-stone-800 dark:bg-stone-900/80 dark:text-stone-400">
-                {t('centerBadge')}
-              </span>
-            </div>
-            <p className="mt-2 max-w-full break-words font-ui text-sm text-stone-500 dark:text-stone-400">{t('centerSubtitle')}</p>
-          </div>
-        </FadeIn>
-
         <div className="grid min-w-0 gap-5 sm:gap-8 lg:grid-cols-12 lg:items-start">
           <aside className="min-w-0 lg:sticky lg:top-24 lg:col-span-3">
             <FadeIn variant="scale" delay={0.05}>
@@ -868,6 +960,19 @@ export function ProfileContent() {
               )
             ) : null}
 
+            {activeTab === 'works' && hasMoreWorks ? (
+              <div className="flex justify-center">
+                <Button
+                  variant="secondary"
+                  onClick={loadMoreWorks}
+                  disabled={isLoadingMoreWorks}
+                  className="rounded-xl px-5 py-2 text-sm"
+                >
+                  {isLoadingMoreWorks ? t('actions.loadingMore') : t('actions.loadMore')}
+                </Button>
+              </div>
+            ) : null}
+
             {activeTab === 'favorites' ? (
               filteredFavorites.length > 0 ? (
                 <FadeIn variant="fade" delay={0.12}>
@@ -896,6 +1001,19 @@ export function ProfileContent() {
                   href={`/${locale}/gallery`}
                 />
               )
+            ) : null}
+
+            {activeTab === 'favorites' && favoritesPageState.hasMore ? (
+              <div className="flex justify-center">
+                <Button
+                  variant="secondary"
+                  onClick={loadMoreFavorites}
+                  disabled={isLoadingMoreFavorites}
+                  className="rounded-xl px-5 py-2 text-sm"
+                >
+                  {isLoadingMoreFavorites ? t('actions.loadingMore') : t('actions.loadMore')}
+                </Button>
+              </div>
             ) : null}
 
             {activeTab === 'profile' ? (

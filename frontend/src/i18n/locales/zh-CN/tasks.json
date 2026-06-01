@@ -8,6 +8,17 @@
     "total": "{count} 个任务",
     "visible": "显示 {count} 个"
   },
+  "view": {
+    "label": "显示切换",
+    "two": "两列",
+    "four": "四列",
+    "twoAria": "切换为两列瀑布流",
+    "fourAria": "切换为四列瀑布流"
+  },
+  "auth": {
+    "required": "请先登录以查看任务列表",
+    "login": "前往登录"
+  },
   "group": {
     "title": "同批生成（{count} 个任务）",
     "badge": "同一任务组",

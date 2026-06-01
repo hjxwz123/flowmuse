@@ -96,7 +96,9 @@
     "actions": {
       "view": "View work",
       "download": "Download",
-      "downloadVideo": "Download video"
+      "downloadVideo": "Download video",
+      "loadMore": "Load more",
+      "loadingMore": "Loading..."
     },
     "empty": {
       "worksTitle": "No works yet",

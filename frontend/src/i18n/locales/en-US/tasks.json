@@ -8,6 +8,17 @@
     "total": "{count} tasks",
     "visible": "{count} shown"
   },
+  "view": {
+    "label": "Display switch",
+    "two": "2 columns",
+    "four": "4 columns",
+    "twoAria": "Switch to two-column masonry",
+    "fourAria": "Switch to four-column masonry"
+  },
+  "auth": {
+    "required": "Please log in to view your tasks.",
+    "login": "Go to login"
+  },
   "group": {
     "title": "Same generation ({count} tasks)",
     "badge": "Task group",

@@ -4,8 +4,10 @@
  */
 
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { persist, createJSONStorage, type PersistStorage } from 'zustand/middleware'
 import type { UserProfile } from '../api/types'
+
+const AUTH_STORAGE_KEY = 'auth-storage'
 
 interface AuthState {
   // 状态
@@ -25,6 +27,53 @@ interface AuthState {
   updateUser: (user: Partial<UserProfile>) => void
   updateToken: (accessToken: string) => void
   setHasHydrated: (state: boolean) => void
+}
+
+type PersistedAuthState = Pick<
+  AuthState,
+  'user' | 'accessToken' | 'refreshToken' | 'isAuthenticated'
+>
+
+const isCompleteAuthState = (state: PersistedAuthState) => {
+  return Boolean(
+    state.isAuthenticated &&
+      state.user &&
+      state.accessToken &&
+      state.refreshToken
+  )
+}
+
+const clearAuthBrowserStorage = () => {
+  if (typeof window === 'undefined') return
+
+  try {
+    window.localStorage.removeItem(AUTH_STORAGE_KEY)
+  } catch {
+    // ignore
+  }
+
+  try {
+    window.sessionStorage.removeItem('dev_verify_email_token')
+    window.sessionStorage.removeItem('pending_verification_email')
+  } catch {
+    // ignore
+  }
+}
+
+const createAuthStorage = (): PersistStorage<PersistedAuthState> | undefined => {
+  const storage = createJSONStorage<PersistedAuthState>(() => localStorage)
+  if (!storage) return storage
+
+  return {
+    ...storage,
+    setItem: (name, value) => {
+      if (!isCompleteAuthState(value.state)) {
+        return storage.removeItem(name)
+      }
+
+      return storage.setItem(name, value)
+    },
+  }
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -55,16 +104,10 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: null,
           isAuthenticated: false,
         })
-        // 手动清除 localStorage，确保刷新页面后不会恢复旧状态
+        // 手动清除浏览器存储，确保刷新页面后不会恢复旧状态
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('auth-storage')
-          // 同时清除可能的开发环境 token
-          try {
-            sessionStorage.removeItem('dev_verify_email_token')
-            sessionStorage.removeItem('pending_verification_email')
-          } catch {
-            // ignore
-          }
+          clearAuthBrowserStorage()
+          window.setTimeout(clearAuthBrowserStorage, 0)
         }
       },
 
@@ -86,8 +129,8 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'auth-storage', // localStorage 键名
-      storage: createJSONStorage(() => localStorage),
+      name: AUTH_STORAGE_KEY, // localStorage 键名
+      storage: createAuthStorage(),
       // 只持久化这些字段
       partialize: (state) => ({
         user: state.user,

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import {
   Brush,
   Circle as CircleIcon,
@@ -323,6 +324,7 @@ function createTrueEraserBrush(
 export function CanvasBoardContent() {
   const t = useTranslations('canvas')
   const locale = useLocale()
+  const router = useRouter()
   const { isAuthenticated, isReady } = useAuth()
 
   const canvasElementRef = useRef<HTMLCanvasElement | null>(null)
@@ -780,7 +782,7 @@ export function CanvasBoardContent() {
     const editor = canvasRef.current
     if (!editor) return
     if (!isAuthenticated) {
-      toast.error(t('errors.loginRequired'))
+      router.push(`/${locale}/auth/login`)
       return
     }
     if (!selectedProjectId) {

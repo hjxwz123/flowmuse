@@ -7,7 +7,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ArrowLeft, ArrowRight, Images } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Columns2, Columns4, Images } from 'lucide-react'
 import { Button, Card, Loading, SkeletonTaskCard } from '@/components/ui'
 import { imageService, videoService, researchService, tasksService } from '@/lib/api/services'
 import { useAuth } from '@/lib/hooks/useAuth'
@@ -27,6 +27,7 @@ import { PageTransition } from '@/components/shared/PageTransition'
 import { FadeIn } from '@/components/shared/FadeIn'
 
 type TaskFilter = 'all' | TaskStatus
+type TaskColumnMode = 2 | 4
 type UnifiedTask = ApiTask | ApiResearchTask
 type ImageTask = ApiTask & { type: 'image' }
 type TaskListEntry =
@@ -210,6 +211,7 @@ export function TasksContent() {
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [activeFilter, setActiveFilter] = useState<TaskFilter>('all')
+  const [taskColumnMode, setTaskColumnMode] = useState<TaskColumnMode>(2)
   const [error, setError] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
@@ -449,6 +451,11 @@ export function TasksContent() {
         : groupTasksForDisplay(filteredTasks),
     [filteredTasks, isGroupView]
   )
+  const masonryClassName = cn(
+    'gap-6',
+    taskColumnMode === 4 ? 'columns-1 xl:columns-4' : 'columns-1 xl:columns-2'
+  )
+  const skeletonCount = taskColumnMode === 4 ? 8 : 4
 
   const handleRetryLoad = () => {
     if (isGroupView) {
@@ -467,10 +474,10 @@ export function TasksContent() {
             {t('title')}
           </h2>
           <p className="font-ui text-stone-600 dark:text-stone-400 mb-6">
-            请先登录以查看任务列表
+            {t('auth.required')}
           </p>
           <Button onClick={() => router.push(`/${locale}/auth/login`)}>
-            前往登录
+            {t('auth.login')}
           </Button>
         </Card>
       </div>
@@ -483,9 +490,45 @@ export function TasksContent() {
         <FadeIn variant="slide">
           <section className="mb-2 flex flex-col gap-4 md:mb-4 md:flex-row md:items-end md:justify-between">
             <div className="space-y-2">
-              <h1 className="text-3xl font-semibold tracking-tight text-stone-950 dark:text-white md:text-4xl">
-                {isGroupView ? t('group.pageTitle') : t('title')}
-              </h1>
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-3xl font-semibold tracking-tight text-stone-950 dark:text-white md:text-4xl">
+                  {isGroupView ? t('group.pageTitle') : t('title')}
+                </h1>
+                {!isGroupView ? (
+                  <div
+                    className="hidden items-center gap-1 rounded-full border border-stone-200/80 bg-white p-1 shadow-sm dark:border-stone-800/80 dark:bg-stone-950 xl:inline-flex"
+                    aria-label={t('view.label')}
+                  >
+                    {[
+                      { value: 2 as const, label: t('view.two'), aria: t('view.twoAria'), icon: Columns2 },
+                      { value: 4 as const, label: t('view.four'), aria: t('view.fourAria'), icon: Columns4 },
+                    ].map((item) => {
+                      const Icon = item.icon
+                      const active = taskColumnMode === item.value
+
+                      return (
+                        <button
+                          key={item.value}
+                          type="button"
+                          onClick={() => setTaskColumnMode(item.value)}
+                          aria-label={item.aria}
+                          aria-pressed={active}
+                          title={item.aria}
+                          className={cn(
+                            'inline-flex h-8 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium transition-all duration-200',
+                            active
+                              ? 'theme-toggle-active'
+                              : 'text-stone-500 hover:text-stone-950 dark:text-stone-400 dark:hover:text-white'
+                          )}
+                        >
+                          <Icon className="h-3.5 w-3.5" />
+                          <span>{item.label}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                ) : null}
+              </div>
               {isGroupView ? (
                 <div className="flex flex-wrap items-center gap-2">
                   <button
@@ -532,8 +575,8 @@ export function TasksContent() {
         {/* Task List */}
         {isLoading ? (
           <FadeIn variant="fade" delay={0.2}>
-            <div className="columns-1 gap-6 xl:columns-2">
-              {Array.from({ length: 4 }).map((_, i) => (
+            <div className={masonryClassName}>
+              {Array.from({ length: skeletonCount }).map((_, i) => (
                 <div key={i} className="mb-6 break-inside-avoid">
                   <SkeletonTaskCard />
                 </div>
@@ -562,7 +605,7 @@ export function TasksContent() {
         ) : (
           <>
             <FadeIn variant="fade" delay={0.2}>
-              <div className="columns-1 gap-6 xl:columns-2">
+              <div className={masonryClassName}>
                 {taskEntries.map((entry, index) => (
                   <div key={entry.key} className="mb-6 break-inside-avoid">
                     <FadeIn variant="scale" delay={Math.min(index, 6) * 0.04}>

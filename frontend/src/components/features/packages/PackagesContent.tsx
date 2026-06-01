@@ -363,7 +363,7 @@ export function PackagesContent() {
   const handleRedeem = async () => {
     if (!redeemCode.trim()) return
     if (!isAuthenticated) {
-      setRedeemMessage({ type: 'error', text: t('redeem.error.loginRequired') })
+      router.push(`/${locale}/auth/login`)
       return
     }
 
