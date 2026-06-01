@@ -181,6 +181,43 @@
     color: rgb(var(--aurora-purple) / 1);
   }
 
+  :where(
+    input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']):not([type='button']):not([type='submit']):not([type='reset']),
+    textarea,
+    select,
+    [contenteditable='true'],
+    [role='textbox'],
+    [class*='inputWrapper'],
+    [class*='inputBox']
+  ) {
+    --tw-shadow: 0 0 transparent !important;
+    --tw-shadow-colored: 0 0 transparent !important;
+    --tw-ring-offset-shadow: 0 0 transparent !important;
+    --tw-ring-shadow: 0 0 transparent !important;
+    box-shadow: none !important;
+  }
+
+  :where(
+    input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']):not([type='button']):not([type='submit']):not([type='reset']),
+    textarea,
+    select,
+    [contenteditable='true'],
+    [role='textbox'],
+    [class*='inputWrapper'],
+    [class*='inputBox']
+  ):focus,
+  :where(
+    input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']):not([type='button']):not([type='submit']):not([type='reset']),
+    textarea,
+    select,
+    [contenteditable='true'],
+    [role='textbox'],
+    [class*='inputWrapper'],
+    [class*='inputBox']
+  ):focus-within {
+    box-shadow: none !important;
+  }
+
   :where(.dark, html[data-darkreader-scheme='dark'])
     :where(.admin-theme, [role='dialog'])
     :where(.theme-solid-shadow, .theme-toggle-active, .theme-tab-trigger[data-state='active'], [class*='shadow-aurora'], [class*='shadow-glow']) {

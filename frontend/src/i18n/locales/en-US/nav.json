@@ -59,9 +59,7 @@
   "user": {
     "login": "Login",
     "register": "Register",
-    "profile": "Profile",
-    "myWorks": "My Works",
-    "favorites": "Favorites",
+    "profile": "Personal Center",
     "credits": "Credits",
     "invite": "Invite Rewards",
     "orders": "Orders",

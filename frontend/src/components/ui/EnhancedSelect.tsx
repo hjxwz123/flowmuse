@@ -196,12 +196,12 @@ export function EnhancedSelect({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={cn(
-          'flex w-full items-start justify-between gap-2 border border-stone-200 bg-stone-50 font-ui text-left text-stone-900 shadow-[0_14px_38px_-30px_rgb(51_65_85_/_0.34)] transition-all duration-300 ease-out sm:items-center sm:gap-3 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100 dark:shadow-[0_18px_44px_-32px_rgb(12_10_9_/_0.86)]',
+          'flex w-full items-start justify-between gap-2 border border-stone-200 bg-stone-50 font-ui text-left text-stone-900 transition-all duration-300 ease-out sm:items-center sm:gap-3 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100',
           compact
             ? 'rounded-lg px-3 py-2.5 sm:px-3.5 sm:py-2.5'
             : 'rounded-xl px-4 py-3 sm:px-5 sm:py-3.5',
           isOpen && 'border-aurora-purple ring-2 ring-aurora-purple/20',
-          !disabled && 'cursor-pointer hover:border-stone-300 hover:shadow-[0_20px_48px_-32px_rgb(51_65_85_/_0.4)] dark:hover:border-stone-500 dark:hover:shadow-[0_24px_56px_-34px_rgb(12_10_9_/_0.9)]',
+          !disabled && 'cursor-pointer hover:border-stone-300 dark:hover:border-stone-500',
           disabled && 'cursor-not-allowed opacity-50'
         )}
       >

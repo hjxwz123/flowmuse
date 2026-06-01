@@ -1,15 +1,16 @@
 {
   "title": "Dashboard",
   "menu": {
-    "profile": "Profile",
-    "myGallery": "My Gallery",
-    "favorites": "Favorites",
+    "profile": "Personal Center",
     "credits": "Credits",
     "invite": "Invite Rewards",
     "packages": "My Packages"
   },
   "profile": {
-    "title": "Profile",
+    "title": "Personal Center",
+    "centerTitle": "Personal Center",
+    "centerBadge": "Creator Hub",
+    "centerSubtitle": "Manage your works, favorites, and account settings.",
     "avatar": "Avatar",
     "uploadAvatar": "Upload Avatar",
     "email": "Email",
@@ -21,8 +22,94 @@
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
     "saveSuccess": "Saved successfully",
+    "saveFailed": "Failed to save",
     "uploadSuccess": "Avatar uploaded successfully",
-    "passwordChanged": "Password changed successfully"
+    "uploadFailed": "Failed to upload avatar",
+    "avatarTooLarge": "File size must be under 5MB",
+    "passwordChanged": "Password changed successfully",
+    "passwordRequired": "Please fill in all password fields",
+    "passwordMismatch": "New password and confirmation do not match",
+    "passwordTooShort": "New password must be at least 6 characters",
+    "passwordChangeFailed": "Failed to change password",
+    "loadFailed": "Failed to load personal center",
+    "membershipLevel": "Membership",
+    "memberActive": "Active",
+    "memberInactive": "Not active",
+    "permanentCredits": "Permanent Credits",
+    "dailyCredits": "Daily Credits",
+    "startCreate": "Create",
+    "recharge": "Recharge",
+    "joinedAt": "Joined: {date}",
+    "terms": "Terms",
+    "exploreGallery": "Explore Gallery",
+    "statusLabel": "Account Status",
+    "roleLabel": "Creator Access",
+    "membershipExpire": "Expires",
+    "submitPassword": "Update Password",
+    "stats": {
+      "works": "My Works",
+      "favorites": "Favorites",
+      "public": "Shared Publicly",
+      "credits": "Available Credits",
+      "imageVideo": "Images {images} / Videos {videos}",
+      "flatManage": "Flat management",
+      "galleryVisible": "Visible in gallery",
+      "available": "Permanent balance"
+    },
+    "recent": {
+      "title": "Recent Generations",
+      "subtitle": "Quickly revisit your latest completed works",
+      "manage": "Manage",
+      "empty": "No completed works yet"
+    },
+    "tabs": {
+      "works": "My Works",
+      "favorites": "Favorites",
+      "profile": "Profile"
+    },
+    "filters": {
+      "all": "All",
+      "allFavorites": "All Favorites",
+      "images": "Images",
+      "videos": "Videos",
+      "public": "Public",
+      "private": "Private",
+      "pending": "Pending"
+    },
+    "search": {
+      "works": "Search prompts...",
+      "favorites": "Search favorites..."
+    },
+    "sort": {
+      "newest": "Newest",
+      "oldest": "Oldest"
+    },
+    "labels": {
+      "image": "Image",
+      "video": "Video",
+      "public": "Public",
+      "private": "Private",
+      "pending": "Pending",
+      "untitled": "Untitled work",
+      "favoriteAt": "Favorited"
+    },
+    "actions": {
+      "view": "View work",
+      "download": "Download",
+      "downloadVideo": "Download video"
+    },
+    "empty": {
+      "worksTitle": "No works yet",
+      "worksDescription": "Create your first image or video, then manage it here.",
+      "favoritesTitle": "No favorites yet",
+      "favoritesDescription": "Explore the gallery and save works that inspire you."
+    },
+    "sections": {
+      "basic": "Basic Profile",
+      "basicNote": "Basic info is used in artwork displays",
+      "account": "Account Status and Access",
+      "security": "Security and Password"
+    }
   },
   "orders": {
     "title": "Orders",
@@ -84,24 +171,6 @@
     "noInvitees": "No invite records yet",
     "invitedAt": "Invite Bound At",
     "registeredAt": "Registered At"
-  },
-  "myGallery": {
-    "title": "My Gallery",
-    "tabs": {
-      "images": "Images",
-      "videos": "Videos"
-    },
-    "empty": "No artworks yet, start creating now!",
-    "goCreate": "Create Now"
-  },
-  "favorites": {
-    "title": "Favorites",
-    "tabs": {
-      "images": "Images",
-      "videos": "Videos"
-    },
-    "empty": "No favorites yet",
-    "goGallery": "Explore Gallery"
   },
   "myPackages": {
     "title": "My Packages",

@@ -1,15 +1,16 @@
 {
   "title": "用户中心",
   "menu": {
-    "profile": "个人资料",
-    "myGallery": "我的作品",
-    "favorites": "我的收藏",
+    "profile": "个人中心",
     "credits": "点数明细",
     "invite": "邀请奖励",
     "packages": "我的套餐"
   },
   "profile": {
-    "title": "个人资料",
+    "title": "个人中心",
+    "centerTitle": "个人中心",
+    "centerBadge": "Personal Center",
+    "centerSubtitle": "管理你的作品、创意收藏与账号基础设置",
     "avatar": "头像",
     "uploadAvatar": "上传头像",
     "email": "邮箱",
@@ -21,8 +22,94 @@
     "newPassword": "新密码",
     "confirmPassword": "确认密码",
     "saveSuccess": "保存成功",
+    "saveFailed": "保存失败",
     "uploadSuccess": "头像上传成功",
-    "passwordChanged": "密码修改成功"
+    "uploadFailed": "头像上传失败",
+    "avatarTooLarge": "文件大小不能超过 5MB",
+    "passwordChanged": "密码修改成功",
+    "passwordRequired": "请填写所有密码字段",
+    "passwordMismatch": "新密码和确认密码不一致",
+    "passwordTooShort": "新密码长度不能少于 6 位",
+    "passwordChangeFailed": "密码修改失败",
+    "loadFailed": "个人中心加载失败",
+    "membershipLevel": "会员等级",
+    "memberActive": "已开通",
+    "memberInactive": "未开通",
+    "permanentCredits": "永久点数",
+    "dailyCredits": "每日点数",
+    "startCreate": "开始创作",
+    "recharge": "充值点数",
+    "joinedAt": "加入时间：{date}",
+    "terms": "服务协议",
+    "exploreGallery": "探索画廊",
+    "statusLabel": "账户状态",
+    "roleLabel": "创作者权限",
+    "membershipExpire": "到期时间",
+    "submitPassword": "提交修改密码",
+    "stats": {
+      "works": "我的作品",
+      "favorites": "我的收藏",
+      "public": "已公开分享",
+      "credits": "可用点数",
+      "imageVideo": "图片 {images} / 视频 {videos}",
+      "flatManage": "直接平铺管理",
+      "galleryVisible": "展厅展示中",
+      "available": "永久点数余额"
+    },
+    "recent": {
+      "title": "最近生成轨迹",
+      "subtitle": "快速回看最近完成的创作",
+      "manage": "前往管理",
+      "empty": "最近还没有完成的作品"
+    },
+    "tabs": {
+      "works": "我的作品",
+      "favorites": "我的收藏",
+      "profile": "个人信息"
+    },
+    "filters": {
+      "all": "全部",
+      "allFavorites": "全部收藏",
+      "images": "图片",
+      "videos": "视频",
+      "public": "公开",
+      "private": "私密",
+      "pending": "审核中"
+    },
+    "search": {
+      "works": "输入提示词搜索...",
+      "favorites": "搜索收藏的内容..."
+    },
+    "sort": {
+      "newest": "最近创建",
+      "oldest": "最早创建"
+    },
+    "labels": {
+      "image": "图片",
+      "video": "视频",
+      "public": "公开",
+      "private": "私密",
+      "pending": "审核中",
+      "untitled": "未命名作品",
+      "favoriteAt": "收藏于"
+    },
+    "actions": {
+      "view": "查看作品",
+      "download": "下载作品",
+      "downloadVideo": "下载视频"
+    },
+    "empty": {
+      "worksTitle": "还没有作品",
+      "worksDescription": "开始创作第一张图片或视频，完成后会在这里集中管理。",
+      "favoritesTitle": "还没有收藏",
+      "favoritesDescription": "去画廊发现喜欢的作品，把灵感收进你的收藏。"
+    },
+    "sections": {
+      "basic": "基础资料",
+      "basicNote": "基础信息会用于作品展示",
+      "account": "账户状态与权限",
+      "security": "安全设置与密码管理"
+    }
   },
   "orders": {
     "title": "支付记录",
@@ -84,24 +171,6 @@
     "noInvitees": "暂时还没有邀请记录",
     "invitedAt": "邀请绑定时间",
     "registeredAt": "注册时间"
-  },
-  "myGallery": {
-    "title": "我的作品",
-    "tabs": {
-      "images": "图片",
-      "videos": "视频"
-    },
-    "empty": "还没有作品，快去创作吧！",
-    "goCreate": "去创作"
-  },
-  "favorites": {
-    "title": "我的收藏",
-    "tabs": {
-      "images": "图片",
-      "videos": "视频"
-    },
-    "empty": "还没有收藏任何作品",
-    "goGallery": "去画廊逛逛"
   },
   "myPackages": {
     "title": "我的套餐",

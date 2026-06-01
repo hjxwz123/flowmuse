@@ -31,11 +31,10 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               'bg-stone-50/80 dark:bg-stone-800/80 backdrop-blur-sm',
               'border-2 border-stone-200 dark:border-stone-600',
               'text-stone-900 dark:text-stone-100',
-              'shadow-canvas',
               'transition-all duration-300 ease-out',
               'focus:outline-none focus:border-transparent',
               'focus:ring-2 focus:ring-aurora-purple',
-              'hover:shadow-canvas-lg hover:border-stone-300 dark:hover:border-stone-500',
+              'hover:border-stone-300 dark:hover:border-stone-500',
               'appearance-none cursor-pointer',
               error && 'border-red-300 dark:border-red-500 focus:ring-red-400',
               className

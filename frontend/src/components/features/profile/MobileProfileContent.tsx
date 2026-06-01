@@ -17,8 +17,6 @@ import {
   User,
   CreditCard,
   UserPlus,
-  Image as ImageIcon,
-  Heart,
   Settings,
   LogOut,
   ChevronRight,
@@ -84,9 +82,9 @@ export function MobileProfileContent() {
   const menuItems = [
     {
       icon: User,
-      label: '个人信息',
+      label: '个人中心',
       href: `/${locale}/dashboard/profile`,
-      description: '查看和编辑个人资料',
+      description: '管理作品、收藏和个人资料',
     },
     {
       icon: CreditCard,
@@ -105,18 +103,6 @@ export function MobileProfileContent() {
       label: '支付记录',
       href: `/${locale}/dashboard/orders`,
       description: '查看购买订单',
-    },
-    {
-      icon: ImageIcon,
-      label: '我的作品',
-      href: `/${locale}/dashboard/my-gallery`,
-      description: '查看我的图片和视频',
-    },
-    {
-      icon: Heart,
-      label: '我的收藏',
-      href: `/${locale}/dashboard/favorites`,
-      description: '查看收藏的作品',
     },
     {
       icon: Settings,

@@ -11,11 +11,9 @@ import Link from 'next/link'
 import Image from 'next/image'
 import {
   BarChart3,
-  Bookmark,
   ChevronDown,
   Coins,
   Gift,
-  Image as ImageIcon,
   LogOut,
   Mail,
   Receipt,
@@ -249,18 +247,6 @@ export const UserMenu = ({
       href: `/${locale}/dashboard/profile`,
     },
     {
-      key: 'myWorks',
-      label: t('myWorks'),
-      icon: ImageIcon,
-      href: `/${locale}/dashboard/my-gallery`,
-    },
-    {
-      key: 'favorites',
-      label: t('favorites'),
-      icon: Bookmark,
-      href: `/${locale}/dashboard/favorites`,
-    },
-    {
       key: 'credits',
       label: t('credits'),
       icon: Coins,
@@ -430,11 +416,11 @@ export const UserMenu = ({
           </div>
 
           <div className={styles.menuList}>
-            {menuItems.slice(0, 4).map(renderMenuItem)}
+            {menuItems.slice(0, 2).map(renderMenuItem)}
 
             <div className={styles.divider} />
 
-            {menuItems.slice(4).map(renderMenuItem)}
+            {menuItems.slice(2).map(renderMenuItem)}
 
             {isAdmin ? (
               <>

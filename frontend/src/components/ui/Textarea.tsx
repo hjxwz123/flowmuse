@@ -6,7 +6,7 @@
 'use client'
 
 import { cn } from '@/lib/utils/cn'
-import { TextareaHTMLAttributes, forwardRef, useState } from 'react'
+import { TextareaHTMLAttributes, forwardRef } from 'react'
 
 export interface TextareaProps
   extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -16,8 +16,6 @@ export interface TextareaProps
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, label, error, ...props }, ref) => {
-    const [isFocused, setIsFocused] = useState(false)
-
     return (
       <div className="w-full">
         {label && (
@@ -32,24 +30,14 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             'bg-stone-50/80 dark:bg-stone-800/80 backdrop-blur-sm',
             'border-2 border-stone-200 dark:border-stone-600',
             'text-stone-900 dark:text-stone-100 placeholder:text-stone-400 dark:placeholder:text-stone-500',
-            'shadow-canvas',
             'transition-all duration-300 ease-out',
             'focus:outline-none focus:border-transparent',
             'focus:ring-2 focus:ring-aurora-purple',
-            'hover:shadow-canvas-lg hover:border-stone-300 dark:hover:border-stone-500',
+            'hover:border-stone-300 dark:hover:border-stone-500',
             'resize-none',
-            isFocused && 'shadow-aurora',
             error && 'border-red-300 dark:border-red-500 focus:ring-red-400',
             className
           )}
-          onFocus={(e) => {
-            setIsFocused(true)
-            props.onFocus?.(e)
-          }}
-          onBlur={(e) => {
-            setIsFocused(false)
-            props.onBlur?.(e)
-          }}
           {...props}
         />
         {error && (

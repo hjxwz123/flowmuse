@@ -59,9 +59,7 @@
   "user": {
     "login": "登录",
     "register": "注册",
-    "profile": "个人资料",
-    "myWorks": "我的作品",
-    "favorites": "我的收藏",
+    "profile": "个人中心",
     "credits": "点数明细",
     "invite": "邀请奖励",
     "orders": "支付记录",
