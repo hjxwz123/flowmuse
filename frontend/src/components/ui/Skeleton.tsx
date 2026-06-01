@@ -17,7 +17,7 @@ export const Skeleton = ({
   return (
     <div
       className={cn(
-        'animate-pulse rounded-xl bg-gradient-to-br from-stone-100 via-stone-50 to-stone-100',
+        'animate-pulse rounded-xl bg-gradient-to-br from-stone-100 via-stone-50 to-stone-100 dark:from-stone-800 dark:via-stone-900 dark:to-stone-800',
         className
       )}
       {...props}
@@ -75,18 +75,28 @@ export const SkeletonTaskCard = () => {
  */
 export const SkeletonDetailPage = () => {
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="h-full w-full max-w-none">
+      <div className="grid h-full w-full grid-cols-1 gap-6 lg:grid-cols-2 lg:items-center lg:gap-8">
         {/* 左侧：大图 */}
-        <Skeleton className="aspect-square rounded-2xl" />
+        <div className="flex min-h-[360px] w-full items-center justify-center rounded-[28px] border border-stone-200/70 bg-white/55 p-3 backdrop-blur-sm dark:border-white/10 dark:bg-stone-900/50 sm:min-h-[460px] lg:min-h-[calc(100vh-180px)]">
+          <Skeleton className="h-full min-h-[330px] w-full max-w-[760px] rounded-2xl sm:min-h-[430px] lg:min-h-[min(68vh,760px)]" />
+        </div>
 
         {/* 右侧：信息区域 */}
-        <div className="space-y-4">
-          <Skeleton className="h-8 w-3/4" />
-          <Skeleton className="h-20 w-full" />
-          <Skeleton className="h-10 w-32" />
-          <Skeleton className="h-6 w-1/2" />
-          <Skeleton className="h-6 w-2/3" />
+        <div className="w-full space-y-5 rounded-[28px] border border-stone-200/70 bg-white/45 p-5 backdrop-blur-sm dark:border-white/10 dark:bg-stone-900/45 sm:p-6 lg:min-h-[calc(100vh-220px)]">
+          <Skeleton className="h-10 w-5/6 rounded-full" />
+          <div className="flex gap-3">
+            <Skeleton className="h-11 flex-1 rounded-full" />
+            <Skeleton className="h-11 flex-1 rounded-full" />
+          </div>
+          <Skeleton className="h-32 w-full rounded-2xl" />
+          <div className="grid grid-cols-3 gap-3">
+            <Skeleton className="h-20 rounded-2xl" />
+            <Skeleton className="h-20 rounded-2xl" />
+            <Skeleton className="h-20 rounded-2xl" />
+          </div>
+          <Skeleton className="h-24 w-full rounded-2xl" />
+          <Skeleton className="h-40 w-full rounded-2xl" />
         </div>
       </div>
     </div>

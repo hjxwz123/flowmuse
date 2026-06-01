@@ -2550,10 +2550,6 @@ export function SimplifiedCreateContent() {
     setQuickStartCanScrollNext(scroller.scrollLeft < maxScrollLeft)
   }
 
-  const getQuickStartCardDescription = (template: Template) => {
-    return (template.description?.trim() || template.prompt.trim()).replace(/\s+/g, ' ')
-  }
-
   const scrollQuickStartBy = (direction: 'prev' | 'next') => {
     const scroller = quickStartScrollerRef.current
     if (!scroller) return
@@ -2988,7 +2984,7 @@ export function SimplifiedCreateContent() {
                           )}
 
                           <div className="absolute inset-0 bg-black/10 transition-colors duration-300 group-hover:bg-black/20" />
-                          <div className="absolute inset-0 hidden flex-col justify-between bg-black/60 p-4 opacity-0 transition-opacity duration-300 md:flex md:group-hover:opacity-100">
+                          <div className="absolute inset-0 hidden bg-black/60 p-4 opacity-0 transition-opacity duration-300 md:block md:group-hover:opacity-100">
                             <div className="flex items-start justify-between gap-2">
                               {tpl.category ? (
                                 <span className="rounded-full bg-white/92 px-2.5 py-1 text-[11px] font-medium text-stone-700 backdrop-blur dark:bg-stone-950/88 dark:text-stone-100">
@@ -3000,12 +2996,6 @@ export function SimplifiedCreateContent() {
                               <span className="rounded-full border border-white/20 bg-white/12 px-2.5 py-1 text-[11px] font-medium text-white/92 backdrop-blur">
                                 {t(`featuredTemplates.sources.${quickStartSource}`)}
                               </span>
-                            </div>
-
-                            <div className="space-y-3">
-                              <p className="line-clamp-4 text-xs leading-5 text-white/90">
-                                {getQuickStartCardDescription(tpl)}
-                              </p>
                             </div>
                           </div>
 

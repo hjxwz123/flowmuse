@@ -8,7 +8,7 @@
 import { useState, useEffect } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
-import { Card, Button, MagicInput } from '@/components/ui'
+import { Card, Button, MagicInput, Modal } from '@/components/ui'
 import { membershipService, packageService, redeemService } from '@/lib/api/services'
 import { ApiClientError } from '@/lib/api/error'
 import { useAuthStore } from '@/lib/store/authStore'
@@ -18,7 +18,7 @@ import type { MembershipLevel, MembershipPeriod, UserMembershipStatus } from '@/
 import { cn } from '@/lib/utils/cn'
 import { PageTransition } from '@/components/shared/PageTransition'
 import { FadeIn } from '@/components/shared/FadeIn'
-import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, X } from 'lucide-react'
+import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, ExternalLink, KeyRound, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { WechatPayDialog } from './WechatPayDialog'
 
@@ -77,6 +77,7 @@ export function PackagesContent() {
   const [isRedeeming, setIsRedeeming] = useState(false)
   const [redeemMessage, setRedeemMessage] = useState<RedeemMessage | null>(null)
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null)
+  const [cardPurchasePromptOpen, setCardPurchasePromptOpen] = useState(false)
 
   // 支付弹窗
   const [payDialog, setPayDialog] = useState<
@@ -90,6 +91,7 @@ export function PackagesContent() {
   const [customCredits, setCustomCredits] = useState<number>(settings?.creditBuyMinCredits ?? 100)
 
   const wechatPayEnabled = settings?.wechatPayEnabled === true
+  const cardPurchaseUrl = settings?.cardPurchaseUrl?.trim() ?? ''
   const creditBuyEnabled = settings?.creditBuyEnabled === true
   const ratePerYuan = settings?.creditBuyRatePerYuan ?? 100
   const minCredits = settings?.creditBuyMinCredits ?? 100
@@ -250,6 +252,17 @@ export function PackagesContent() {
   }
 
   const creditPackages = packages.filter(p => p.packageType === 'credits')
+  const handleOpenCardPurchasePrompt = () => {
+    setCardPurchasePromptOpen(true)
+  }
+
+  const handleGoCardPurchase = () => {
+    if (!cardPurchaseUrl) return
+
+    setCardPurchasePromptOpen(false)
+    window.open(cardPurchaseUrl, '_blank', 'noopener,noreferrer')
+  }
+
   const getRedeemErrorMessage = (error: unknown) => {
     const errorCode = getRedeemApiErrorCode(error)
 
@@ -415,10 +428,10 @@ export function PackagesContent() {
                 >
                   {t('redeem.title')}
                 </a>
-                {settings?.cardPurchaseUrl ? (
+                {cardPurchaseUrl ? (
                   <button
                     type="button"
-                    onClick={() => window.open(settings.cardPurchaseUrl, '_blank')}
+                    onClick={handleGoCardPurchase}
                     className="inline-flex items-center gap-2 rounded-full bg-stone-950 px-5 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-stone-800 dark:bg-white dark:text-black dark:hover:bg-stone-200"
                   >
                     {t('actions.buyCode')}
@@ -541,11 +554,23 @@ export function PackagesContent() {
                               </div>
                             </div>
                             {getPackageDescription(pkg) && <p className="text-sm text-stone-600 dark:text-stone-400 mb-4">{getPackageDescription(pkg)}</p>}
-                            {wechatPayEnabled ? (
-                              <Button variant="primary" className="w-full" onClick={() => { if (!isAuthenticated) { router.push(`/${locale}/auth/login`); return } setPayDialog({ type: 'package', pkg }) }}>{t('packageCard.buy')}</Button>
-                            ) : (
-                              <Button variant="secondary" className="w-full" disabled>{t('packageCard.comingSoon')}</Button>
-                            )}
+                            <Button
+                              variant={wechatPayEnabled ? 'primary' : 'secondary'}
+                              className="w-full"
+                              onClick={() => {
+                                if (!wechatPayEnabled) {
+                                  handleOpenCardPurchasePrompt()
+                                  return
+                                }
+                                if (!isAuthenticated) {
+                                  router.push(`/${locale}/auth/login`)
+                                  return
+                                }
+                                setPayDialog({ type: 'package', pkg })
+                              }}
+                            >
+                              {wechatPayEnabled ? t('packageCard.buy') : t('offlinePayment.button')}
+                            </Button>
                           </div>
                         </Card>
                       </FadeIn>
@@ -663,6 +688,11 @@ export function PackagesContent() {
                       const dailyCredits = Math.max(0, Number(level.dailyCredits || 0))
                       const benefits = getMembershipBenefits(level)
                       const isCurrentLevel = myMembership?.isActive && myMembership.levelId === level.id
+                      const membershipCtaLabel = !wechatPayEnabled
+                        ? t('offlinePayment.button')
+                        : isCurrentLevel
+                          ? t('membership.renew')
+                          : t('membership.subscribe')
 
                       return (
                         <div
@@ -717,8 +747,11 @@ export function PackagesContent() {
                           <Button
                             variant="primary"
                             className="mt-4 w-full"
-                            disabled={!wechatPayEnabled}
                             onClick={() => {
+                              if (!wechatPayEnabled) {
+                                handleOpenCardPurchasePrompt()
+                                return
+                              }
                               if (!isAuthenticated) {
                                 router.push(`/${locale}/auth/login`)
                                 return
@@ -726,7 +759,7 @@ export function PackagesContent() {
                               setPayDialog({ type: 'membership', level, period: membershipPeriod })
                             }}
                           >
-                            {isCurrentLevel ? t('membership.renew') : t('membership.subscribe')}
+                            {membershipCtaLabel}
                           </Button>
                         </div>
                       )
@@ -826,6 +859,66 @@ export function PackagesContent() {
         />
       ) : null
     )}
+
+    <Modal
+      isOpen={cardPurchasePromptOpen}
+      onClose={() => setCardPurchasePromptOpen(false)}
+      size="sm"
+      className="max-w-lg"
+      ariaLabel={t('offlinePayment.title')}
+    >
+      <div className="space-y-5">
+        <div className="flex items-start gap-4">
+          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-aurora-purple/25 bg-aurora-purple/10 text-aurora-purple">
+            <KeyRound className="h-5 w-5" />
+          </span>
+          <div className="min-w-0 space-y-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-aurora-purple">
+              {t('offlinePayment.badge')}
+            </p>
+            <h3 className="font-display text-2xl font-semibold text-stone-950 dark:text-stone-50">
+              {t('offlinePayment.title')}
+            </h3>
+            <p className="text-sm leading-6 text-stone-600 dark:text-stone-300">
+              {cardPurchaseUrl ? t('offlinePayment.description') : t('offlinePayment.missingUrl')}
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-stone-200 bg-stone-50/80 p-4 dark:border-stone-700 dark:bg-stone-900/70">
+          <div className="flex items-start gap-3">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-aurora-purple" />
+            <p className="text-sm leading-6 text-stone-600 dark:text-stone-300">
+              {t('offlinePayment.redeemHint')}
+            </p>
+          </div>
+          {cardPurchaseUrl ? (
+            <p className="mt-3 truncate rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-500 dark:border-stone-700 dark:bg-stone-950/70 dark:text-stone-400">
+              {cardPurchaseUrl}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <Button
+            variant="secondary"
+            className="w-full sm:w-auto"
+            onClick={() => setCardPurchasePromptOpen(false)}
+          >
+            {t('offlinePayment.close')}
+          </Button>
+          <Button
+            variant="primary"
+            className="w-full gap-2 sm:w-auto"
+            onClick={handleGoCardPurchase}
+            disabled={!cardPurchaseUrl}
+          >
+            <ExternalLink className="h-4 w-4" />
+            {t('offlinePayment.primary')}
+          </Button>
+        </div>
+      </div>
+    </Modal>
     </>
   )
 }

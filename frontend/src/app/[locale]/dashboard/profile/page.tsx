@@ -1,5 +1,5 @@
 /**
- * 个人资料页面
+ * 个人中心页面
  */
 
 import { setRequestLocale } from 'next-intl/server'

@@ -28,6 +28,16 @@
   "actions": {
     "buyCode": "Buy Code"
   },
+  "offlinePayment": {
+    "button": "Buy Activation Code",
+    "badge": "Code Activation",
+    "title": "Please purchase an activation code",
+    "description": "Online payment is currently unavailable. Please go to the activation-code purchase page, then return here and redeem the code to activate your package or membership.",
+    "redeemHint": "After purchase, copy your code and enter it in the Redeem Code section on this page. Credits or membership benefits will be applied automatically.",
+    "primary": "Go to Code Purchase",
+    "close": "Maybe Later",
+    "missingUrl": "Online payment is currently unavailable, and the activation-code purchase URL has not been configured. Please contact the administrator."
+  },
   "period": {
     "monthly": "Monthly",
     "yearly": "Yearly"

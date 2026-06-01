@@ -101,22 +101,22 @@ function sortByDate<T extends { createdAt: string }>(items: T[], sort: SortOptio
 
 function CenterSkeleton() {
   return (
-    <PageTransition className="min-h-screen bg-canvas px-4 py-8 dark:bg-canvas-dark sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1600px] space-y-8">
+    <PageTransition className="min-h-screen w-full max-w-full overflow-x-hidden bg-canvas px-3 py-6 text-stone-950 dark:bg-canvas-dark dark:text-stone-100 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mx-auto w-full max-w-[1600px] min-w-0 space-y-6 sm:space-y-8">
         <div className="space-y-3">
           <Skeleton className="h-9 w-44" />
-          <Skeleton className="h-4 w-72" />
+          <Skeleton className="h-4 w-full max-w-72" />
         </div>
-        <div className="grid gap-8 lg:grid-cols-12">
-          <div className="lg:col-span-3">
-            <div className="rounded-2xl border border-stone-200 bg-stone-50/80 p-6 dark:border-stone-800 dark:bg-stone-900/70">
+        <div className="grid min-w-0 gap-5 sm:gap-8 lg:grid-cols-12">
+          <div className="min-w-0 lg:col-span-3">
+            <div className="max-w-full rounded-2xl border border-stone-200 bg-stone-50/80 p-4 dark:border-white/10 dark:bg-stone-900/90 sm:p-6">
               <Skeleton className="h-20 w-20 rounded-full" />
               <Skeleton className="mt-5 h-5 w-36" />
               <Skeleton className="mt-3 h-4 w-44" />
               <Skeleton className="mt-6 h-32 w-full" />
             </div>
           </div>
-          <div className="space-y-6 lg:col-span-9">
+          <div className="min-w-0 space-y-5 sm:space-y-6 lg:col-span-9">
             <Skeleton className="h-44 w-full rounded-2xl" />
             <Skeleton className="h-14 w-full rounded-2xl" />
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
@@ -201,7 +201,7 @@ function GalleryCard({
   const href = `/${locale}/gallery/${task.type}/${task.id}`
 
   return (
-    <article className="group relative overflow-hidden rounded-xl border border-stone-200 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-[0_18px_42px_rgba(0,0,0,0.08)] dark:border-stone-800 dark:bg-stone-950 dark:hover:border-stone-700 dark:hover:shadow-[0_18px_48px_rgba(0,0,0,0.34)]">
+    <article className="group relative min-w-0 overflow-hidden rounded-xl border border-stone-200 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-[0_18px_42px_rgba(0,0,0,0.08)] dark:border-white/10 dark:bg-stone-900 dark:hover:border-white/20 dark:hover:shadow-none">
       <Link href={href} className="block">
         <div className="relative aspect-square overflow-hidden bg-stone-100 dark:bg-stone-900">
           {preview.src ? (
@@ -237,11 +237,11 @@ function GalleryCard({
         </div>
 
         <div className="p-3">
-          <p className="line-clamp-2 min-h-[2.5rem] text-xs leading-5 text-stone-700 dark:text-stone-200">
+          <p className="line-clamp-2 min-h-[2.5rem] break-words text-xs leading-5 text-stone-700 dark:text-stone-200">
             {task.prompt || labels.untitled}
           </p>
-          <div className="mt-3 flex items-center justify-between border-t border-stone-100 pt-2 text-[10px] text-stone-400 dark:border-stone-800">
-            <span>{formatDateTime(task.createdAt, locale)}</span>
+          <div className="mt-3 flex min-w-0 items-center justify-between border-t border-stone-100 pt-2 text-[10px] text-stone-400 dark:border-stone-800">
+            <span className="min-w-0 truncate">{formatDateTime(task.createdAt, locale)}</span>
           </div>
         </div>
       </Link>
@@ -256,8 +256,7 @@ function GalleryCard({
             <Eye className="h-4 w-4" />
           </Link>
         </div>
-        <div className="space-y-2">
-          <p className="line-clamp-2 text-xs leading-5 text-stone-100">{task.prompt || labels.untitled}</p>
+        <div>
           {task.resultUrl ? (
             <a
               href={task.resultUrl}
@@ -288,7 +287,7 @@ function FavoriteCard({
   const href = `/${locale}/gallery/${favorite.targetType}/${favorite.targetId}`
 
   return (
-    <article className="group relative overflow-hidden rounded-xl border border-stone-200 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-[0_18px_42px_rgba(0,0,0,0.08)] dark:border-stone-800 dark:bg-stone-950 dark:hover:border-stone-700 dark:hover:shadow-[0_18px_48px_rgba(0,0,0,0.34)]">
+    <article className="group relative min-w-0 overflow-hidden rounded-xl border border-stone-200 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-stone-300 hover:shadow-[0_18px_42px_rgba(0,0,0,0.08)] dark:border-white/10 dark:bg-stone-900 dark:hover:border-white/20 dark:hover:shadow-none">
       <Link href={href} className="block">
         <div className="relative aspect-square overflow-hidden bg-stone-100 dark:bg-stone-900">
           {preview.src ? (
@@ -323,11 +322,11 @@ function FavoriteCard({
         </div>
 
         <div className="p-3">
-          <div className="mb-2 flex items-center justify-between gap-2 text-[10px] text-stone-400">
-            <span>{labels.favorite}</span>
-            <span>{formatDate(favorite.createdAt, locale)}</span>
+          <div className="mb-2 flex min-w-0 items-center justify-between gap-2 text-[10px] text-stone-400">
+            <span className="shrink-0">{labels.favorite}</span>
+            <span className="min-w-0 truncate">{formatDate(favorite.createdAt, locale)}</span>
           </div>
-          <p className="line-clamp-2 min-h-[2.5rem] text-xs leading-5 text-stone-700 dark:text-stone-200">
+          <p className="line-clamp-2 min-h-[2.5rem] break-words text-xs leading-5 text-stone-700 dark:text-stone-200">
             {task.prompt || labels.untitled}
           </p>
         </div>
@@ -563,26 +562,26 @@ export function ProfileContent() {
   ]
 
   return (
-    <PageTransition className="min-h-screen bg-canvas px-4 py-8 dark:bg-canvas-dark sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1600px] space-y-8">
+    <PageTransition className="min-h-screen w-full max-w-full overflow-x-hidden bg-canvas px-3 py-6 text-stone-950 dark:bg-canvas-dark dark:text-stone-100 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mx-auto w-full max-w-[1600px] min-w-0 space-y-6 sm:space-y-8">
         <FadeIn variant="slide">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-display text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 sm:text-4xl">
+          <div className="min-w-0">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <h1 className="min-w-0 break-words font-display text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 sm:text-4xl">
                 {t('centerTitle')}
               </h1>
               <span className="rounded-full border border-stone-200 bg-stone-100 px-2.5 py-1 text-xs font-medium text-stone-500 dark:border-stone-800 dark:bg-stone-900/80 dark:text-stone-400">
                 {t('centerBadge')}
               </span>
             </div>
-            <p className="mt-2 font-ui text-sm text-stone-500 dark:text-stone-400">{t('centerSubtitle')}</p>
+            <p className="mt-2 max-w-full break-words font-ui text-sm text-stone-500 dark:text-stone-400">{t('centerSubtitle')}</p>
           </div>
         </FadeIn>
 
-        <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
-          <aside className="lg:sticky lg:top-24 lg:col-span-3">
+        <div className="grid min-w-0 gap-5 sm:gap-8 lg:grid-cols-12 lg:items-start">
+          <aside className="min-w-0 lg:sticky lg:top-24 lg:col-span-3">
             <FadeIn variant="scale" delay={0.05}>
-              <section className="relative overflow-hidden rounded-2xl border border-stone-200 bg-white/80 p-6 shadow-canvas backdrop-blur-sm dark:border-stone-800 dark:bg-stone-950/78 dark:shadow-canvas-dark">
+              <section className="relative max-w-full overflow-hidden rounded-2xl border border-stone-200 bg-white/90 p-4 shadow-canvas backdrop-blur-sm dark:border-white/10 dark:bg-stone-900/90 dark:shadow-none sm:p-6">
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-[radial-gradient(circle_at_30%_10%,rgb(var(--aurora-purple)/0.22),transparent_48%),radial-gradient(circle_at_80%_18%,rgb(var(--aurora-purple)/0.14),transparent_42%)]" />
 
                 <div className="relative z-10">
@@ -612,9 +611,9 @@ export function ProfileContent() {
                       className="hidden"
                     />
 
-                    <div className="min-w-0">
-                      <div className="flex items-center justify-center gap-2 lg:justify-start">
-                        <h2 className="max-w-full truncate font-display text-xl font-bold text-stone-950 dark:text-stone-50">
+                    <div className="w-full min-w-0">
+                      <div className="flex min-w-0 items-center justify-center gap-2 lg:justify-start">
+                        <h2 className="min-w-0 max-w-full truncate font-display text-xl font-bold text-stone-950 dark:text-stone-50">
                           {displayName}
                         </h2>
                         {profile.emailVerified ? (
@@ -625,23 +624,23 @@ export function ProfileContent() {
                     </div>
                   </div>
 
-                  <div className="mt-6 space-y-3 rounded-xl border border-stone-200 bg-stone-50/70 p-4 dark:border-stone-800 dark:bg-stone-900/55">
-                    <div className="flex items-center justify-between gap-3 text-xs">
-                      <span className="text-stone-500 dark:text-stone-400">{t('membershipLevel')}</span>
+                  <div className="mt-6 space-y-3 rounded-xl border border-stone-200 bg-stone-50/70 p-4 dark:border-white/10 dark:bg-stone-950/60">
+                    <div className="flex min-w-0 items-center justify-between gap-3 text-xs">
+                      <span className="min-w-0 truncate text-stone-500 dark:text-stone-400">{t('membershipLevel')}</span>
                       <span
-                        className="rounded-full px-2.5 py-1 text-[10px] font-semibold text-white"
+                        className="shrink-0 truncate rounded-full px-2.5 py-1 text-[10px] font-semibold text-white"
                         style={membershipColor ? { backgroundColor: membershipColor } : undefined}
                       >
                         {membershipLabel}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between gap-3 text-xs">
-                      <span className="text-stone-500 dark:text-stone-400">{t('permanentCredits')}</span>
-                      <span className="font-semibold text-stone-900 dark:text-stone-100">{profile.permanentCredits}</span>
+                    <div className="flex min-w-0 items-center justify-between gap-3 text-xs">
+                      <span className="min-w-0 truncate text-stone-500 dark:text-stone-400">{t('permanentCredits')}</span>
+                      <span className="shrink-0 font-semibold text-stone-900 dark:text-stone-100">{profile.permanentCredits}</span>
                     </div>
-                    <div className="flex items-center justify-between gap-3 text-xs">
-                      <span className="text-stone-500 dark:text-stone-400">{t('dailyCredits')}</span>
-                      <span className="font-semibold text-stone-900 dark:text-stone-100">
+                    <div className="flex min-w-0 items-center justify-between gap-3 text-xs">
+                      <span className="min-w-0 truncate text-stone-500 dark:text-stone-400">{t('dailyCredits')}</span>
+                      <span className="shrink-0 font-semibold text-stone-900 dark:text-stone-100">
                         {dailyCredits > 0 ? dailyCredits : '-'}
                       </span>
                     </div>
@@ -650,25 +649,25 @@ export function ProfileContent() {
                     </div>
                   </div>
 
-                  <div className="mt-5 grid grid-cols-2 gap-3">
-                    <Button className="rounded-xl px-3 py-2 text-xs" onClick={() => router.push(`/${locale}/create`)}>
-                      <span className="inline-flex items-center gap-1.5">
-                        <WandSparkles className="h-3.5 w-3.5" />
-                        {t('startCreate')}
+                  <div className="mt-5 grid grid-cols-2 gap-2 sm:gap-3">
+                    <Button className="min-w-0 rounded-xl px-2 py-2 text-xs sm:px-3" onClick={() => router.push(`/${locale}/create`)}>
+                      <span className="inline-flex min-w-0 items-center gap-1.5">
+                        <WandSparkles className="h-3.5 w-3.5 shrink-0" />
+                        <span className="min-w-0 truncate">{t('startCreate')}</span>
                       </span>
                     </Button>
                     <Button
                       variant="secondary"
-                      className="rounded-xl px-3 py-2 text-xs"
+                      className="min-w-0 rounded-xl px-2 py-2 text-xs sm:px-3"
                       onClick={() => router.push(`/${locale}/packages`)}
                     >
-                      <Zap className="mr-1.5 h-3.5 w-3.5 text-amber-500" />
-                      {t('recharge')}
+                      <Zap className="mr-1.5 h-3.5 w-3.5 shrink-0 text-amber-500" />
+                      <span className="min-w-0 truncate">{t('recharge')}</span>
                     </Button>
                   </div>
 
-                  <div className="mt-5 flex items-center justify-between border-t border-stone-100 pt-4 text-[11px] text-stone-400 dark:border-stone-800">
-                    <span>{t('joinedAt', { date: formatDate(profile.createdAt, locale) })}</span>
+                  <div className="mt-5 flex min-w-0 flex-col items-start gap-2 border-t border-stone-100 pt-4 text-[11px] text-stone-400 dark:border-stone-800 sm:flex-row sm:items-center sm:justify-between">
+                    <span className="max-w-full break-words">{t('joinedAt', { date: formatDate(profile.createdAt, locale) })}</span>
                     <Link href={`/${locale}/terms`} className="transition-colors hover:text-aurora-purple">
                       {t('terms')}
                     </Link>
@@ -678,10 +677,10 @@ export function ProfileContent() {
             </FadeIn>
           </aside>
 
-          <section className="space-y-6 lg:col-span-9">
+          <section className="min-w-0 space-y-5 sm:space-y-6 lg:col-span-9">
             <FadeIn variant="scale" delay={0.1}>
-              <section className="grid gap-6 rounded-2xl border border-stone-200 bg-white/80 p-5 shadow-canvas backdrop-blur-sm dark:border-stone-800 dark:bg-stone-950/78 dark:shadow-canvas-dark md:grid-cols-12 md:p-6">
-                <div className="grid grid-cols-2 gap-3 md:col-span-5">
+              <section className="grid min-w-0 gap-5 rounded-2xl border border-stone-200 bg-white/90 p-4 shadow-canvas backdrop-blur-sm dark:border-white/10 dark:bg-stone-900/90 dark:shadow-none sm:p-5 md:grid-cols-12 md:gap-6 md:p-6">
+                <div className="grid min-w-0 grid-cols-2 gap-2 sm:gap-3 md:col-span-5">
                   {[
                     { label: t('stats.works'), value: metrics.worksTotal, hint: t('stats.imageVideo', { images: metrics.imageTotal, videos: metrics.videoTotal }), icon: Palette },
                     { label: t('stats.favorites'), value: metrics.favoritesTotal, hint: t('stats.flatManage'), icon: Heart },
@@ -690,22 +689,22 @@ export function ProfileContent() {
                   ].map((item) => {
                     const Icon = item.icon
                     return (
-                      <div key={item.label} className="rounded-xl border border-stone-200 bg-stone-50/75 p-4 dark:border-stone-800 dark:bg-stone-900/45">
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="text-xs text-stone-500 dark:text-stone-400">{item.label}</span>
+                      <div key={item.label} className="min-w-0 rounded-xl border border-stone-200 bg-stone-50/75 p-3 dark:border-white/10 dark:bg-stone-950/55 sm:p-4">
+                        <div className="flex min-w-0 items-center justify-between gap-2 sm:gap-3">
+                          <span className="min-w-0 truncate text-xs text-stone-500 dark:text-stone-400">{item.label}</span>
                           <Icon className="h-4 w-4 text-aurora-purple" />
                         </div>
-                        <div className="mt-2 font-display text-2xl font-bold text-stone-950 dark:text-stone-50">{item.value}</div>
-                        <div className="mt-1 text-[10px] text-stone-500 dark:text-stone-400">{item.hint}</div>
+                        <div className="mt-2 break-words font-display text-xl font-bold text-stone-950 dark:text-stone-50 sm:text-2xl">{item.value}</div>
+                        <div className="mt-1 break-words text-[10px] text-stone-500 dark:text-stone-400">{item.hint}</div>
                       </div>
                     )
                   })}
                 </div>
 
-                <div className="flex flex-col justify-between md:col-span-7">
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-stone-400">{t('recent.title')}</p>
+                <div className="min-w-0 flex flex-col justify-between md:col-span-7">
+                  <div className="mb-3 flex min-w-0 items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="break-words text-xs font-semibold uppercase tracking-[0.18em] text-stone-400">{t('recent.title')}</p>
                       <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">{t('recent.subtitle')}</p>
                     </div>
                     <button
@@ -717,7 +716,7 @@ export function ProfileContent() {
                     </button>
                   </div>
 
-                  <div className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                  <div className="flex max-w-full min-w-0 gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     {recentWorks.length > 0 ? (
                       recentWorks.map((item) => {
                         const preview = getTaskPreview(item)
@@ -754,9 +753,9 @@ export function ProfileContent() {
               </section>
             </FadeIn>
 
-            <div className="sticky top-20 z-20 -mx-4 border-b border-stone-200 bg-canvas/88 px-4 py-3 backdrop-blur-md dark:border-stone-800 dark:bg-canvas-dark/88 sm:-mx-6 sm:px-6 lg:top-24 lg:mx-0 lg:px-0">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="grid rounded-xl bg-stone-200/70 p-1 dark:bg-stone-900 sm:inline-grid sm:grid-cols-3">
+            <div className="max-w-full min-w-0 rounded-2xl border border-stone-200 bg-white/90 p-2 shadow-canvas backdrop-blur-sm dark:border-white/10 dark:bg-stone-900/90 dark:shadow-none">
+              <div className="min-w-0">
+                <div className="grid w-full min-w-0 grid-cols-3 rounded-xl bg-stone-100 p-1 dark:bg-stone-950/70">
                   {[
                     { value: 'works' as CenterTab, label: t('tabs.works'), icon: Palette },
                     { value: 'favorites' as CenterTab, label: t('tabs.favorites'), icon: Heart },
@@ -770,14 +769,14 @@ export function ProfileContent() {
                         type="button"
                         onClick={() => setActiveTab(item.value)}
                         className={cn(
-                          'inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all',
+                          'inline-flex min-w-0 items-center justify-center gap-1 rounded-lg px-1.5 py-2 text-xs font-medium transition-colors sm:gap-2 sm:px-4 sm:text-sm',
                           active
-                            ? 'bg-white text-stone-950 shadow-sm dark:bg-stone-800 dark:text-stone-50'
+                            ? 'bg-white text-stone-950 dark:bg-aurora-purple dark:text-stone-950'
                             : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100'
                         )}
                       >
-                        <Icon className="h-4 w-4" />
-                        {item.label}
+                        <Icon className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+                        <span className="min-w-0 truncate">{item.label}</span>
                       </button>
                     )
                   })}
@@ -787,8 +786,8 @@ export function ProfileContent() {
 
             {activeTab !== 'profile' ? (
               <FadeIn variant="fade" delay={0.1}>
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white/80 p-3.5 shadow-canvas backdrop-blur-sm dark:border-stone-800 dark:bg-stone-950/78 dark:shadow-canvas-dark">
-                  <div className="flex flex-wrap gap-2">
+                <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white/90 p-3 shadow-canvas backdrop-blur-sm dark:border-white/10 dark:bg-stone-900/90 dark:shadow-none sm:p-3.5">
+                  <div className="flex min-w-0 flex-wrap gap-2">
                     {(activeTab === 'works' ? workFilterOptions : favoriteFilterOptions).map((option) => {
                       const isActive = activeTab === 'works'
                         ? workFilter === option.value
@@ -805,7 +804,7 @@ export function ProfileContent() {
                             'rounded-lg border px-3 py-1.5 text-xs font-medium transition-all',
                             isActive
                               ? 'border-aurora-purple/25 bg-aurora-purple/10 text-aurora-purple'
-                              : 'border-transparent text-stone-500 hover:border-stone-200 hover:bg-stone-100 dark:text-stone-400 dark:hover:border-stone-800 dark:hover:bg-stone-900'
+                              : 'border-transparent text-stone-500 hover:border-stone-200 hover:bg-stone-100 dark:text-stone-400 dark:hover:border-white/10 dark:hover:bg-stone-950/70'
                           )}
                         >
                           {option.label}
@@ -814,20 +813,20 @@ export function ProfileContent() {
                     })}
                   </div>
 
-                  <div className="flex w-full items-center gap-2 sm:w-auto">
-                    <div className="relative flex-1 sm:w-56">
+                  <div className="flex w-full min-w-0 flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+                    <div className="relative min-w-0 flex-1 sm:w-56">
                       <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-400" />
                       <input
                         value={searchQuery}
                         onChange={(event) => setSearchQuery(event.target.value)}
                         placeholder={activeTab === 'works' ? t('search.works') : t('search.favorites')}
-                        className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 pl-8 text-xs text-stone-800 outline-none transition-colors placeholder:text-stone-400 focus:border-aurora-purple/60 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-100"
+                        className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 pl-8 text-xs text-stone-800 outline-none transition-colors placeholder:text-stone-400 focus:border-aurora-purple/60 dark:border-white/10 dark:bg-stone-950/70 dark:text-stone-100 dark:placeholder:text-stone-500"
                       />
                     </div>
                     <select
                       value={sortOption}
                       onChange={(event) => setSortOption(event.target.value as SortOption)}
-                      className="rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-700 outline-none transition-colors focus:border-aurora-purple/60 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200"
+                      className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-xs text-stone-700 outline-none transition-colors focus:border-aurora-purple/60 dark:border-white/10 dark:bg-stone-950/70 dark:text-stone-200 dark:[color-scheme:dark] sm:w-auto"
                     >
                       <option value="newest">{t('sort.newest')}</option>
                       <option value="oldest">{t('sort.oldest')}</option>
@@ -840,7 +839,7 @@ export function ProfileContent() {
             {activeTab === 'works' ? (
               filteredWorks.length > 0 ? (
                 <FadeIn variant="fade" delay={0.12}>
-                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+                  <div className="grid min-w-0 grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
                     {filteredWorks.map((item) => (
                       <GalleryCard
                         key={`${item.type}-${item.id}`}
@@ -872,7 +871,7 @@ export function ProfileContent() {
             {activeTab === 'favorites' ? (
               filteredFavorites.length > 0 ? (
                 <FadeIn variant="fade" delay={0.12}>
-                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+                  <div className="grid min-w-0 grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
                     {filteredFavorites.map((favorite) => (
                       <FavoriteCard
                         key={`${favorite.targetType}-${favorite.targetId}`}
@@ -902,29 +901,29 @@ export function ProfileContent() {
             {activeTab === 'profile' ? (
               <FadeIn variant="fade" delay={0.12}>
                 <div className="space-y-6">
-                  <section className="rounded-2xl border border-stone-200 bg-white/80 p-6 shadow-canvas backdrop-blur-sm dark:border-stone-800 dark:bg-stone-950/78 dark:shadow-canvas-dark">
+                  <section className="max-w-full rounded-2xl border border-stone-200 bg-white/90 p-4 shadow-canvas backdrop-blur-sm dark:border-white/10 dark:bg-stone-900/90 dark:shadow-none sm:p-6">
                     <SectionTitle title={t('sections.basic')} note={t('sections.basicNote')} />
 
-                    <div className="mt-6 grid gap-6 md:grid-cols-2">
+                    <div className="mt-6 grid min-w-0 gap-5 md:grid-cols-2 md:gap-6">
                       <MagicInput
                         label={t('username')}
                         value={username}
                         onChange={(event) => setUsername(event.target.value)}
                         placeholder={t('username')}
-                        className="rounded-xl border px-4 py-2.5 text-sm"
+                        className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm dark:border-white/10 dark:bg-stone-950/70"
                       />
                       <div>
                         <label className="mb-2 block font-ui text-sm font-medium text-stone-700 dark:text-stone-300">
                           {t('email')}
                         </label>
-                        <div className="relative">
+                        <div className="relative min-w-0">
                           <input
                             readOnly
                             value={profile.email}
-                            className="w-full cursor-not-allowed rounded-xl border border-stone-200 bg-stone-100/70 px-4 py-2.5 pr-24 text-sm text-stone-500 outline-none dark:border-stone-800 dark:bg-stone-900/60 dark:text-stone-400"
+                            className="w-full min-w-0 cursor-not-allowed rounded-xl border border-stone-200 bg-stone-100/70 px-4 py-2.5 text-sm text-stone-500 outline-none dark:border-white/10 dark:bg-stone-950/60 dark:text-stone-400 sm:pr-24"
                           />
                           <span className={cn(
-                            'absolute right-3 top-1/2 -translate-y-1/2 rounded-full border px-2 py-0.5 text-[10px] font-semibold',
+                            'mt-2 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold sm:absolute sm:right-3 sm:top-1/2 sm:mt-0 sm:-translate-y-1/2',
                             profile.emailVerified
                               ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300'
                               : 'border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-300'
@@ -949,24 +948,24 @@ export function ProfileContent() {
                     </div>
                   </section>
 
-                  <section className="rounded-2xl border border-stone-200 bg-white/80 p-6 shadow-canvas backdrop-blur-sm dark:border-stone-800 dark:bg-stone-950/78 dark:shadow-canvas-dark">
+                  <section className="max-w-full rounded-2xl border border-stone-200 bg-white/90 p-4 shadow-canvas backdrop-blur-sm dark:border-white/10 dark:bg-stone-900/90 dark:shadow-none sm:p-6">
                     <SectionTitle title={t('sections.account')} />
-                    <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+                    <div className="mt-6 grid min-w-0 grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
                       {[
                         { label: t('statusLabel'), value: profile.status, tone: 'text-emerald-600 dark:text-emerald-300' },
                         { label: t('roleLabel'), value: profile.role, tone: 'text-stone-900 dark:text-stone-100' },
                         { label: t('membershipLevel'), value: membershipLabel, tone: 'text-aurora-purple' },
                         { label: t('membershipExpire'), value: membershipActive ? formatDate(profile.membership?.expireAt ?? null, locale) : '-', tone: 'text-stone-900 dark:text-stone-100' },
                       ].map((item) => (
-                        <div key={item.label} className="rounded-xl border border-stone-200 bg-stone-50/70 p-4 text-center dark:border-stone-800 dark:bg-stone-900/45">
+                        <div key={item.label} className="min-w-0 rounded-xl border border-stone-200 bg-stone-50/70 p-3 text-center dark:border-white/10 dark:bg-stone-950/55 sm:p-4">
                           <div className="text-[10px] text-stone-500 dark:text-stone-400">{item.label}</div>
-                          <div className={cn('mt-1 text-xs font-bold', item.tone)}>{item.value}</div>
+                          <div className={cn('mt-1 break-words text-xs font-bold', item.tone)}>{item.value}</div>
                         </div>
                       ))}
                     </div>
                   </section>
 
-                  <section className="rounded-2xl border border-stone-200 bg-white/80 p-6 shadow-canvas backdrop-blur-sm dark:border-stone-800 dark:bg-stone-950/78 dark:shadow-canvas-dark">
+                  <section className="max-w-full rounded-2xl border border-stone-200 bg-white/90 p-4 shadow-canvas backdrop-blur-sm dark:border-white/10 dark:bg-stone-900/90 dark:shadow-none sm:p-6">
                     <button
                       type="button"
                       onClick={() => setShowPasswordForm((value) => !value)}
@@ -983,15 +982,15 @@ export function ProfileContent() {
                       )}
                     >
                       <div className="overflow-hidden">
-                        <div className="mt-6 border-t border-stone-100 pt-6 dark:border-stone-800">
-                          <div className="grid gap-4 md:grid-cols-3">
+                        <div className="mt-6 border-t border-stone-100 pt-6 dark:border-white/10">
+                          <div className="grid min-w-0 gap-4 md:grid-cols-3">
                             <MagicInput
                               label={t('oldPassword')}
                               type="password"
                               value={oldPassword}
                               onChange={(event) => setOldPassword(event.target.value)}
                               placeholder={t('oldPassword')}
-                              className="rounded-xl border px-4 py-2.5 text-sm"
+                              className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm dark:border-white/10 dark:bg-stone-950/70"
                             />
                             <MagicInput
                               label={t('newPassword')}
@@ -999,7 +998,7 @@ export function ProfileContent() {
                               value={newPassword}
                               onChange={(event) => setNewPassword(event.target.value)}
                               placeholder={t('newPassword')}
-                              className="rounded-xl border px-4 py-2.5 text-sm"
+                              className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm dark:border-white/10 dark:bg-stone-950/70"
                             />
                             <MagicInput
                               label={t('confirmPassword')}
@@ -1007,13 +1006,13 @@ export function ProfileContent() {
                               value={confirmPassword}
                               onChange={(event) => setConfirmPassword(event.target.value)}
                               placeholder={t('confirmPassword')}
-                              className="rounded-xl border px-4 py-2.5 text-sm"
+                              className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm dark:border-white/10 dark:bg-stone-950/70"
                             />
                           </div>
 
                           {passwordError ? <p className="mt-4 text-sm text-red-600 dark:text-red-400">{passwordError}</p> : null}
 
-                          <div className="mt-6 flex justify-end gap-3">
+                          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                             <Button
                               variant="ghost"
                               onClick={() => {
@@ -1061,12 +1060,12 @@ function SectionTitle({
   compact?: boolean
 }) {
   return (
-    <div className={cn('flex items-center justify-between gap-4 border-b border-stone-100 pb-3 dark:border-stone-800', compact && 'border-b-0 pb-0')}>
-      <h3 className="flex items-center gap-2 text-sm font-bold text-stone-950 dark:text-stone-50">
+    <div className={cn('flex min-w-0 flex-col items-start gap-2 border-b border-stone-100 pb-3 dark:border-stone-800 sm:flex-row sm:items-center sm:justify-between sm:gap-4', compact && 'border-b-0 pb-0')}>
+      <h3 className="flex min-w-0 items-center gap-2 break-words text-sm font-bold text-stone-950 dark:text-stone-50">
         <span className="h-3 w-1.5 rounded-full bg-aurora-purple" />
         {title}
       </h3>
-      {note ? <span className="text-[10px] text-stone-400">{note}</span> : null}
+      {note ? <span className="max-w-full break-words text-[10px] text-stone-400">{note}</span> : null}
     </div>
   )
 }
@@ -1084,7 +1083,7 @@ function EmptyPanel({
 }) {
   return (
     <FadeIn variant="fade" delay={0.12}>
-      <div className="rounded-2xl border border-dashed border-stone-300 bg-white/60 p-10 text-center dark:border-stone-700 dark:bg-stone-950/50">
+      <div className="max-w-full rounded-2xl border border-dashed border-stone-300 bg-white/60 p-6 text-center dark:border-stone-700 dark:bg-stone-950/50 sm:p-10">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-aurora-purple/10 text-aurora-purple">
           <Sparkles className="h-5 w-5" />
         </div>
