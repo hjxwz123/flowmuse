@@ -81,6 +81,7 @@
     "subtitle": "有兑换码？在这里输入",
     "placeholder": "请输入兑换码",
     "button": "兑换",
+    "dismiss": "关闭兑换提示",
     "success": {
       "title": "兑换成功",
       "credits": "获得 {credits} 点数",
@@ -91,6 +92,11 @@
       "invalid": "兑换码无效",
       "used": "兑换码已使用",
       "expired": "兑换码已过期",
+      "exhausted": "兑换码使用次数已用完",
+      "disabled": "兑换码已停用",
+      "invalidPayload": "兑换码配置异常，请联系管理员",
+      "membershipInactive": "该兑换码关联的会员等级已停用，请联系管理员",
+      "loginRequired": "请先登录后再兑换",
       "failed": "兑换失败，请检查兑换码状态或稍后再试"
     },
     "history": {

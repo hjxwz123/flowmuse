@@ -81,6 +81,7 @@
     "subtitle": "Have a redeem code? Enter it here",
     "placeholder": "Enter redeem code",
     "button": "Redeem",
+    "dismiss": "Dismiss redeem message",
     "success": {
       "title": "Redeemed Successfully",
       "credits": "Received {credits} credits",
@@ -91,6 +92,11 @@
       "invalid": "Invalid redeem code",
       "used": "Redeem code already used",
       "expired": "Redeem code expired",
+      "exhausted": "Redeem code usage limit has been reached",
+      "disabled": "Redeem code has been disabled",
+      "invalidPayload": "Redeem code configuration is invalid. Please contact support.",
+      "membershipInactive": "The membership tier for this code is no longer active. Please contact support.",
+      "loginRequired": "Please sign in before redeeming a code",
       "failed": "Redemption failed, please try again later"
     },
     "history": {

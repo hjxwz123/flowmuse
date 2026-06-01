@@ -10,7 +10,15 @@
   },
   "group": {
     "title": "Same generation ({count} tasks)",
-    "badge": "Task group"
+    "badge": "Task group",
+    "pageTitle": "Task Group",
+    "back": "Back to all tasks",
+    "imageCount": "{count} images",
+    "completedCount": "{completed}/{count} completed",
+    "open": "View group",
+    "openAria": "View this group of {count} images",
+    "untitled": "Grouped image generation",
+    "previewAlt": "Task group preview"
   },
   "tabs": {
     "all": "All",
@@ -24,6 +32,15 @@
     "processing": "Processing",
     "completed": "Completed",
     "failed": "Failed"
+  },
+  "failure": {
+    "generic": "Task failed. Please retry or contact an administrator.",
+    "image": {
+      "timeout": "The task timed out. Please try again later.",
+      "formatOrBusy": "The format is invalid or the model is busy. Please try again later.",
+      "channel": "Channel error. Please contact an administrator.",
+      "sensitiveWord": "Sensitive word blocked. Please revise your prompt and try again."
+    }
   },
   "info": {
     "type": "Type",
@@ -174,6 +191,7 @@
   },
   "errors": {
     "load": "Failed to load tasks",
+    "loadGroup": "Failed to load task group",
     "delete": "Failed to delete task",
     "cancel": "Failed to cancel task",
     "retry": "Failed to retry task",

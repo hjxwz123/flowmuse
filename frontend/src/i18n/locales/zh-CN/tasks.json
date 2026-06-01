@@ -10,7 +10,15 @@
   },
   "group": {
     "title": "同批生成（{count} 个任务）",
-    "badge": "同一任务组"
+    "badge": "同一任务组",
+    "pageTitle": "任务组",
+    "back": "返回全部任务",
+    "imageCount": "{count} 张图片",
+    "completedCount": "已完成 {completed}/{count}",
+    "open": "查看这一组",
+    "openAria": "查看这一组 {count} 张图片",
+    "untitled": "同批生成图片",
+    "previewAlt": "任务组预览图"
   },
   "tabs": {
     "all": "全部",
@@ -24,6 +32,15 @@
     "processing": "生成中",
     "completed": "已完成",
     "failed": "失败"
+  },
+  "failure": {
+    "generic": "任务失败，请重试或者联系管理员",
+    "image": {
+      "timeout": "任务超时，请稍后重试。",
+      "formatOrBusy": "格式错误或者模型繁忙，请稍后再试。",
+      "channel": "渠道错误，请联系管理员。",
+      "sensitiveWord": "触发敏感词拦截，请修改提示词后重试。"
+    }
   },
   "info": {
     "type": "类型",
@@ -174,6 +191,7 @@
   },
   "errors": {
     "load": "加载任务列表失败",
+    "loadGroup": "加载任务组失败",
     "delete": "删除任务失败",
     "cancel": "取消任务失败",
     "retry": "重试任务失败",

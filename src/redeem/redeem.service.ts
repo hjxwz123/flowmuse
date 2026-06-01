@@ -6,6 +6,23 @@ import { MembershipsService } from '../memberships/memberships.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedeemDto } from './dto/redeem.dto';
 
+type RedeemErrorCode =
+  | 'REDEEM_CODE_NOT_FOUND'
+  | 'REDEEM_CODE_DISABLED'
+  | 'REDEEM_CODE_EXPIRED'
+  | 'REDEEM_CODE_EXHAUSTED'
+  | 'REDEEM_CODE_ALREADY_USED_BY_USER'
+  | 'REDEEM_CODE_INVALID_CREDITS'
+  | 'REDEEM_CODE_INVALID_MEMBERSHIP'
+  | 'REDEEM_MEMBERSHIP_LEVEL_INACTIVE';
+
+function redeemErrorPayload(errorCode: RedeemErrorCode, message: string) {
+  return {
+    message,
+    data: { errorCode },
+  };
+}
+
 @Injectable()
 export class RedeemService {
   constructor(
@@ -16,7 +33,7 @@ export class RedeemService {
 
   private normalizeMembershipCycles(value: number | null | undefined) {
     if (!Number.isFinite(value)) return 1;
-      return Math.max(1, Math.floor(Number(value)));
+    return Math.max(1, Math.floor(Number(value)));
   }
 
   async redeem(userId: bigint, dto: RedeemDto) {
@@ -34,7 +51,11 @@ export class RedeemService {
       );
 
       const lockedCodeId = lockedRows[0]?.id;
-      if (!lockedCodeId) throw new NotFoundException('Redeem code not found');
+      if (!lockedCodeId) {
+        throw new NotFoundException(
+          redeemErrorPayload('REDEEM_CODE_NOT_FOUND', 'Redeem code not found'),
+        );
+      }
 
       const code = await tx.redeemCode.findUnique({
         where: { id: lockedCodeId },
@@ -51,10 +72,11 @@ export class RedeemService {
         },
       });
 
-      if (!code) throw new NotFoundException('Redeem code not found');
-      if (code.status !== RedeemCodeStatus.active) throw new ForbiddenException('Redeem code not active');
-      if (code.expireDate && code.expireDate < now) throw new ForbiddenException('Redeem code expired');
-      if (code.usedCount >= code.maxUseCount) throw new ForbiddenException('Redeem code exhausted');
+      if (!code) {
+        throw new NotFoundException(
+          redeemErrorPayload('REDEEM_CODE_NOT_FOUND', 'Redeem code not found'),
+        );
+      }
 
       const existingLog = await tx.redeemLog.findFirst({
         where: {
@@ -63,7 +85,39 @@ export class RedeemService {
         },
         select: { id: true },
       });
-      if (existingLog) throw new ForbiddenException('Redeem code already used by this user');
+      if (existingLog) {
+        throw new ForbiddenException(
+          redeemErrorPayload(
+            'REDEEM_CODE_ALREADY_USED_BY_USER',
+            'Redeem code already used by this user',
+          ),
+        );
+      }
+      if (code.status === RedeemCodeStatus.disabled) {
+        throw new ForbiddenException(
+          redeemErrorPayload('REDEEM_CODE_DISABLED', 'Redeem code disabled'),
+        );
+      }
+      if (code.expireDate && code.expireDate < now) {
+        throw new ForbiddenException(
+          redeemErrorPayload('REDEEM_CODE_EXPIRED', 'Redeem code expired'),
+        );
+      }
+      if (code.usedCount >= code.maxUseCount) {
+        throw new ForbiddenException(
+          redeemErrorPayload('REDEEM_CODE_EXHAUSTED', 'Redeem code exhausted'),
+        );
+      }
+      if (code.status === RedeemCodeStatus.expired) {
+        throw new ForbiddenException(
+          redeemErrorPayload('REDEEM_CODE_EXPIRED', 'Redeem code expired'),
+        );
+      }
+      if (code.status !== RedeemCodeStatus.active) {
+        throw new ForbiddenException(
+          redeemErrorPayload('REDEEM_CODE_DISABLED', 'Redeem code not active'),
+        );
+      }
 
       const updatedCode = await tx.redeemCode.update({
         where: { id: code.id },
@@ -78,7 +132,14 @@ export class RedeemService {
 
       if (code.type === RedeemCodeType.credits) {
         const credits = code.credits ?? 0;
-        if (credits <= 0) throw new BadRequestException('Invalid credits on code');
+        if (credits <= 0) {
+          throw new BadRequestException(
+            redeemErrorPayload(
+              'REDEEM_CODE_INVALID_CREDITS',
+              'Invalid credits on code',
+            ),
+          );
+        }
 
         const user = await tx.user.update({
           where: { id: userId },
@@ -119,10 +180,17 @@ export class RedeemService {
       }
 
       if (!code.membershipLevelId || !code.membershipLevel || !code.membershipPeriod) {
-        throw new BadRequestException('Invalid membership payload on code');
+        throw new BadRequestException(
+          redeemErrorPayload(
+            'REDEEM_CODE_INVALID_MEMBERSHIP',
+            'Invalid membership payload on code',
+          ),
+        );
       }
       if (!code.membershipLevel.isActive) {
-        throw new BadRequestException('Membership level is inactive');
+        throw new BadRequestException(
+          redeemErrorPayload('REDEEM_MEMBERSHIP_LEVEL_INACTIVE', 'Membership level is inactive'),
+        );
       }
 
       const membershipPeriod = code.membershipPeriod as MembershipPeriod;

@@ -2784,7 +2784,7 @@ export function SimplifiedCreateContent() {
                       title={tNav('tools')}
                       className="group inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white/90 text-stone-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-stone-300 hover:text-stone-900 dark:border-stone-700 dark:bg-stone-950/70 dark:text-stone-200 dark:hover:border-stone-600 dark:hover:text-white"
                     >
-                      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-stone-900 text-white transition-transform duration-200 group-hover:scale-105 dark:bg-stone-100 dark:text-stone-900">
+                      <span className="theme-solid-control theme-solid-shadow inline-flex h-7 w-7 items-center justify-center rounded-full border border-transparent transition-transform duration-200 group-hover:scale-105">
                         <Wrench className="h-3.5 w-3.5" />
                       </span>
                       <span className="sr-only">{tNav('tools')}</span>
@@ -2832,7 +2832,7 @@ export function SimplifiedCreateContent() {
                       href={`/${locale}/tools`}
                       className="group inline-flex w-fit items-center gap-2 rounded-full border border-stone-200 bg-white/90 px-2.5 py-2 text-sm font-medium text-stone-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-stone-300 hover:text-stone-900 dark:border-stone-700 dark:bg-stone-950/70 dark:text-stone-200 dark:hover:border-stone-600 dark:hover:text-white"
                     >
-                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-stone-900 text-white transition-transform duration-200 group-hover:scale-105 dark:bg-stone-100 dark:text-stone-900">
+                      <span className="theme-solid-control theme-solid-shadow inline-flex h-8 w-8 items-center justify-center rounded-full border border-transparent transition-transform duration-200 group-hover:scale-105">
                         <Wrench className="h-4 w-4" />
                       </span>
                       <span>{tNav('tools')}</span>
@@ -2882,7 +2882,7 @@ export function SimplifiedCreateContent() {
                           className={cn(
                             quickStartChipBase,
                             quickStartCategory === category
-                              ? 'border-stone-900 bg-stone-900 text-white dark:border-stone-100 dark:bg-stone-100 dark:text-stone-900'
+                              ? 'theme-toggle-active'
                               : 'border-stone-200 bg-stone-50 text-stone-600 hover:border-stone-300 hover:text-stone-900 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:border-stone-600 dark:hover:text-stone-100'
                           )}
                         >

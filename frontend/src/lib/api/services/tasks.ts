@@ -13,4 +13,8 @@ export const tasksService = {
   ): Promise<SlicePaginatedResult<UnifiedTaskFeedItem>> {
     return apiClient.get('/tasks/feed', { params })
   },
+
+  async getImageGroup(taskGroupId: string): Promise<ApiTask[]> {
+    return apiClient.get(`/tasks/groups/${encodeURIComponent(taskGroupId)}`)
+  },
 }

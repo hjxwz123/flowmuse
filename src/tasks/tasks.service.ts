@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, TaskStatus } from '@prisma/client';
 
 import { SlicePaginatedResult } from '../common/dto/slice-pagination.dto';
@@ -17,6 +17,28 @@ type FeedRow = {
 @Injectable()
 export class TasksService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async listImageGroup(userId: bigint, taskGroupId: string) {
+    const normalizedTaskGroupId = taskGroupId.trim();
+    if (!/^[a-zA-Z0-9_-]{1,64}$/.test(normalizedTaskGroupId)) {
+      throw new BadRequestException('Invalid taskGroupId');
+    }
+
+    const images = await this.prisma.imageTask.findMany({
+      where: {
+        userId,
+        deletedAt: null,
+        taskGroupId: normalizedTaskGroupId,
+      },
+      include: { tool: { select: { title: true } } },
+      orderBy: [
+        { createdAt: 'desc' },
+        { id: 'desc' },
+      ],
+    });
+
+    return images.map((item) => serializeImageTask(item));
+  }
 
   async listFeed(
     userId: bigint,

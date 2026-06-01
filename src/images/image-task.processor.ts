@@ -43,6 +43,24 @@ function jsonEquals(left: ProviderDataValue, right: ProviderDataValue) {
   return JSON.stringify(left ?? null) === JSON.stringify(right ?? null);
 }
 
+function toJsonObject(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
+function buildFailureProviderData(upstream: unknown, httpStatusCode: unknown) {
+  const statusCode = typeof httpStatusCode === 'number' && Number.isFinite(httpStatusCode)
+    ? httpStatusCode
+    : undefined;
+
+  if (statusCode === undefined) return upstream;
+
+  return {
+    ...(toJsonObject(upstream) ?? {}),
+    status_code: statusCode,
+  };
+}
+
 @Injectable()
 @Processor(IMAGE_GENERATION_QUEUE, {
   limiter: {
@@ -170,14 +188,16 @@ export class ImageTaskProcessor extends WorkerHost {
       if (latestState.status === TaskStatus.completed) return;
       if (latestState.status === TaskStatus.failed) return;
 
-      await this.markFailedAndRefund(task, taskId, 'Task timeout', latestState.providerData);
+      const providerData = mergeTaskProviderData(latestState.providerData, { status_code: 524 });
+      await this.markFailedAndRefund(task, taskId, 'Task timeout', providerData);
     } catch (error: any) {
       const latestState = await this.getTaskState(taskId);
       if (latestState?.status === TaskStatus.completed) return;
       if (latestState?.status === TaskStatus.failed) return;
 
       const upstream = error?.response?.data;
-      const providerData = mergeTaskProviderData(latestState?.providerData ?? task.providerData, upstream);
+      const failureProviderData = buildFailureProviderData(upstream, error?.response?.status);
+      const providerData = mergeTaskProviderData(latestState?.providerData ?? task.providerData, failureProviderData);
       await this.markFailedAndRefund(task, taskId, error?.message ?? 'Task failed', providerData);
     }
   }

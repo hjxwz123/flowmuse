@@ -1,6 +1,9 @@
+'use client'
+
 import Link from 'next/link'
-import { Fragment } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'
+import { motion, useReducedMotion } from 'framer-motion'
 
 interface SiteTopNoticeBarProps {
   text: string
@@ -108,14 +111,49 @@ function isInternalHref(href: string) {
 }
 
 export function SiteTopNoticeBar({ text, onClose }: SiteTopNoticeBarProps) {
+  const [isClosing, setIsClosing] = useState(false)
+  const closeTimerRef = useRef<number | null>(null)
+  const shouldReduceMotion = useReducedMotion()
   const message = text.trim()
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current)
+      }
+    }
+  }, [])
+
+  const handleClose = () => {
+    if (isClosing) return
+
+    if (shouldReduceMotion) {
+      onClose()
+      return
+    }
+
+    setIsClosing(true)
+    closeTimerRef.current = window.setTimeout(() => {
+      onClose()
+    }, 220)
+  }
+
   if (!message) return null
 
   const segments = parseNoticeSegments(message)
   if (segments.length === 0) return null
 
   return (
-    <div className="border-b border-stone-200 bg-white text-black dark:border-stone-800 dark:bg-black dark:text-white">
+    <motion.div
+      initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
+      animate={
+        isClosing
+          ? { opacity: 0, y: -10, height: 0 }
+          : { opacity: 1, y: 0, height: 'auto' }
+      }
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+      className="overflow-hidden border-b border-stone-200 bg-white text-black dark:border-stone-800 dark:bg-black dark:text-white"
+    >
       <div className="relative mx-auto flex min-h-12 w-full max-w-7xl items-center justify-center px-14 py-3 md:px-16">
         <p className="max-w-full text-center text-sm font-medium leading-6 text-stone-950 dark:text-white">
           {segments.map((segment, index) => {
@@ -159,13 +197,14 @@ export function SiteTopNoticeBar({ text, onClose }: SiteTopNoticeBarProps) {
 
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleClose}
           aria-label="Close notice"
+          disabled={isClosing}
           className="absolute right-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-stone-200 bg-white text-stone-700 transition-colors hover:bg-stone-100 hover:text-black dark:border-stone-800 dark:bg-black dark:text-stone-300 dark:hover:bg-stone-900 dark:hover:text-white"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
-    </div>
+    </motion.div>
   )
 }

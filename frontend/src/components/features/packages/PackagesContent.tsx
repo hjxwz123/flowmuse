@@ -10,6 +10,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { Card, Button, MagicInput } from '@/components/ui'
 import { membershipService, packageService, redeemService } from '@/lib/api/services'
+import { ApiClientError } from '@/lib/api/error'
 import { useAuthStore } from '@/lib/store/authStore'
 import { useSiteStore } from '@/lib/store'
 import type { Package } from '@/lib/api/types/packages'
@@ -17,7 +18,8 @@ import type { MembershipLevel, MembershipPeriod, UserMembershipStatus } from '@/
 import { cn } from '@/lib/utils/cn'
 import { PageTransition } from '@/components/shared/PageTransition'
 import { FadeIn } from '@/components/shared/FadeIn'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { AlertCircle, CheckCircle2, ChevronDown, ChevronUp, X } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { WechatPayDialog } from './WechatPayDialog'
 
 // FAQ 数据
@@ -39,6 +41,23 @@ const faqItems = [
   },
 ]
 
+type RedeemMessage = {
+  type: 'success' | 'error'
+  text: string
+}
+
+function getRedeemApiErrorCode(error: unknown) {
+  if (!(error instanceof ApiClientError)) return null
+
+  const data = error.data
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return null
+
+  const payload = data as Record<string, unknown>
+  const errorCode = payload.errorCode ?? payload.code
+
+  return typeof errorCode === 'string' ? errorCode : null
+}
+
 export function PackagesContent() {
   const t = useTranslations('packages')
   const tCommon = useTranslations('common')
@@ -56,10 +75,7 @@ export function PackagesContent() {
   const [isLoading, setIsLoading] = useState(true)
   const [redeemCode, setRedeemCode] = useState('')
   const [isRedeeming, setIsRedeeming] = useState(false)
-  const [redeemMessage, setRedeemMessage] = useState<{
-    type: 'success' | 'error'
-    text: string
-  } | null>(null)
+  const [redeemMessage, setRedeemMessage] = useState<RedeemMessage | null>(null)
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null)
 
   // 支付弹窗
@@ -234,6 +250,36 @@ export function PackagesContent() {
   }
 
   const creditPackages = packages.filter(p => p.packageType === 'credits')
+  const getRedeemErrorMessage = (error: unknown) => {
+    const errorCode = getRedeemApiErrorCode(error)
+
+    switch (errorCode) {
+      case 'REDEEM_CODE_NOT_FOUND':
+        return t('redeem.error.invalid')
+      case 'REDEEM_CODE_ALREADY_USED_BY_USER':
+        return t('redeem.error.used')
+      case 'REDEEM_CODE_EXPIRED':
+        return t('redeem.error.expired')
+      case 'REDEEM_CODE_EXHAUSTED':
+        return t('redeem.error.exhausted')
+      case 'REDEEM_CODE_DISABLED':
+        return t('redeem.error.disabled')
+      case 'REDEEM_CODE_INVALID_CREDITS':
+      case 'REDEEM_CODE_INVALID_MEMBERSHIP':
+        return t('redeem.error.invalidPayload')
+      case 'REDEEM_MEMBERSHIP_LEVEL_INACTIVE':
+        return t('redeem.error.membershipInactive')
+      default:
+        break
+    }
+
+    if (error instanceof ApiClientError) {
+      if (error.code === 401) return t('redeem.error.loginRequired')
+      if (error.code === 400 || error.code === 404) return t('redeem.error.invalid')
+    }
+
+    return t('redeem.error.failed')
+  }
 
   // 加载套餐列表
   useEffect(() => {
@@ -304,7 +350,7 @@ export function PackagesContent() {
   const handleRedeem = async () => {
     if (!redeemCode.trim()) return
     if (!isAuthenticated) {
-      setRedeemMessage({ type: 'error', text: t('redeem.error.failed') })
+      setRedeemMessage({ type: 'error', text: t('redeem.error.loginRequired') })
       return
     }
 
@@ -336,7 +382,7 @@ export function PackagesContent() {
       }
     } catch (err: unknown) {
       console.error('Failed to redeem:', err)
-      setRedeemMessage({ type: 'error', text: t('redeem.error.failed') })
+      setRedeemMessage({ type: 'error', text: getRedeemErrorMessage(err) })
     } finally {
       setIsRedeeming(false)
     }
@@ -353,11 +399,11 @@ export function PackagesContent() {
           <div className="absolute inset-0 animate-blob rounded-full bg-aurora-purple blur-[120px]" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-[90rem]">
+        <div className="relative z-10 mx-auto flex w-full max-w-[1560px] flex-col gap-6">
           <FadeIn variant="slide">
-            <section className="mb-6 flex flex-col gap-4 md:mb-8 md:flex-row md:items-end md:justify-between">
+            <section className="mb-2 flex flex-col gap-4 md:mb-4 md:flex-row md:items-end md:justify-between">
               <div className="space-y-2">
-                <h1 className="bg-gradient-aurora bg-clip-text text-3xl font-display font-bold tracking-tight text-transparent md:text-5xl">
+                <h1 className="text-3xl font-semibold tracking-tight text-stone-950 dark:text-white md:text-4xl">
                   {t('title')}
                 </h1>
               </div>
@@ -418,18 +464,48 @@ export function PackagesContent() {
                 </div>
 
                 {/* 兑换消息 */}
-                {redeemMessage && (
-                  <div
-                    className={cn(
-                      'mt-4 p-4 rounded-xl font-ui text-sm',
-                      redeemMessage.type === 'success'
-                        ? 'border border-green-200 bg-green-50 text-green-800 dark:border-green-700/60 dark:bg-green-900/20 dark:text-green-300'
-                        : 'border border-red-200 bg-red-50 text-red-800 dark:border-red-700/60 dark:bg-red-900/20 dark:text-red-300'
-                    )}
-                  >
-                    {redeemMessage.text}
-                  </div>
-                )}
+                <AnimatePresence initial={false} mode="wait">
+                  {redeemMessage && (
+                    <motion.div
+                      key={`${redeemMessage.type}-${redeemMessage.text}`}
+                      initial={{ opacity: 0, y: -8, scale: 0.98, height: 0 }}
+                      animate={{ opacity: 1, y: 0, scale: 1, height: 'auto' }}
+                      exit={{ opacity: 0, y: -6, scale: 0.98, height: 0 }}
+                      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div
+                        role={redeemMessage.type === 'error' ? 'alert' : 'status'}
+                        className={cn(
+                          'mt-4 flex items-start gap-3 rounded-xl border p-4 font-ui text-sm shadow-sm',
+                          redeemMessage.type === 'success'
+                            ? 'border-green-200 bg-green-50 text-green-800 dark:border-green-700/60 dark:bg-green-900/20 dark:text-green-300'
+                            : 'border-red-200 bg-red-50 text-red-800 dark:border-red-700/60 dark:bg-red-900/20 dark:text-red-300'
+                        )}
+                      >
+                        {redeemMessage.type === 'success' ? (
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                        ) : (
+                          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                        )}
+                        <p className="min-w-0 flex-1 leading-5">{redeemMessage.text}</p>
+                        <button
+                          type="button"
+                          onClick={() => setRedeemMessage(null)}
+                          aria-label={t('redeem.dismiss')}
+                          className={cn(
+                            'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors',
+                            redeemMessage.type === 'success'
+                              ? 'hover:bg-green-100 dark:hover:bg-green-950/60'
+                              : 'hover:bg-red-100 dark:hover:bg-red-950/60'
+                          )}
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </Card>
           </FadeIn>

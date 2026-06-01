@@ -15,6 +15,7 @@ export class FluxImageAdapter extends BaseImageAdapter {
       status: data.status,
       resultUrls: data.output?.image_url ? [data.output.image_url] : [],
       errorMessage: data.error,
+      providerData: data,
     };
   }
 
@@ -42,4 +43,3 @@ export class FluxImageAdapter extends BaseImageAdapter {
     };
   }
 }
-

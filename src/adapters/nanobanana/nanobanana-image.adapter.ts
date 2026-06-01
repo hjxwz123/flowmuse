@@ -79,26 +79,29 @@ export class NanobananaImageAdapter extends BaseImageAdapter {
         );
       }
       if (error.response?.status === 429) {
-        throw new Error('Nanobanana rate limit exceeded. Please wait and try again.');
+        throw withHttpResponse('Nanobanana rate limit exceeded. Please wait and try again.', error);
       }
       if (error.response?.status === 403) {
-        throw new Error(
+        throw withHttpResponse(
           `Nanobanana API key invalid or insufficient permissions (channel: ${this.channel.name}). ` +
-          `Verify the x-goog-api-key header is correct.`
+          `Verify the x-goog-api-key header is correct.`,
+          error,
         );
       }
       if (error.response?.status === 404) {
-        throw new Error(
-          `Nanobanana API endpoint not found. Verify baseURL "${this.channel.baseUrl}" and model "${model}" are correct.`
+        throw withHttpResponse(
+          `Nanobanana API endpoint not found. Verify baseURL "${this.channel.baseUrl}" and model "${model}" are correct.`,
+          error,
         );
       }
       if (error.response?.data?.error?.message) {
-        throw new Error(`Nanobanana API error: ${error.response.data.error.message}`);
+        throw withHttpResponse(`Nanobanana API error: ${error.response.data.error.message}`, error);
       }
       // 保留原始错误消息但添加上下文
-      throw new Error(
+      throw withHttpResponse(
         `Nanobanana request failed after ${elapsed}ms (${error.message || 'Unknown error'}). ` +
-        `Channel: ${this.channel.name}, Model: ${model}, BaseURL: ${this.channel.baseUrl}`
+        `Channel: ${this.channel.name}, Model: ${model}, BaseURL: ${this.channel.baseUrl}`,
+        error,
       );
     }
   }
@@ -275,6 +278,13 @@ type GeminiPartInput =
 
 function asString(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim() ? value : undefined;
+}
+
+function withHttpResponse(message: string, source: any) {
+  const error = new Error(message);
+  if (source?.response) (error as any).response = source.response;
+  if (source?.code) (error as any).code = source.code;
+  return error;
 }
 
 function isHttpUrl(value: string) {

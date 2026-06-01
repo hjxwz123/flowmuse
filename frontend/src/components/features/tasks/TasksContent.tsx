@@ -6,7 +6,8 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { ArrowLeft, ArrowRight, Images } from 'lucide-react'
 import { Button, Card, Loading, SkeletonTaskCard } from '@/components/ui'
 import { imageService, videoService, researchService, tasksService } from '@/lib/api/services'
 import { useAuth } from '@/lib/hooks/useAuth'
@@ -27,10 +28,10 @@ import { FadeIn } from '@/components/shared/FadeIn'
 
 type TaskFilter = 'all' | TaskStatus
 type UnifiedTask = ApiTask | ApiResearchTask
-type MediaTask = ApiTask
+type ImageTask = ApiTask & { type: 'image' }
 type TaskListEntry =
   | { kind: 'single'; key: string; task: UnifiedTask }
-  | { kind: 'group'; key: string; taskGroupId: string; tasks: MediaTask[] }
+  | { kind: 'group'; key: string; taskGroupId: string; tasks: ImageTask[] }
 
 const TASKS_CACHE_MAX_AGE_MS = 5 * 60 * 1000
 const TASKS_CACHE_FRESH_MS = 20 * 1000
@@ -53,8 +54,8 @@ function appendTasksStable(prev: UnifiedTask[], incoming: UnifiedTask[]) {
   return [...prev, ...dedupedIncoming]
 }
 
-function isMediaTask(task: UnifiedTask): task is MediaTask {
-  return task.type === 'image' || task.type === 'video'
+function isImageTask(task: UnifiedTask): task is ImageTask {
+  return task.type === 'image'
 }
 
 function groupTasksForDisplay(items: UnifiedTask[]): TaskListEntry[] {
@@ -62,7 +63,7 @@ function groupTasksForDisplay(items: UnifiedTask[]): TaskListEntry[] {
   const groupedIndexes = new Map<string, number>()
 
   for (const task of items) {
-    if (!isMediaTask(task) || !task.taskGroupId) {
+    if (!isImageTask(task) || !task.taskGroupId) {
       entries.push({ kind: 'single', key: `${task.type}-${task.id}`, task })
       continue
     }
@@ -95,11 +96,115 @@ function groupTasksForDisplay(items: UnifiedTask[]): TaskListEntry[] {
   })
 }
 
+function getGroupPreviewTileClass(count: number, index: number) {
+  if (count === 1) return 'col-span-2 row-span-2'
+  if (count === 2) return 'row-span-2'
+  if (count === 3 && index === 0) return 'row-span-2'
+  return ''
+}
+
+function TaskGroupCard({
+  taskGroupId,
+  tasks,
+  onOpen,
+}: {
+  taskGroupId: string
+  tasks: ImageTask[]
+  onOpen: () => void
+}) {
+  const t = useTranslations('tasks')
+  const previewTasks = tasks.slice(0, 4)
+  const leadTask = tasks[0]
+  const completedCount = tasks.filter((task) => task.status === 'completed').length
+  const totalCredits = tasks.reduce((sum, task) => sum + (task.creditsCost || 0), 0)
+  const title = leadTask.toolTitle || leadTask.prompt || t('group.untitled')
+
+  return (
+    <Card variant="glass" className="overflow-hidden p-0">
+      <button
+        type="button"
+        onClick={onOpen}
+        className="group block h-full w-full text-left transition-transform duration-300 hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-aurora-purple/40"
+        aria-label={t('group.openAria', { count: tasks.length })}
+      >
+        <div className="relative aspect-video overflow-hidden bg-stone-100 dark:bg-stone-800">
+          <div className="grid h-full grid-cols-2 grid-rows-2 gap-1 p-1">
+            {previewTasks.map((task, index) => {
+              const imageUrl = task.thumbnailUrl || task.resultUrl
+              return (
+                <div
+                  key={task.id}
+                  className={cn(
+                    'relative overflow-hidden rounded-lg bg-stone-200 dark:bg-stone-700',
+                    getGroupPreviewTileClass(previewTasks.length, index)
+                  )}
+                >
+                  {task.status === 'completed' && imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={imageUrl}
+                      alt={task.prompt || t('group.previewAlt')}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-stone-100 to-stone-200 dark:from-stone-800 dark:to-stone-700">
+                      <Images className="h-7 w-7 text-stone-400 dark:text-stone-500" />
+                    </div>
+                  )}
+                  {index === 3 && tasks.length > 4 ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-lg font-semibold text-white">
+                      +{tasks.length - 4}
+                    </div>
+                  ) : null}
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="absolute left-3 top-3 rounded-full border border-white/30 bg-black/55 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+            {t('group.imageCount', { count: tasks.length })}
+          </div>
+        </div>
+
+        <div className="space-y-3 p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="line-clamp-2 text-sm font-semibold leading-6 text-stone-950 transition-colors group-hover:text-aurora-purple dark:text-white dark:group-hover:text-aurora-pink">
+                {title}
+              </p>
+              <p className="mt-1 font-mono text-[11px] text-stone-500 dark:text-stone-400">
+                {taskGroupId}
+              </p>
+            </div>
+            <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-stone-400 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-aurora-purple dark:group-hover:text-aurora-pink" />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs text-stone-600 dark:text-stone-300">
+            <span className="rounded-full border border-stone-200 bg-white px-2.5 py-1 dark:border-stone-700 dark:bg-stone-900">
+              {t('group.completedCount', { completed: completedCount, count: tasks.length })}
+            </span>
+            <span className="rounded-full border border-stone-200 bg-white px-2.5 py-1 dark:border-stone-700 dark:bg-stone-900">
+              {t('info.cost')}: {totalCredits}
+            </span>
+            <span className="rounded-full border border-aurora-purple/20 bg-aurora-purple/10 px-2.5 py-1 text-aurora-purple dark:border-aurora-purple/30 dark:bg-aurora-purple/10 dark:text-aurora-pink">
+              {t('group.open')}
+            </span>
+          </div>
+        </div>
+      </button>
+    </Card>
+  )
+}
+
 export function TasksContent() {
   const t = useTranslations('tasks')
   const locale = useLocale()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user, isAuthenticated, isReady, requireAuth } = useAuth()
+  const taskGroupId = searchParams.get('groupId')?.trim() || ''
+  const isGroupView = Boolean(taskGroupId)
 
   const [tasks, setTasks] = useState<UnifiedTask[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -123,6 +228,12 @@ export function TasksContent() {
   useEffect(() => {
     pageRef.current = page
   }, [page])
+
+  useEffect(() => {
+    if (isGroupView) {
+      setActiveFilter('all')
+    }
+  }, [isGroupView, taskGroupId])
 
   const applyTaskUpdate = useCallback(
     (nextTask: UnifiedTask) => {
@@ -180,16 +291,51 @@ export function TasksContent() {
     [isAuthenticated, t, userId]
   )
 
+  const loadTaskGroup = useCallback(
+    async (options?: { silent?: boolean }) => {
+      if (!isAuthenticated || !taskGroupId || loadingRef.current) return
+      loadingRef.current = true
+      const silent = options?.silent ?? false
+
+      try {
+        if (!silent) {
+          setIsLoading(true)
+        }
+
+        const groupTasks = await tasksService.getImageGroup(taskGroupId)
+        setTasks(sortTasksByCreatedAtDesc(groupTasks))
+        setHasMore(false)
+        setPage(1)
+        setError(null)
+      } catch (err) {
+        console.error('[TasksContent] Failed to load task group:', err)
+        if (!silent || tasksRef.current.length === 0) {
+          setError(t('errors.loadGroup'))
+        }
+      } finally {
+        setIsLoading(false)
+        setIsLoadingMore(false)
+        loadingRef.current = false
+      }
+    },
+    [isAuthenticated, taskGroupId, t]
+  )
+
   const loadNextPage = useCallback(async () => {
-    if (!isAuthenticated || !hasMore || loadingRef.current) return
+    if (isGroupView || !isAuthenticated || !hasMore || loadingRef.current) return
     await loadTasks(pageRef.current + 1, true)
-  }, [hasMore, isAuthenticated, loadTasks])
+  }, [hasMore, isAuthenticated, isGroupView, loadTasks])
 
   // 等待 hydration 完成后再检查认证和加载数据
   useEffect(() => {
     if (!isReady) return
 
     if (requireAuth()) {
+      if (isGroupView) {
+        void loadTaskGroup()
+        return
+      }
+
       const cached = getTasksViewCache(userId, TASKS_CACHE_MAX_AGE_MS)
       if (cached) {
         setTasks(cached.tasks)
@@ -206,7 +352,7 @@ export function TasksContent() {
 
       void loadTasks(1, false)
     }
-  }, [isReady, loadTasks, requireAuth, userId])
+  }, [isGroupView, isReady, loadTaskGroup, loadTasks, requireAuth, userId])
 
   // 更新单个任务
   const updateTask = useCallback(
@@ -220,13 +366,17 @@ export function TasksContent() {
             ? await imageService.getTask(taskId)
             : await videoService.getTask(taskId)
 
+        if (isGroupView && (taskDetail.type !== 'image' || taskDetail.taskGroupId !== taskGroupId)) {
+          return
+        }
+
         // 更新任务列表中的对应任务
         applyTaskUpdate(taskDetail)
       } catch (error) {
         console.error('[TasksContent] 更新任务失败:', error)
       }
     },
-    [applyTaskUpdate]
+    [applyTaskUpdate, isGroupView, taskGroupId]
   )
 
   // 收件箱轮询 - 监听任务完成/失败消息
@@ -239,7 +389,7 @@ export function TasksContent() {
 
   // 底部哨兵触发加载更多，避免全局 scroll 监听带来的滚动卡顿
   useEffect(() => {
-    if (!hasMore || !isAuthenticated) return
+    if (isGroupView || !hasMore || !isAuthenticated) return
     const sentinel = loadMoreRef.current
     if (!sentinel) return
 
@@ -253,10 +403,10 @@ export function TasksContent() {
 
     observer.observe(sentinel)
     return () => observer.disconnect()
-  }, [hasMore, isAuthenticated, loadNextPage])
+  }, [hasMore, isAuthenticated, isGroupView, loadNextPage])
 
   useEffect(() => {
-    if (!hasMore || !isAuthenticated) return
+    if (isGroupView || !hasMore || !isAuthenticated) return
 
     let ticking = false
 
@@ -285,14 +435,29 @@ export function TasksContent() {
       window.removeEventListener('scroll', handleScroll)
       window.removeEventListener('resize', handleScroll)
     }
-  }, [hasMore, isAuthenticated, loadNextPage])
+  }, [hasMore, isAuthenticated, isGroupView, loadNextPage])
 
   // 过滤任务
   const filteredTasks = useMemo(
     () => (activeFilter === 'all' ? tasks : tasks.filter((task) => task.status === activeFilter)),
     [activeFilter, tasks],
   )
-  const taskEntries = useMemo(() => groupTasksForDisplay(filteredTasks), [filteredTasks])
+  const taskEntries = useMemo(
+    () =>
+      isGroupView
+        ? filteredTasks.map((task) => ({ kind: 'single' as const, key: `${task.type}-${task.id}`, task }))
+        : groupTasksForDisplay(filteredTasks),
+    [filteredTasks, isGroupView]
+  )
+
+  const handleRetryLoad = () => {
+    if (isGroupView) {
+      void loadTaskGroup()
+      return
+    }
+
+    void loadTasks(1, false)
+  }
 
   if (!isAuthenticated) {
     return (
@@ -319,8 +484,23 @@ export function TasksContent() {
           <section className="mb-2 flex flex-col gap-4 md:mb-4 md:flex-row md:items-end md:justify-between">
             <div className="space-y-2">
               <h1 className="text-3xl font-semibold tracking-tight text-stone-950 dark:text-white md:text-4xl">
-                {t('title')}
+                {isGroupView ? t('group.pageTitle') : t('title')}
               </h1>
+              {isGroupView ? (
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/${locale}/tasks`)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 bg-white px-3 py-1.5 text-xs font-medium text-stone-700 transition-colors hover:border-aurora-purple/35 hover:text-aurora-purple dark:border-stone-700 dark:bg-stone-950 dark:text-stone-300 dark:hover:border-aurora-purple/35 dark:hover:text-aurora-pink"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    {t('group.back')}
+                  </button>
+                  <span className="rounded-full border border-stone-200 bg-white px-3 py-1.5 font-mono text-[11px] text-stone-500 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-400">
+                    {taskGroupId}
+                  </span>
+                </div>
+              ) : null}
             </div>
 
             <div className="w-full md:max-w-md">
@@ -363,7 +543,7 @@ export function TasksContent() {
         ) : error ? (
           <Card className="text-center py-12">
             <p className="font-ui text-red-600 mb-4">{error}</p>
-            <Button onClick={() => loadTasks(1, false)} variant="secondary">
+            <Button onClick={handleRetryLoad} variant="secondary">
               重试
             </Button>
           </Card>
@@ -384,43 +564,14 @@ export function TasksContent() {
             <FadeIn variant="fade" delay={0.2}>
               <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 {taskEntries.map((entry, index) => (
-                  <div key={entry.key} className={entry.kind === 'group' ? 'xl:col-span-2' : undefined}>
+                  <div key={entry.key}>
                     <FadeIn variant="scale" delay={Math.min(index, 6) * 0.04}>
                       {entry.kind === 'group' ? (
-                        <div className="space-y-3">
-                          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200/80 pb-2 dark:border-stone-800/80">
-                            <div>
-                              <p className="text-sm font-semibold text-stone-900 dark:text-stone-100">
-                                {t('group.title', { count: entry.tasks.length })}
-                              </p>
-                              <p className="mt-0.5 font-mono text-[11px] text-stone-500 dark:text-stone-400">
-                                {entry.taskGroupId}
-                              </p>
-                            </div>
-                            <span className="rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-medium text-stone-600 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300">
-                              {t('group.badge')}
-                            </span>
-                          </div>
-                          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                            {entry.tasks.map((task) => (
-                              <TaskCard
-                                key={`${task.type}-${task.id}`}
-                                task={task}
-                                onUpdate={(nextTask) => {
-                                  if (nextTask) {
-                                    applyTaskUpdate(nextTask)
-                                    return
-                                  }
-                                  void updateTask(task.type, task.id)
-                                }}
-                                onDelete={() => {
-                                  setTasks((prev) => prev.filter((item) => !(item.type === task.type && item.id === task.id)))
-                                  removeTaskFromTasksViewCache(userId, task.type, task.id)
-                                }}
-                              />
-                            ))}
-                          </div>
-                        </div>
+                        <TaskGroupCard
+                          taskGroupId={entry.taskGroupId}
+                          tasks={entry.tasks}
+                          onOpen={() => router.push(`/${locale}/tasks?groupId=${encodeURIComponent(entry.taskGroupId)}`)}
+                        />
                       ) : entry.task.type === 'research' ? (
                         <ResearchTaskCard
                           task={entry.task}
@@ -461,7 +612,7 @@ export function TasksContent() {
               </div>
             )}
             {/* No More Data Message */}
-            {!hasMore && tasks.length > 0 && (
+            {!isGroupView && !hasMore && tasks.length > 0 && (
               <div className="text-center py-8">
                 <p className="font-ui text-sm text-stone-500">
                   已加载全部任务
@@ -471,7 +622,7 @@ export function TasksContent() {
           </>
         )}
 
-        {!isLoading && !error && hasMore && <div ref={loadMoreRef} className="h-1 w-full" aria-hidden="true" />}
+        {!isGroupView && !isLoading && !error && hasMore && <div ref={loadMoreRef} className="h-1 w-full" aria-hidden="true" />}
       </div>
     </PageTransition>
   )

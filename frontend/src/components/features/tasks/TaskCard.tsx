@@ -26,6 +26,48 @@ interface TaskCardProps {
   onDelete?: () => void
 }
 
+type KnownImageFailureStatusCode = 429 | 503 | 524
+
+const imageFailureMessageKeys: Record<KnownImageFailureStatusCode, 'formatOrBusy' | 'channel' | 'timeout'> = {
+  429: 'formatOrBusy',
+  503: 'channel',
+  524: 'timeout',
+}
+
+function normalizeImageFailureStatusCode(value: unknown): KnownImageFailureStatusCode | null {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value === 429 || value === 503 || value === 524 ? value : null
+  }
+
+  if (typeof value !== 'string') return null
+  const text = value.trim()
+  if (!text) return null
+
+  const exact = Number(text)
+  if (Number.isFinite(exact) && (exact === 429 || exact === 503 || exact === 524)) {
+    return exact
+  }
+
+  const match = text.match(/\b(429|503|524)\b/)
+  if (!match) return null
+  return Number(match[1]) as KnownImageFailureStatusCode
+}
+
+function extractImageFailureStatusCode(task: ApiTask): KnownImageFailureStatusCode | null {
+  const explicitCode = normalizeImageFailureStatusCode(task.failureStatusCode)
+  if (explicitCode) return explicitCode
+
+  const errorMessage = task.errorMessage?.trim()
+  if (errorMessage && /^task timeout$/i.test(errorMessage)) return 524
+
+  return normalizeImageFailureStatusCode(errorMessage)
+}
+
+function isSensitiveWordFailure(task: ApiTask) {
+  if (task.failureReason === 'sensitive_word') return true
+  return task.errorMessage?.toLowerCase().includes('triggering') === true
+}
+
 export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
   const t = useTranslations('tasks')
   const locale = useLocale()
@@ -62,6 +104,18 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
   const isMjActionPending = pendingMjActionId !== null
   const canRegenerateImageTask =
     task.type === 'image' && (task.status === 'completed' || task.status === 'failed')
+  const imageFailureStatusCode =
+    task.status === 'failed' && task.type === 'image' ? extractImageFailureStatusCode(task) : null
+  const isImageSensitiveWordFailure =
+    task.status === 'failed' && task.type === 'image' && isSensitiveWordFailure(task)
+  const failureMessage =
+    task.status === 'failed'
+      ? isImageSensitiveWordFailure
+        ? t('failure.image.sensitiveWord')
+        : imageFailureStatusCode
+        ? t(`failure.image.${imageFailureMessageKeys[imageFailureStatusCode]}`)
+        : t('failure.generic')
+      : null
 
   useEffect(() => {
     return () => {
@@ -563,10 +617,10 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
           )}
 
           {/* 错误信息 */}
-          {task.status === 'failed' && (
+          {failureMessage && (
             <div className="mb-3 p-2 bg-red-50 rounded-lg">
               <p className="font-ui text-xs text-red-600">
-                任务失败，请重试或者联系管理员
+                {failureMessage}
               </p>
             </div>
           )}

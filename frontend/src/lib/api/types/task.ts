@@ -38,6 +38,8 @@ export interface ApiTask {
   publicModeratedBy: string | null
   publicModerationNote: string | null
   errorMessage: string | null
+  failureStatusCode?: number | null
+  failureReason?: 'sensitive_word' | null
   retryCount: number
   startedAt: string | null
   completedAt: string | null

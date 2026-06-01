@@ -3,6 +3,7 @@ import { ImageTask, PublicModerationStatus, VideoTask } from '@prisma/client';
 import { serializeUserFacingProviderData } from './user-provider-data.serializer';
 
 export type ApiTaskType = 'image' | 'video';
+export type ApiTaskFailureReason = 'sensitive_word';
 
 export type ApiTask = {
   type: ApiTaskType;
@@ -32,6 +33,8 @@ export type ApiTask = {
   publicModeratedBy: string | null;
   publicModerationNote: string | null;
   errorMessage: string | null;
+  failureStatusCode: number | null;
+  failureReason: ApiTaskFailureReason | null;
   retryCount: number;
   startedAt: Date | null;
   completedAt: Date | null;
@@ -48,9 +51,91 @@ export type ApiTaskLite = Omit<ApiTask, 'parameters'>;
 
 type WithOptionalTool = { tool?: { title: string } | null };
 
+const KNOWN_FAILURE_STATUS_CODES = new Set([429, 503, 524]);
+
 function toJsonObject(value: unknown): Record<string, unknown> | null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   return value as Record<string, unknown>;
+}
+
+function normalizeKnownFailureStatusCode(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return KNOWN_FAILURE_STATUS_CODES.has(value) ? value : null;
+  }
+
+  if (typeof value !== 'string') return null;
+  const text = value.trim();
+  if (!text) return null;
+
+  const exact = Number(text);
+  if (Number.isFinite(exact) && KNOWN_FAILURE_STATUS_CODES.has(exact)) {
+    return exact;
+  }
+
+  const match = text.match(/\b(429|503|524)\b/);
+  return match ? Number(match[1]) : null;
+}
+
+function extractKnownFailureStatusCode(value: unknown, depth = 0): number | null {
+  const direct = normalizeKnownFailureStatusCode(value);
+  if (direct !== null) return direct;
+  if (depth >= 5 || !value || typeof value !== 'object') return null;
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const nested = extractKnownFailureStatusCode(item, depth + 1);
+      if (nested !== null) return nested;
+    }
+    return null;
+  }
+
+  const source = value as Record<string, unknown>;
+  const preferredKeys = ['status_code', 'statusCode', 'http_status', 'httpStatus', 'code', 'status'];
+  for (const key of preferredKeys) {
+    if (!(key in source)) continue;
+    const code = normalizeKnownFailureStatusCode(source[key]);
+    if (code !== null) return code;
+  }
+
+  for (const nestedValue of Object.values(source)) {
+    const nested = extractKnownFailureStatusCode(nestedValue, depth + 1);
+    if (nested !== null) return nested;
+  }
+
+  return null;
+}
+
+function containsTriggeringFailure(value: unknown, depth = 0): boolean {
+  if (typeof value === 'string') return value.toLowerCase().includes('triggering');
+  if (depth >= 5 || !value || typeof value !== 'object') return false;
+
+  if (Array.isArray(value)) {
+    return value.some((item) => containsTriggeringFailure(item, depth + 1));
+  }
+
+  return Object.values(value as Record<string, unknown>).some((nestedValue) =>
+    containsTriggeringFailure(nestedValue, depth + 1),
+  );
+}
+
+function getFailureStatusCode(task: Pick<ImageTask | VideoTask, 'status' | 'errorMessage' | 'providerData'>) {
+  if (task.status !== 'failed') return null;
+
+  const providerStatusCode = extractKnownFailureStatusCode(task.providerData);
+  if (providerStatusCode !== null) return providerStatusCode;
+
+  const errorMessage = task.errorMessage?.trim();
+  if (errorMessage && /^task timeout$/i.test(errorMessage)) return 524;
+
+  return extractKnownFailureStatusCode(errorMessage);
+}
+
+function getFailureReason(task: Pick<ImageTask | VideoTask, 'status' | 'errorMessage' | 'providerData'>): ApiTaskFailureReason | null {
+  if (task.status !== 'failed') return null;
+  if (containsTriggeringFailure(task.errorMessage) || containsTriggeringFailure(task.providerData)) {
+    return 'sensitive_word';
+  }
+  return null;
 }
 
 function normalizePublicModerationStatus(
@@ -94,6 +179,8 @@ export function serializeImageTask(task: ImageTask & WithOptionalTool): ApiTask 
     publicModeratedBy: task.publicModeratedBy ?? null,
     publicModerationNote: task.publicModerationNote ?? null,
     errorMessage: task.errorMessage ?? null,
+    failureStatusCode: getFailureStatusCode(task),
+    failureReason: getFailureReason(task),
     retryCount: task.retryCount,
     startedAt: task.startedAt ?? null,
     completedAt: task.completedAt ?? null,
@@ -138,6 +225,8 @@ export function serializeVideoTask(
     publicModeratedBy: task.publicModeratedBy ?? null,
     publicModerationNote: task.publicModerationNote ?? null,
     errorMessage: task.errorMessage ?? null,
+    failureStatusCode: getFailureStatusCode(task),
+    failureReason: getFailureReason(task),
     retryCount: task.retryCount,
     startedAt: task.startedAt ?? null,
     completedAt: task.completedAt ?? null,
@@ -181,6 +270,8 @@ export function serializeImageTaskLite(task: ImageTask & WithOptionalTool): ApiT
     publicModeratedBy: task.publicModeratedBy ?? null,
     publicModerationNote: task.publicModerationNote ?? null,
     errorMessage: task.errorMessage ?? null,
+    failureStatusCode: getFailureStatusCode(task),
+    failureReason: getFailureReason(task),
     retryCount: task.retryCount,
     startedAt: task.startedAt ?? null,
     completedAt: task.completedAt ?? null,
@@ -221,6 +312,8 @@ export function serializeVideoTaskLite(task: VideoTask & WithOptionalTool): ApiT
     publicModeratedBy: task.publicModeratedBy ?? null,
     publicModerationNote: task.publicModerationNote ?? null,
     errorMessage: task.errorMessage ?? null,
+    failureStatusCode: getFailureStatusCode(task),
+    failureReason: getFailureReason(task),
     retryCount: task.retryCount,
     startedAt: task.startedAt ?? null,
     completedAt: task.completedAt ?? null,
