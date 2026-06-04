@@ -149,18 +149,12 @@ export function RegisterAuthContent({
       }
 
       if (errorMessage.includes('invite-only') || errorMessage.includes('仅允许通过邀请码注册')) {
-        setErrors({
-          general: tErrors('inviteCodeRequired'),
-          inviteCode: tErrors('inviteCodeRequired'),
-        })
+        setErrors({ general: tErrors('inviteCodeRequired') })
         return
       }
 
       if (errorMessage.includes('invite code') || errorMessage.includes('邀请码')) {
-        setErrors({
-          general: tErrors('invalidInviteCode'),
-          inviteCode: tErrors('invalidInviteCode'),
-        })
+        setErrors({ general: tErrors('invalidInviteCode') })
         return
       }
 

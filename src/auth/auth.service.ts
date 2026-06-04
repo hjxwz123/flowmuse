@@ -34,6 +34,111 @@ type JwtActionPayload = {
   action: JwtAction;
 };
 
+type AuthEmailTemplateParams = {
+  title: string;
+  subtitle: string;
+  body: string;
+  buttonLabel: string;
+  link: string;
+  footerName: string;
+  note: string;
+  warning?: string;
+};
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderAuthEmailTemplate(params: AuthEmailTemplateParams) {
+  const currentYear = new Date().getFullYear();
+  const title = escapeHtml(params.title);
+  const subtitle = escapeHtml(params.subtitle);
+  const body = escapeHtml(params.body);
+  const buttonLabel = escapeHtml(params.buttonLabel);
+  const link = escapeHtml(params.link);
+  const footerName = escapeHtml(params.footerName || 'FlowMuse');
+  const note = escapeHtml(params.note);
+  const warning = params.warning ? escapeHtml(params.warning) : '';
+
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+</head>
+<body style="margin:0; padding:0; background-color:#F3F4F6; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#F5F6FF; padding:40px 0;">
+    <tr>
+      <td align="center" style="padding:0 16px;">
+        <table width="90%" border="0" cellspacing="0" cellpadding="0" style="width:90%; max-width:580px; background-color:#ffffff; border-radius:16px; box-shadow:0 10px 25px rgba(165,180,252,0.15); overflow:hidden;">
+          <tr>
+            <td height="6" style="height:6px; background:linear-gradient(90deg,#3B82F6 0%,#4F46E5 100%); background-color:#4F46E5; font-size:0; line-height:0;">&nbsp;</td>
+          </tr>
+          <tr>
+            <td style="padding:40px 40px 30px 40px;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td style="font-size:24px; font-weight:700; color:#1F2937; letter-spacing:-0.5px;">
+                    ${title}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-size:14px; color:#9CA3AF; padding-top:4px; padding-bottom:30px;">
+                    ${subtitle}
+                  </td>
+                </tr>
+              </table>
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td style="font-size:16px; color:#4B5563; line-height:1.6; padding-bottom:30px;">
+                    ${body}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="left" style="padding-bottom:30px;">
+                    <a href="${link}" target="_blank" style="background:linear-gradient(135deg,#3B82F6 0%,#4F46E5 100%); background-color:#4F46E5; color:#ffffff; display:inline-block; padding:12px 32px; font-size:16px; font-weight:600; text-decoration:none; border-radius:8px; box-shadow:0 4px 12px rgba(79,70,229,0.3);">
+                      ${buttonLabel} &rarr;
+                    </a>
+                  </td>
+                </tr>
+                ${warning ? `<tr>
+                  <td style="font-size:14px; color:#EF4444; font-weight:500; padding-bottom:20px;">
+                    * ${warning}
+                  </td>
+                </tr>` : ''}
+                <tr>
+                  <td style="font-size:13px; color:#9CA3AF; line-height:1.5; border-top:1px solid #F3F4F6; padding-top:20px;">
+                    如果按钮无法点击，请复制以下链接粘贴至浏览器地址栏：<br>
+                    <a href="${link}" target="_blank" style="color:#4F46E5; text-decoration:none; word-break:break-all; overflow-wrap:anywhere;">${link}</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-size:13px; color:#9CA3AF; padding-top:10px;">
+                    * ${note}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#FAF5FF; padding:20px 40px; text-align:center; font-size:12px; color:#9CA3AF;">
+              © ${currentYear} ${footerName}. 保留所有权利。
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -97,8 +202,8 @@ export class AuthService {
     return this.config.get<string>('FRONTEND_URL') ?? '';
   }
 
-  private async enqueueEmail(to: string, subject: string, text: string) {
-    await this.emailQueue.add('send', { to, subject, text });
+  private async enqueueEmail(to: string, subject: string, text: string, html?: string) {
+    await this.emailQueue.add('send', { to, subject, text, html });
   }
 
   private async verifyTurnstileIfEnabled(token: string | undefined, req?: Request) {
@@ -398,7 +503,21 @@ export class AuthService {
       // 注册后不返回 tokens，用户需要先验证邮箱
       const verifyEmailToken = await this.issueActionToken(user.id, 'verify_email', '1d');
       const verifyLink = this.frontendUrl() ? `${this.frontendUrl()}/auth/verify-email?token=${encodeURIComponent(verifyEmailToken)}` : verifyEmailToken;
-      await this.enqueueEmail(user.email, 'Verify your email', `Please verify your email:\n${verifyLink}\n`);
+      const emailBrandName = publicSettings.siteTitle || 'FlowMuse';
+      await this.enqueueEmail(
+        user.email,
+        `激活您的 ${emailBrandName} 账号`,
+        `您好！感谢您注册 ${emailBrandName}。请点击以下链接确认您的邮箱地址：\n${verifyLink}\n\n此链接将在 24 小时内有效。如果您并未注册此账号，请忽略此邮件。\n`,
+        renderAuthEmailTemplate({
+          title: '欢迎加入',
+          subtitle: '加入我们，释放无限创意',
+          body: `您好！感谢您注册 ${emailBrandName}。为了保障您的账号安全并完成激活，请点击下方按钮确认您的邮箱地址：`,
+          buttonLabel: '激活账号',
+          link: verifyLink,
+          footerName: emailBrandName,
+          note: '此链接将在 24 小时内有效。如果您并未注册此账号，请忽略此邮件。',
+        }),
+      );
 
       return {
         user: {
@@ -565,7 +684,23 @@ export class AuthService {
 
     const resetToken = await this.issueActionToken(user.id, 'reset_password', '30m');
     const resetLink = this.frontendUrl() ? `${this.frontendUrl()}/auth/reset-password?token=${encodeURIComponent(resetToken)}` : resetToken;
-    await this.enqueueEmail(user.email, 'Reset your password', `Reset your password:\n${resetLink}\n`);
+    const publicSettings = await this.settings.getPublicSettings();
+    const emailBrandName = publicSettings.siteTitle || 'FlowMuse';
+    await this.enqueueEmail(
+      user.email,
+      `${emailBrandName} 密码重置请求`,
+      `您好！我们收到了重置您账号密码的请求。请点击以下链接设置新密码：\n${resetLink}\n\n如果您并未申请重置密码，请忽略此邮件，您的密码将保持不变。\n此链接将在 30 分钟内有效。\n`,
+      renderAuthEmailTemplate({
+        title: '重置密码请求',
+        subtitle: '安全与账号保护',
+        body: '您好！我们收到了重置您账号密码的请求。请点击下方按钮设置新密码：',
+        buttonLabel: '重置密码',
+        link: resetLink,
+        footerName: emailBrandName,
+        warning: '如果您并未申请重置密码，请忽略此邮件，您的密码将保持不变。',
+        note: '此链接将在 30 分钟内有效。',
+      }),
+    );
 
     return { ok: true, resetToken: process.env.NODE_ENV === 'production' ? undefined : resetToken };
   }
