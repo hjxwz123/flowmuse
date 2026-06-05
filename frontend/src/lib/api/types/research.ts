@@ -4,7 +4,7 @@ export interface ApiResearchTask {
   type: 'research'
   id: string
   userId: string
-  modelId: string
+  modelId: string | null
   modelName: string | null
   channelId: string
   taskNo: string

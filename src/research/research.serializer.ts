@@ -4,7 +4,7 @@ export type ApiResearchTask = {
   type: 'research';
   id: string;
   userId: string;
-  modelId: string;
+  modelId: string | null;
   modelName: string | null;
   channelId: string;
   taskNo: string;
@@ -49,7 +49,7 @@ export function serializeResearchTask(
     type: 'research',
     id: task.id.toString(),
     userId: task.userId.toString(),
-    modelId: task.modelId.toString(),
+    modelId: task.modelId?.toString() ?? null,
     modelName: task.model?.name ?? null,
     channelId: task.channelId.toString(),
     taskNo: task.taskNo,

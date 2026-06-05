@@ -197,7 +197,7 @@ export class AdminTasksService {
         task: {
           ...serializeResearchTask(task),
           prompt: task.topic,
-          provider: task.model.provider,
+          provider: task.model?.provider ?? null,
           providerTaskId: null,
           negativePrompt: null,
           resultUrl: null,

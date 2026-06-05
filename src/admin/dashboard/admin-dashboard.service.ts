@@ -223,6 +223,7 @@ export class AdminDashboardService {
       allModelUsage.set(item.modelId, current + count);
     }
     for (const item of researchModels) {
+      if (item.modelId === null) continue;
       const current = allModelUsage.get(item.modelId) || 0;
       const count = typeof item._count === 'object' && item._count._all ? item._count._all : 0;
       allModelUsage.set(item.modelId, current + count);

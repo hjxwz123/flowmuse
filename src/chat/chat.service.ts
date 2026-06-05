@@ -144,6 +144,29 @@ type WebSearchProgress = {
   totalArticles?: number;
 };
 
+type ConversationModelSummary = {
+  id: bigint;
+  name: string;
+  icon: string | null;
+  type: AiModelType;
+  supportsImageInput: boolean | null;
+  isActive: boolean;
+};
+
+type ConversationModelWithChannel = AiModel & {
+  channel: {
+    baseUrl: string;
+    apiKey: string | null;
+    extraHeaders: Prisma.JsonValue | null;
+    timeout: number;
+    status: ApiChannelStatus;
+  };
+};
+
+type ConversationWithChannel = Awaited<ReturnType<ChatService['requireConversationWithChannelRaw']>> & {
+  model: ConversationModelWithChannel;
+};
+
 type ChatModerationCheckResult = {
   passed: boolean;
   reason: string | null;
@@ -259,7 +282,6 @@ export class ChatService {
     const keyword = this.normalizeSearchKeyword(q);
     const where: Prisma.ChatConversationWhereInput = {
       userId,
-      model: { is: { type: AiModelType.chat } },
     };
 
     if (keyword) {
@@ -363,7 +385,7 @@ export class ChatService {
 
     if (dto.modelId !== undefined) {
       const nextModelId = this.parseBigInt(dto.modelId, 'modelId');
-      if (nextModelId !== conversation.model.id) {
+      if (nextModelId !== conversation.model?.id) {
         const nextModel = await this.prisma.aiModel.findFirst({
           where: {
             id: nextModelId,
@@ -659,9 +681,6 @@ export class ChatService {
       throw new BadRequestException('Media Agent and Auto Project Agent cannot be enabled together');
     }
 
-    if (mediaAgent?.enabled && fileIds.length > 0) {
-      throw new BadRequestException('Media Agent does not support file attachments');
-    }
     if (autoProjectAgent?.enabled && (images.length > 0 || fileIds.length > 0)) {
       throw new BadRequestException('Auto Project Agent does not support direct attachments');
     }
@@ -684,14 +703,11 @@ export class ChatService {
     let projectActionSystemMessage = '';
     let mergedCitations: ChatCitation[] = [];
 
-    if (!mediaAgent?.enabled && !autoProjectAgent?.enabled) {
+    if (!autoProjectAgent?.enabled) {
       const chatFileSettings = await this.getChatFileRuntimeSettings();
       if (fileIds.length > 0 && !chatFileSettings.enabled) {
         throw new BadRequestException('管理员已关闭聊天文件上传功能');
       }
-      const webSearchSettings = await this.getWebSearchRuntimeSettings();
-      const shouldUseWebSearch = await this.resolveShouldUseWebSearch(content, dto.webSearch, webSearchSettings);
-
       const builtFileContext = await this.buildFileContext({
         userId,
         conversationId,
@@ -699,19 +715,24 @@ export class ChatService {
         query: content,
         settings: chatFileSettings,
       });
-      const builtWebContext = await this.buildWebSearchContext({
-        query: content,
-        fileContext: builtFileContext.systemMessage,
-        shouldUse: shouldUseWebSearch,
-        explicitRequested: dto.webSearch === true,
-        settings: webSearchSettings,
-      });
-
       fileContext.systemMessage = builtFileContext.systemMessage;
       fileContext.attachments = builtFileContext.attachments;
       fileContext.citations = builtFileContext.citations;
-      webContext.systemMessage = builtWebContext.systemMessage;
-      webContext.citations = builtWebContext.citations;
+
+      if (!mediaAgent?.enabled) {
+        const webSearchSettings = await this.getWebSearchRuntimeSettings();
+        const shouldUseWebSearch = await this.resolveShouldUseWebSearch(content, dto.webSearch, webSearchSettings);
+        const builtWebContext = await this.buildWebSearchContext({
+          query: content,
+          fileContext: builtFileContext.systemMessage,
+          shouldUse: shouldUseWebSearch,
+          explicitRequested: dto.webSearch === true,
+          settings: webSearchSettings,
+        });
+        webContext.systemMessage = builtWebContext.systemMessage;
+        webContext.citations = builtWebContext.citations;
+      }
+
       projectContextSystemMessage = await this.buildConversationProjectContextSystemMessage(
         userId,
         conversation.projectContext?.id ?? null,
@@ -719,7 +740,7 @@ export class ChatService {
       projectActionSystemMessage = projectContextSystemMessage
         ? this.buildProjectPromptActionSystemMessage(conversation.projectContext?.name ?? null)
         : '';
-      mergedCitations = [...builtFileContext.citations, ...builtWebContext.citations];
+      mergedCitations = [...fileContext.citations, ...webContext.citations];
     }
 
     const dailyQuestionQuota = await this.assertDailyQuestionLimit(userId, conversation.model.id, {
@@ -784,13 +805,15 @@ export class ChatService {
         : await this.requestChatCompletion(
             conversation,
             this.injectSystemContextIntoUpstream(
-              this.toUpstreamMessages(recentMessages, {
+              await this.toUpstreamMessages(recentMessages, {
                 includeImages: supportsImageInput,
+                includeFilePromptContext: true,
+                userId,
+                conversationId,
               }),
               conversation.model.systemPrompt,
               projectContextSystemMessage,
               projectActionSystemMessage,
-              fileContext.systemMessage,
               webContext.systemMessage,
             ),
           );
@@ -1174,9 +1197,6 @@ export class ChatService {
         throw new BadRequestException('Media Agent and Auto Project Agent cannot be enabled together');
       }
 
-      if (mediaAgent?.enabled && fileIds.length > 0) {
-        throw new BadRequestException('Media Agent does not support file attachments');
-      }
       if (autoProjectAgent?.enabled && (images.length > 0 || fileIds.length > 0)) {
         throw new BadRequestException('Auto Project Agent does not support direct attachments');
       }
@@ -1200,13 +1220,11 @@ export class ChatService {
       let mergedCitations: ChatCitation[] = [];
       let shouldUseWebSearch = false;
 
-      if (!mediaAgent?.enabled && !autoProjectAgent?.enabled) {
+      if (!autoProjectAgent?.enabled) {
         const chatFileSettings = await this.getChatFileRuntimeSettings();
         if (fileIds.length > 0 && !chatFileSettings.enabled) {
           throw new BadRequestException('管理员已关闭聊天文件上传功能');
         }
-        const webSearchSettings = await this.getWebSearchRuntimeSettings();
-        shouldUseWebSearch = await this.resolveShouldUseWebSearch(content, dto.webSearch, webSearchSettings);
         const builtFileContext = await this.buildFileContext({
           userId,
           conversationId,
@@ -1214,30 +1232,35 @@ export class ChatService {
           query: content,
           settings: chatFileSettings,
         });
-        const builtWebContext = await this.buildWebSearchContext({
-          query: content,
-          fileContext: builtFileContext.systemMessage,
-          shouldUse: shouldUseWebSearch,
-          explicitRequested: dto.webSearch === true,
-          settings: webSearchSettings,
-          onProgress: (progress) => {
-            sendSse({
-              type: 'status',
-              stage: progress.stage,
-              message: progress.message,
-              searchedQueries: progress.searchedQueries,
-              totalQueries: progress.totalQueries,
-              searchedArticles: progress.searchedArticles,
-              totalArticles: progress.totalArticles,
-            });
-          },
-        });
-
         fileContext.systemMessage = builtFileContext.systemMessage;
         fileContext.attachments = builtFileContext.attachments;
         fileContext.citations = builtFileContext.citations;
-        webContext.systemMessage = builtWebContext.systemMessage;
-        webContext.citations = builtWebContext.citations;
+
+        if (!mediaAgent?.enabled) {
+          const webSearchSettings = await this.getWebSearchRuntimeSettings();
+          shouldUseWebSearch = await this.resolveShouldUseWebSearch(content, dto.webSearch, webSearchSettings);
+          const builtWebContext = await this.buildWebSearchContext({
+            query: content,
+            fileContext: builtFileContext.systemMessage,
+            shouldUse: shouldUseWebSearch,
+            explicitRequested: dto.webSearch === true,
+            settings: webSearchSettings,
+            onProgress: (progress) => {
+              sendSse({
+                type: 'status',
+                stage: progress.stage,
+                message: progress.message,
+                searchedQueries: progress.searchedQueries,
+                totalQueries: progress.totalQueries,
+                searchedArticles: progress.searchedArticles,
+                totalArticles: progress.totalArticles,
+              });
+            },
+          });
+          webContext.systemMessage = builtWebContext.systemMessage;
+          webContext.citations = builtWebContext.citations;
+        }
+
         projectContextSystemMessage = await this.buildConversationProjectContextSystemMessage(
           userId,
           conversation.projectContext?.id ?? null,
@@ -1245,7 +1268,7 @@ export class ChatService {
         projectActionSystemMessage = projectContextSystemMessage
           ? this.buildProjectPromptActionSystemMessage(conversation.projectContext?.name ?? null)
           : '';
-        mergedCitations = [...builtFileContext.citations, ...builtWebContext.citations];
+        mergedCitations = [...fileContext.citations, ...webContext.citations];
       }
 
       const dailyQuestionQuota = await this.assertDailyQuestionLimit(userId, conversation.model.id, {
@@ -1361,13 +1384,15 @@ export class ChatService {
           : await this.requestChatCompletionStream(
               conversation,
               this.injectSystemContextIntoUpstream(
-                this.toUpstreamMessages(recentMessages, {
+                await this.toUpstreamMessages(recentMessages, {
                   includeImages: supportsImageInput,
+                  includeFilePromptContext: true,
+                  userId,
+                  conversationId,
                 }),
                 conversation.model.systemPrompt,
                 projectContextSystemMessage,
                 projectActionSystemMessage,
-                fileContext.systemMessage,
                 webContext.systemMessage,
               ),
               (chunk) => {
@@ -2181,14 +2206,31 @@ export class ChatService {
     return 'Upstream provider returned an error';
   }
 
-  private toUpstreamMessages(
-    messages: Array<{ role: ChatMessageRole; content: string; images: Prisma.JsonValue | null; files?: Prisma.JsonValue | null }>,
-    options?: { includeImages?: boolean },
+  private async toUpstreamMessages(
+    messages: Array<{
+      role: ChatMessageRole;
+      content: string;
+      images: Prisma.JsonValue | null;
+      files?: Prisma.JsonValue | null;
+    }>,
+    options?: {
+      includeImages?: boolean;
+      includeFilePromptContext?: boolean;
+      userId?: bigint;
+      conversationId?: bigint;
+    },
   ) {
     const includeImages = options?.includeImages !== false;
+    const includeFilePromptContext = options?.includeFilePromptContext === true;
+    const filePromptContextByMessageIndex = includeFilePromptContext
+      ? await this.resolveMessageFilePromptContexts(messages, {
+          userId: options?.userId,
+          conversationId: options?.conversationId,
+        })
+      : new Map<number, string>();
 
     return messages
-      .map((msg): UpstreamMessage | null => {
+      .map((msg, index): UpstreamMessage | null => {
         const role = msg.role as UpstreamMessage['role'];
 
         if (role !== 'assistant' && role !== 'system' && role !== 'user') return null;
@@ -2200,13 +2242,16 @@ export class ChatService {
           };
         }
 
+        const userContent = includeFilePromptContext
+          ? this.buildUserPromptWithAttachedFileContext(msg.content, filePromptContextByMessageIndex.get(index) ?? '')
+          : msg.content;
         const images = includeImages ? this.extractImages(msg.images) : [];
         if (!includeImages) {
-          const plainText = msg.content.trim();
+          const plainText = userContent.trim();
           if (plainText) {
             return {
               role,
-              content: msg.content,
+              content: userContent,
             };
           }
 
@@ -2230,7 +2275,7 @@ export class ChatService {
         }
 
         if (images.length === 0) {
-          const plainText = msg.content.trim();
+          const plainText = userContent.trim();
           if (!plainText) {
             const fileCount = this.extractMessageFiles(msg.files ?? null).length;
             if (fileCount > 0) {
@@ -2245,13 +2290,13 @@ export class ChatService {
 
           return {
             role,
-            content: msg.content,
+            content: userContent,
           };
         }
 
         const parts: UpstreamMessagePart[] = [];
-        if (msg.content) {
-          parts.push({ type: 'text', text: msg.content });
+        if (userContent) {
+          parts.push({ type: 'text', text: userContent });
         }
 
         for (const image of images) {
@@ -2267,6 +2312,122 @@ export class ChatService {
         };
       })
       .filter((msg): msg is UpstreamMessage => Boolean(msg));
+  }
+
+  private async resolveMessageFilePromptContexts(
+    messages: Array<{
+      role: ChatMessageRole;
+      files?: Prisma.JsonValue | null;
+    }>,
+    options: {
+      userId?: bigint;
+      conversationId?: bigint;
+    },
+  ) {
+    const fileIdsByMessageIndex = new Map<number, string[]>();
+    const uniqueFileIds = new Map<string, bigint>();
+
+    messages.forEach((message, index) => {
+      if (message.role !== ChatMessageRole.user) return;
+
+      const ids: string[] = [];
+      for (const attachment of this.extractMessageFiles(message.files ?? null)) {
+        const parsedId = this.tryParsePositiveBigInt(attachment.id);
+        if (!parsedId) continue;
+
+        const key = parsedId.toString();
+        ids.push(key);
+        if (!uniqueFileIds.has(key)) {
+          uniqueFileIds.set(key, parsedId);
+        }
+      }
+
+      if (ids.length > 0) {
+        fileIdsByMessageIndex.set(index, ids);
+      }
+    });
+
+    if (uniqueFileIds.size === 0) {
+      return new Map<number, string>();
+    }
+
+    const files = await this.prisma.chatFile.findMany({
+      where: {
+        id: { in: Array.from(uniqueFileIds.values()) },
+        ...(options.userId ? { userId: options.userId } : {}),
+        ...(options.conversationId ? { conversationId: options.conversationId } : {}),
+        status: 'ready',
+      },
+      select: {
+        id: true,
+        fileName: true,
+        extractedText: true,
+      },
+    });
+    const fileById = new Map(files.map((file) => [file.id.toString(), file]));
+    const out = new Map<number, string>();
+
+    for (const [messageIndex, fileIds] of fileIdsByMessageIndex.entries()) {
+      const messageFiles = fileIds
+        .map((fileId) => fileById.get(fileId))
+        .filter((file): file is NonNullable<typeof file> => Boolean(file));
+      const filePromptContext = this.buildAttachedFilesPromptContext(messageFiles);
+      if (filePromptContext) {
+        out.set(messageIndex, filePromptContext);
+      }
+    }
+
+    return out;
+  }
+
+  private buildAttachedFilesPromptContext(files: Array<{
+    id: bigint;
+    fileName: string;
+    extractedText: string;
+  }>) {
+    const sections: string[] = [];
+
+    for (const file of files) {
+      const source = (file.extractedText || '').trim();
+      if (!source) continue;
+
+      const ref = `[F${file.id.toString()}]`;
+      sections.push(`${ref} ${normalizeUploadedFileName(file.fileName)}\n${source}`);
+    }
+
+    if (sections.length === 0) {
+      return '';
+    }
+
+    return [
+      '以下是用户本条消息上传的文件原始内容，请先阅读这些文件内容，再结合后面的用户提示词回答。',
+      '文件内容开始：',
+      ...sections,
+      '文件内容结束。',
+    ].join('\n\n');
+  }
+
+  private buildUserPromptWithAttachedFileContext(content: string, filePromptContext: string) {
+    const normalizedFileContext = (filePromptContext || '').trim();
+    if (!normalizedFileContext) return content;
+
+    const text = (content || '').trim();
+    return [
+      normalizedFileContext,
+      text ? `用户提示词：\n${text}` : '用户提示词：\n用户未输入额外文字，仅上传了以上文件。',
+    ].join('\n\n');
+  }
+
+  private tryParsePositiveBigInt(value: string): bigint | null {
+    const normalized = (value || '').trim();
+    if (!/^\d+$/.test(normalized)) return null;
+
+    try {
+      const parsed = BigInt(normalized);
+      return parsed > 0n ? parsed : null;
+    } catch {
+      return null;
+    }
   }
 
   private toImageUrl(value: string) {
@@ -4417,8 +4578,11 @@ export class ChatService {
       params.conversation.projectContext?.id ?? null,
     );
 
-    const upstreamMessages = this.toUpstreamMessages(params.recentMessages, {
+    const upstreamMessages = await this.toUpstreamMessages(params.recentMessages, {
       includeImages: Boolean(params.conversation.model.supportsImageInput),
+      includeFilePromptContext: true,
+      userId: params.userId,
+      conversationId: params.conversationId,
     });
     const completion = await this.requestChatCompletion(
       params.conversation,
@@ -5610,14 +5774,7 @@ export class ChatService {
       id: bigint;
       name: string;
     } | null;
-    model: {
-      id: bigint;
-      name: string;
-      icon: string | null;
-      type: AiModelType;
-      supportsImageInput: boolean | null;
-      isActive: boolean;
-    };
+    model: ConversationModelSummary | null;
     messages?: Array<{
       content: string;
       images: Prisma.JsonValue | null;
@@ -5631,14 +5788,16 @@ export class ChatService {
       id: conversation.id.toString(),
       title: conversation.title,
       isPinned: Boolean(conversation.isPinned),
-      model: {
-        id: conversation.model.id.toString(),
-        name: conversation.model.name,
-        icon: conversation.model.icon,
-        type: conversation.model.type,
-        supportsImageInput: Boolean(conversation.model.supportsImageInput),
-        isActive: conversation.model.isActive,
-      },
+      model: conversation.model
+        ? {
+            id: conversation.model.id.toString(),
+            name: conversation.model.name,
+            icon: conversation.model.icon,
+            type: conversation.model.type,
+            supportsImageInput: Boolean(conversation.model.supportsImageInput),
+            isActive: conversation.model.isActive,
+          }
+        : null,
       projectContext: conversation.projectContext
         ? {
             id: conversation.projectContext.id.toString(),
@@ -5724,7 +5883,6 @@ export class ChatService {
       where: {
         id: conversationId,
         userId,
-        model: { is: { type: AiModelType.chat } },
       },
       include: {
         model: {
@@ -5750,12 +5908,11 @@ export class ChatService {
     return conversation;
   }
 
-  private async requireConversationWithChannel(userId: bigint, conversationId: bigint) {
-    const conversation = await this.prisma.chatConversation.findFirst({
+  private async requireConversationWithChannelRaw(userId: bigint, conversationId: bigint) {
+    return this.prisma.chatConversation.findFirst({
       where: {
         id: conversationId,
         userId,
-        model: { is: { type: AiModelType.chat } },
       },
       include: {
         model: {
@@ -5771,8 +5928,13 @@ export class ChatService {
         },
       },
     });
+  }
 
+  private async requireConversationWithChannel(userId: bigint, conversationId: bigint): Promise<ConversationWithChannel> {
+    const conversation = await this.requireConversationWithChannelRaw(userId, conversationId);
     if (!conversation) throw new NotFoundException('Conversation not found');
-    return conversation;
+    const model = conversation.model;
+    if (!model) throw new BadRequestException('Conversation model has been deleted, please select another model');
+    return { ...conversation, model };
   }
 }

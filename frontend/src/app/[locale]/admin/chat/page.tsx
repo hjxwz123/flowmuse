@@ -42,6 +42,7 @@ export default function AdminChatPage() {
   const [detail, setDetail] = useState<AdminChatConversationDetailResponse | null>(null)
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
+  const deletedModelLabel = '模型已删除'
 
   const fetchList = useCallback(async () => {
     setLoadingList(true)
@@ -213,7 +214,7 @@ export default function AdminChatPage() {
                         <span>{formatDate(item.lastMessageAt)}</span>
                       </div>
                       <div className="mt-1 flex items-center justify-between text-[11px] text-stone-400 dark:text-stone-500">
-                        <span>{item.model.name}</span>
+                        <span>{item.model?.name ?? deletedModelLabel}</span>
                         <span>
                           {t('messageCount')}: {item.messageCount}
                         </span>
@@ -255,7 +256,7 @@ export default function AdminChatPage() {
                       <p className="text-xs text-stone-500 dark:text-stone-400">
                         {t('user')}: {activeConversation.user.username || activeConversation.user.email} | {t('model')}:
                         {' '}
-                        {activeConversation.model.name}
+                        {activeConversation.model?.name ?? deletedModelLabel}
                       </p>
                       <p className="text-xs text-stone-400 dark:text-stone-500">
                         {t('lastMessage')}: {formatDate(activeConversation.lastMessageAt)}

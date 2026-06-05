@@ -18,7 +18,7 @@ export interface ChatConversation {
   id: string
   title: string
   isPinned: boolean
-  model: ChatModelSummary
+  model: ChatModelSummary | null
   projectContext: ChatConversationProjectContext | null
   lastMessagePreview: string
   lastMessageAt: string

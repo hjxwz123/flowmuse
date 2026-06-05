@@ -19,7 +19,7 @@ export interface AdminChatConversationItem {
   title: string
   isPinned: boolean
   user: AdminChatConversationUser
-  model: AdminChatConversationModel
+  model: AdminChatConversationModel | null
   messageCount: number
   lastMessagePreview: string
   lastMessageAt: string
@@ -49,7 +49,7 @@ export interface AdminChatConversationDetail {
   title: string
   isPinned: boolean
   user: AdminChatConversationUser
-  model: AdminChatConversationModel
+  model: AdminChatConversationModel | null
   lastMessageAt: string
   createdAt: string
   updatedAt: string

@@ -149,6 +149,11 @@ export class ResearchProcessor extends WorkerHost {
     if (!task) return;
     if (task.status === TaskStatus.completed || task.status === TaskStatus.failed) return;
 
+    if (!task.model) {
+      await this.failTaskAndRefund(task, 'MODEL_REMOVED');
+      return;
+    }
+
     const model: RuntimeModel = {
       modelKey: task.model.modelKey,
       defaultParams: task.model.defaultParams,
@@ -223,7 +228,7 @@ export class ResearchProcessor extends WorkerHost {
           taskNo: task.taskNo,
           retryCount: task.retryCount,
           status: 'completed',
-          modelId: task.modelId.toString(),
+          modelId: task.modelId?.toString() ?? null,
           channelId: task.channelId.toString(),
           progress: 100,
           stage: 'completed',
@@ -274,13 +279,44 @@ export class ResearchProcessor extends WorkerHost {
           taskNo: task.taskNo,
           retryCount: task.retryCount,
           status: 'failed',
-          modelId: task.modelId.toString(),
+          modelId: task.modelId?.toString() ?? null,
           channelId: task.channelId.toString(),
           errorMessage: message,
           stage: 'failed',
         } satisfies Prisma.JsonObject,
       });
     }
+  }
+
+  private async failTaskAndRefund(
+    task: {
+      id: bigint;
+      userId: bigint;
+      taskNo: string;
+      status: TaskStatus;
+      progress: number;
+      creditsCost: number | null;
+    },
+    message: string,
+  ) {
+    await this.prisma.$transaction(async (tx) => {
+      await tx.researchTask.update({
+        where: { id: task.id },
+        data: {
+          status: TaskStatus.failed,
+          stage: 'failed',
+          progress: Math.max(task.progress, 1),
+          errorMessage: message,
+          completedAt: new Date(),
+        },
+      });
+
+      await this.credits.refundCredits(tx, task.userId, task.id, `Refund research task ${task.taskNo}`, {
+        scopeDescriptionContains: task.taskNo,
+        maxRefundAmount: typeof task.creditsCost === 'number' ? Math.max(task.creditsCost, 0) : undefined,
+      });
+    });
+    await this.publishResearchTaskUpdate(task.id);
   }
 
   private async updateTask(id: bigint, data: Prisma.ResearchTaskUpdateInput) {

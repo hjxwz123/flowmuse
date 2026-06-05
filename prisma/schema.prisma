@@ -605,7 +605,7 @@ model ProjectPrompt {
 model ResearchTask {
   id            BigInt     @id @default(autoincrement()) @db.BigInt
   userId        BigInt     @map("user_id") @db.BigInt
-  modelId       BigInt     @map("model_id") @db.BigInt
+  modelId       BigInt?    @map("model_id") @db.BigInt
   channelId     BigInt     @map("channel_id") @db.BigInt
   taskNo        String     @unique @map("task_no") @db.VarChar(64)
   topic         String     @db.Text
@@ -627,7 +627,7 @@ model ResearchTask {
   updatedAt     DateTime   @updatedAt @map("updated_at")
 
   user    User       @relation(fields: [userId], references: [id])
-  model   AiModel    @relation(fields: [modelId], references: [id])
+  model   AiModel?   @relation(fields: [modelId], references: [id], onDelete: SetNull)
   channel ApiChannel @relation(fields: [channelId], references: [id])
 
   @@index([userId, createdAt], name: "research_task_idx_user_time")
@@ -860,7 +860,7 @@ model UserMembershipSchedule {
 model ChatConversation {
   id            BigInt   @id @default(autoincrement()) @db.BigInt
   userId        BigInt   @map("user_id") @db.BigInt
-  modelId       BigInt   @map("model_id") @db.BigInt
+  modelId       BigInt?  @map("model_id") @db.BigInt
   projectContextId BigInt? @map("project_context_id") @db.BigInt
   title         String   @db.VarChar(200)
   isPinned      Boolean  @default(false) @map("is_pinned")
@@ -870,7 +870,7 @@ model ChatConversation {
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  model    AiModel     @relation(fields: [modelId], references: [id])
+  model    AiModel?    @relation(fields: [modelId], references: [id], onDelete: SetNull)
   projectContext Project? @relation(fields: [projectContextId], references: [id], onDelete: SetNull)
   messages ChatMessage[]
   files    ChatFile[]
@@ -907,7 +907,7 @@ model ChatModerationLog {
   id              BigInt           @id @default(autoincrement()) @db.BigInt
   userId          BigInt           @map("user_id") @db.BigInt
   conversationId  BigInt?          @map("conversation_id") @db.BigInt
-  modelId         BigInt           @map("model_id") @db.BigInt
+  modelId         BigInt?          @map("model_id") @db.BigInt
   content         String           @db.LongText
   reason          String?          @db.Text
   providerModel   String?          @map("provider_model") @db.VarChar(100)
@@ -916,7 +916,7 @@ model ChatModerationLog {
 
   user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   conversation ChatConversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
-  model        AiModel          @relation(fields: [modelId], references: [id])
+  model        AiModel?         @relation(fields: [modelId], references: [id], onDelete: SetNull)
 
   @@index([userId, createdAt], name: "chat_moderation_idx_user_time")
   @@index([conversationId, createdAt], name: "chat_moderation_idx_conv_time")

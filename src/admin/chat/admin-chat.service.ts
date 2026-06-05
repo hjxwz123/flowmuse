@@ -13,13 +13,7 @@ export class AdminChatService {
     const pageSize = Math.min(100, Math.max(1, query.pageSize ?? 20));
     const skip = (page - 1) * pageSize;
 
-    const where: Prisma.ChatConversationWhereInput = {
-      model: {
-        is: {
-          type: AiModelType.chat,
-        },
-      },
-    };
+    const where: Prisma.ChatConversationWhereInput = {};
 
     const userId = this.parseBigInt(query.userId, 'userId');
     if (userId !== null) {
@@ -101,15 +95,7 @@ export class AdminChatService {
             email: row.user.email,
             username: row.user.username,
           },
-          model: {
-            id: row.model.id.toString(),
-            name: row.model.name,
-            provider: row.model.provider,
-            modelKey: row.model.modelKey,
-            icon: row.model.icon,
-            type: row.model.type,
-            isActive: row.model.isActive,
-          },
+          model: row.model ? this.mapModel(row.model) : null,
           messageCount: row._count.messages,
           lastMessagePreview: this.buildPreviewText(latest?.content ?? '', latest?.images ?? null),
           lastMessageAt: latest?.createdAt ?? row.lastMessageAt,
@@ -126,11 +112,6 @@ export class AdminChatService {
     const conversation = await this.prisma.chatConversation.findFirst({
       where: {
         id: conversationId,
-        model: {
-          is: {
-            type: AiModelType.chat,
-          },
-        },
       },
       include: {
         user: {
@@ -173,15 +154,7 @@ export class AdminChatService {
           email: conversation.user.email,
           username: conversation.user.username,
         },
-        model: {
-          id: conversation.model.id.toString(),
-          name: conversation.model.name,
-          provider: conversation.model.provider,
-          modelKey: conversation.model.modelKey,
-          icon: conversation.model.icon,
-          type: conversation.model.type,
-          isActive: conversation.model.isActive,
-        },
+        model: conversation.model ? this.mapModel(conversation.model) : null,
         lastMessageAt: conversation.lastMessageAt,
         createdAt: conversation.createdAt,
         updatedAt: conversation.updatedAt,
@@ -204,11 +177,6 @@ export class AdminChatService {
     const conversation = await this.prisma.chatConversation.findFirst({
       where: {
         id: conversationId,
-        model: {
-          is: {
-            type: AiModelType.chat,
-          },
-        },
       },
       select: {
         id: true,
@@ -240,6 +208,26 @@ export class AdminChatService {
       return imageCount > 1 ? `[${imageCount} images]` : '[image]';
     }
     return '';
+  }
+
+  private mapModel(model: {
+    id: bigint;
+    name: string;
+    provider: string;
+    modelKey: string;
+    icon: string | null;
+    type: AiModelType;
+    isActive: boolean;
+  }) {
+    return {
+      id: model.id.toString(),
+      name: model.name,
+      provider: model.provider,
+      modelKey: model.modelKey,
+      icon: model.icon,
+      type: model.type,
+      isActive: model.isActive,
+    };
   }
 
   private extractImages(value: Prisma.JsonValue | null): string[] {

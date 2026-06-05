@@ -1457,9 +1457,9 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
   )
   const selectedAgentModelType = selectedAgentModel?.type === 'video' ? 'video' : 'image'
   const showAgentGenerationCount = selectedAgentModelType === 'image'
-  const researchModelId = activeConversation?.model.id || selectedModelId
+  const researchModelId = activeConversation?.model?.id || selectedModelId
 
-  const supportsImageUpload = activeConversation
+  const supportsImageUpload = activeConversation?.model
     ? Boolean(activeConversation.model.supportsImageInput)
     : Boolean(selectedModel?.supportsImageInput)
 
@@ -1511,7 +1511,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
 
   const canSend =
     (isImageMode
-      ? (composer.trim().length > 0 || agentReferences.length > 0) &&
+      ? (composer.trim().length > 0 || agentReferences.length > 0 || pendingFiles.length > 0) &&
         Boolean(selectedAgentModelId) &&
         Boolean(activeConversationId || selectedModelId)
       : isAutoMode
@@ -1557,10 +1557,11 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
     !isSwitchingModel &&
     !isUploadingFiles &&
     !isUploadingAgentReferences &&
-    selectedAgentSupportsContextEditing &&
-    (selectedAgentReferenceLimits.images > 0 ||
+    ((selectedAgentSupportsContextEditing &&
+      (selectedAgentReferenceLimits.images > 0 ||
       selectedAgentReferenceLimits.videos > 0 ||
-      selectedAgentReferenceLimits.audios > 0)
+        selectedAgentReferenceLimits.audios > 0)) ||
+      supportsFileUpload)
   const displayConversationTitle = useCallback(
     (value?: string | null) => {
       if (isPlaceholderConversationTitle(value)) return t('title')
@@ -1595,72 +1596,13 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
     },
   ]
   const agentUploadTileInfo = useMemo(() => {
-    const totalSlots =
-      selectedAgentReferenceLimits.images +
-      selectedAgentReferenceLimits.videos +
-      selectedAgentReferenceLimits.audios
-
-    if (
-      selectedAgentReferenceLimits.images > 0 &&
-      selectedAgentReferenceLimits.videos === 0 &&
-      selectedAgentReferenceLimits.audios === 0
-    ) {
-      return {
-        kind: 'image' as const,
-        label: t('menuUploadImage'),
-        meta: `${agentReferenceImages.length}/${selectedAgentEffectiveImageLimit}`,
-      }
-    }
-
-    if (
-      selectedAgentReferenceLimits.videos > 0 &&
-      selectedAgentReferenceLimits.images === 0 &&
-      selectedAgentReferenceLimits.audios === 0
-    ) {
-      return {
-        kind: 'video' as const,
-        label: isZh ? '上传视频' : 'Upload Video',
-        meta: `${agentReferenceVideos.length}/${selectedAgentEffectiveVideoLimit}`,
-      }
-    }
-
-    if (
-      selectedAgentReferenceLimits.audios > 0 &&
-      selectedAgentReferenceLimits.images === 0 &&
-      selectedAgentReferenceLimits.videos === 0
-    ) {
-      return {
-        kind: 'audio' as const,
-        label: isZh ? '上传音频' : 'Upload Audio',
-        meta: `${agentReferenceAudios.length}/${selectedAgentDisplayAudioLimit}`,
-      }
-    }
-
     return {
-      kind: 'multi' as const,
-      label: isZh ? '添加素材' : 'Add Media',
-      meta:
-        selectedAgentVisualReferenceLimit !== null
-          ? `${agentVisualReferenceCount}/${selectedAgentVisualReferenceLimit}`
-          : totalSlots > 0
-            ? `${agentReferences.length}/${totalSlots}`
-            : '',
+      label: isZh ? '上传' : 'Upload',
+      meta: pendingFiles.length > 0 ? pendingFiles.length.toString() : '',
     }
   }, [
-    agentReferenceAudios.length,
-    agentReferenceImages.length,
-    agentReferenceVideos.length,
-    agentVisualReferenceCount,
-    agentReferences.length,
     isZh,
-    selectedAgentDisplayAudioLimit,
-    selectedAgentEffectiveImageLimit,
-    selectedAgentEffectiveVideoLimit,
-    selectedAgentReferenceLimits.audios,
-    selectedAgentReferenceLimits.images,
-    selectedAgentReferenceLimits.videos,
-    selectedAgentVisualReferenceLimit,
-    t,
+    pendingFiles.length,
   ])
 
   const webSearchMenuStatusLabel = useMemo(() => {
@@ -1955,7 +1897,9 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
       setMessages(normalizedMessages)
       setCollapsedCitationsByMessageId({})
       setActiveConversationId(conversationId)
-      setSelectedModelId(response.conversation.model.id)
+      if (response.conversation.model) {
+        setSelectedModelId(response.conversation.model.id)
+      }
       setSelectedProjectContextId(response.conversation.projectContext?.id ?? '')
       if (latestAutoAssistant?.autoProjectAgent) {
         setSelectedAutoProjectId(latestAutoAssistant.autoProjectAgent.projectId ?? '')
@@ -2680,10 +2624,12 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
         modelId: nextModelId,
       })
       appendOrReplaceConversation(updated)
-      setSelectedModelId(updated.model.id)
+      if (updated.model) {
+        setSelectedModelId(updated.model.id)
+      }
       setIsModelMenuOpen(false)
 
-      if (!updated.model.supportsImageInput && pendingImages.length > 0) {
+      if (!updated.model?.supportsImageInput && pendingImages.length > 0) {
         setPendingImages([])
         toast.error(t('errors.modelNoImageAfterSwitch'))
       }
@@ -3181,7 +3127,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
         : [...(override?.images ?? pendingImages)]
     const videos = useImageAgent ? [...(override?.referenceVideos ?? agentReferenceVideoUrls)] : []
     const audios = useImageAgent ? [...(override?.referenceAudios ?? agentReferenceAudioUrls)] : []
-    const files = useChatMode ? [...(override?.files ?? pendingFiles)] : []
+    const files = useAutoMode ? [] : [...(override?.files ?? pendingFiles)]
     const shouldUseWebSearch = useChatMode && (override?.webSearch ?? webSearchActive)
 
     if (!text && images.length === 0 && videos.length === 0 && audios.length === 0 && files.length === 0) {
@@ -3285,9 +3231,9 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
 
       if (!override) {
         setComposer('')
+        setPendingFiles([])
         if (!useImageAgent) {
           setPendingImages([])
-          setPendingFiles([])
         }
       }
 
@@ -3297,6 +3243,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
           ? {
               content: text || undefined,
               images: images.length > 0 ? images : undefined,
+              fileIds: files.length > 0 ? files.map((item) => item.id) : undefined,
               mediaAgent: {
                 enabled: true,
                 modelId: selectedAgentModelId,
@@ -3446,9 +3393,9 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
           )
           if (!override) {
             setComposer(text)
+            setPendingFiles(files)
             if (!useImageAgent) {
               setPendingImages(images)
-              setPendingFiles(files)
             }
           }
         }
@@ -3487,9 +3434,9 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
       if (!keptPartialMessage) {
         if (!override) {
           setComposer(text)
+          setPendingFiles(files)
           if (!useImageAgent) {
             setPendingImages(images)
-            setPendingFiles(files)
           }
         }
       }
@@ -4234,15 +4181,6 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
       setMergingStoryboardProjectId((current) => (current === projectId ? null : current))
     }
   }, [applyStoryboardStatuses, isZh, loadProjects])
-
-  const AgentUploadTileIcon =
-    agentUploadTileInfo.kind === 'image'
-      ? ImagePlus
-      : agentUploadTileInfo.kind === 'video'
-        ? Square
-        : agentUploadTileInfo.kind === 'audio'
-          ? FileText
-          : Plus
 
   if (!isReady) {
     return (
@@ -5866,6 +5804,35 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
                         </div>
                       ) : null}
 
+                      {pendingFiles.length > 0 ? (
+                        <div className={styles.pendingFiles}>
+                          {pendingFiles.map((file, index) => {
+                            const ext = normalizeExtension(file.fileName, file.extension)
+                            return (
+                              <div key={`${file.id}-${index}`} className={styles.pendingFileCard}>
+                                <div className={styles.pendingFileIcon}>
+                                  <FileIcon extension={ext} />
+                                </div>
+                                <div className={styles.pendingFileMeta}>
+                                  <p className={styles.pendingFileName}>{file.fileName}</p>
+                                  <p className={styles.pendingFileSub}>
+                                    {ext ? ext.toUpperCase() : 'FILE'} · {formatFileSize(file.fileSize)}
+                                  </p>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => setPendingFiles((prev) => prev.filter((_, i) => i !== index))}
+                                  className={styles.removePendingFileBtn}
+                                  title={t('removeFile')}
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      ) : null}
+
                       <div className={styles.imageComposerBody}>
                         <div className={styles.imageComposerRail}>
                           <div className={styles.toolsMenuWrap} ref={agentUploadMenuRef}>
@@ -5883,7 +5850,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
                               disabled={!canOpenAgentUploadMenu}
                             >
                               <span className={styles.imageComposerUploadTileInner}>
-                                <AgentUploadTileIcon className="h-5 w-5" />
+                                <Paperclip className="h-5 w-5" />
                                 <span className={styles.imageComposerUploadTitle}>{agentUploadTileInfo.label}</span>
                                 {agentUploadTileInfo.meta ? (
                                   <span className={styles.imageComposerUploadMeta}>{agentUploadTileInfo.meta}</span>
@@ -5893,7 +5860,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
 
                             {isAgentUploadMenuOpen ? (
                               <div className={styles.toolsMenu}>
-                                {selectedAgentReferenceLimits.images > 0 ? (
+                                {selectedAgentSupportsContextEditing && selectedAgentReferenceLimits.images > 0 ? (
                                   <button
                                     type="button"
                                     onClick={() => {
@@ -5916,7 +5883,30 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
                                   </button>
                                 ) : null}
 
-                                {selectedAgentReferenceLimits.videos > 0 ? (
+                                {supportsFileUpload ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      docInputRef.current?.click()
+                                      setIsAgentUploadMenuOpen(false)
+                                    }}
+                                    disabled={isUploadingFiles}
+                                    className={cn(
+                                      styles.toolsMenuItem,
+                                      isUploadingFiles && styles.toolsMenuItemDisabled
+                                    )}
+                                  >
+                                    <span className={styles.toolsMenuItemLeft}>
+                                      <Paperclip className="h-4 w-4" />
+                                      <span>{t('menuUploadFile')}</span>
+                                    </span>
+                                    <span className={styles.toolsMenuItemMeta}>
+                                      {isUploadingFiles ? t('uploadingFile') : pendingFiles.length > 0 ? pendingFiles.length : ''}
+                                    </span>
+                                  </button>
+                                ) : null}
+
+                                {selectedAgentSupportsContextEditing && selectedAgentReferenceLimits.videos > 0 ? (
                                   <button
                                     type="button"
                                     onClick={() => {
@@ -5939,7 +5929,7 @@ export function ChatContent({ initialConversationId }: ChatContentProps) {
                                   </button>
                                 ) : null}
 
-                                {selectedAgentReferenceLimits.audios > 0 ? (
+                                {selectedAgentSupportsContextEditing && selectedAgentReferenceLimits.audios > 0 ? (
                                   <button
                                     type="button"
                                     onClick={() => {

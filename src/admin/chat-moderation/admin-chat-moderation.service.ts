@@ -105,12 +105,14 @@ export class AdminChatModerationService {
             }
           : null,
         task: null,
-        model: {
-          id: item.model.id.toString(),
-          name: item.model.name,
-          modelKey: item.model.modelKey,
-          provider: item.model.provider,
-        },
+        model: item.model
+          ? {
+              id: item.model.id.toString(),
+              name: item.model.name,
+              modelKey: item.model.modelKey,
+              provider: item.model.provider,
+            }
+          : null,
       })),
       ...inputItems.map((item) => ({
         id: item.id.toString(),

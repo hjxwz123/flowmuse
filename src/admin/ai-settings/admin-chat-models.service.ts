@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { AiModelType, ApiChannelStatus } from '@prisma/client';
+import { AiModelType, ApiChannelStatus, Prisma, TaskStatus } from '@prisma/client';
 
+import { CreditsService } from '../../credits/credits.service';
 import { EncryptionService } from '../../encryption/encryption.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AiSettingsService } from '../../settings/ai-settings.service';
 import { SHARED_CHAT_CHANNEL_NAME, SHARED_CHAT_PROVIDER } from '../../settings/ai-chat.constants';
-import { AdminModelsService } from '../models/admin-models.service';
 import { ReorderModelsDto } from '../models/dto/reorder-models.dto';
 import { CreateChatModelDto } from './dto/create-chat-model.dto';
 import { UpdateChatModelDto } from './dto/update-chat-model.dto';
@@ -18,7 +18,7 @@ export class AdminChatModelsService {
     private readonly prisma: PrismaService,
     private readonly encryption: EncryptionService,
     private readonly aiSettings: AiSettingsService,
-    private readonly adminModelsService: AdminModelsService,
+    private readonly credits: CreditsService,
   ) {}
 
   async list() {
@@ -203,19 +203,55 @@ export class AdminChatModelsService {
       throw new BadRequestException('Invalid model id');
     }
 
-    const model = await this.prisma.aiModel.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        type: true,
-      },
-    });
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        const model = await tx.aiModel.findUnique({
+          where: { id },
+          select: {
+            id: true,
+            type: true,
+          },
+        });
 
-    if (!model || model.type !== AiModelType.chat) {
-      throw new BadRequestException('Chat model not found');
+        if (!model || model.type !== AiModelType.chat) {
+          throw new BadRequestException('Chat model not found');
+        }
+
+        const runningResearchTasks = await tx.researchTask.findMany({
+          where: { modelId: id, status: { in: [TaskStatus.pending, TaskStatus.processing] } },
+          select: { id: true, userId: true, taskNo: true, creditsCost: true },
+        });
+
+        for (const task of runningResearchTasks) {
+          await this.credits.refundCredits(tx, task.userId, task.id, `Refund removed chat model research task ${task.taskNo}`, {
+            scopeDescriptionContains: task.taskNo,
+            maxRefundAmount: typeof task.creditsCost === 'number' ? Math.max(task.creditsCost, 0) : undefined,
+          });
+        }
+
+        if (runningResearchTasks.length > 0) {
+          await tx.researchTask.updateMany({
+            where: { id: { in: runningResearchTasks.map((task) => task.id) } },
+            data: { status: TaskStatus.failed, stage: 'failed', errorMessage: 'MODEL_REMOVED', completedAt: new Date() },
+          });
+        }
+
+        await tx.chatConversation.updateMany({ where: { modelId: id }, data: { modelId: null } });
+        await tx.chatModerationLog.updateMany({ where: { modelId: id }, data: { modelId: null } });
+        await tx.inputModerationLog.updateMany({ where: { modelId: id }, data: { modelId: null } });
+        await tx.researchTask.updateMany({ where: { modelId: id }, data: { modelId: null } });
+        await tx.$executeRaw`UPDATE templates SET model_id = NULL WHERE model_id = ${id}`;
+
+        await tx.aiModel.delete({ where: { id } });
+      });
+    } catch (error: any) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
+        throw new BadRequestException('模型删除失败：仍存在外键引用，请检查其他业务表是否引用该模型。');
+      }
+      throw error;
     }
 
-    return this.adminModelsService.remove(id);
+    return { ok: true };
   }
 
   async reorder(dto: ReorderModelsDto) {
