@@ -919,6 +919,75 @@
   margin-top: 8px;
 }
 
+.statusPanel {
+  width: 100%;
+  text-align: left;
+}
+
+.statusIcon {
+  margin-bottom: 24px;
+  display: inline-flex;
+  height: 64px;
+  width: 64px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 22px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  box-shadow: var(--input-shadow);
+  color: var(--secondary-accent);
+}
+
+.statusIconGlyph,
+.statusSpinnerIcon {
+  height: 30px;
+  width: 30px;
+}
+
+.statusSpinnerIcon {
+  animation: spin 0.8s linear infinite;
+}
+
+.statusIconInfo {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.14), rgba(79, 70, 229, 0.06));
+  color: #2563eb;
+}
+
+.statusIconSuccess {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.16), rgba(14, 165, 233, 0.06));
+  color: #16a34a;
+}
+
+.statusIconError {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.14), rgba(248, 113, 113, 0.04));
+  color: #dc2626;
+}
+
+.statusIconLoading {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.14), rgba(59, 130, 246, 0.06));
+  color: #4f46e5;
+}
+
+.statusMeta {
+  margin: -16px 0 24px;
+  color: var(--helper-text);
+  font-family: var(--font-auth-ui);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.statusActions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 26px;
+}
+
+.statusActions .submitBtn,
+.statusActions .secondaryLink {
+  margin-top: 0;
+}
+
 .showcaseSection {
   position: relative;
   z-index: 5;
@@ -1075,6 +1144,22 @@
 
 :global(html.dark) .bannerSuccess .bannerBody {
   color: #dbeafe;
+}
+
+:global(html.dark) .statusIconInfo {
+  color: #93c5fd;
+}
+
+:global(html.dark) .statusIconSuccess {
+  color: #86efac;
+}
+
+:global(html.dark) .statusIconError {
+  color: #fca5a5;
+}
+
+:global(html.dark) .statusIconLoading {
+  color: #a5b4fc;
 }
 
 .animScene {

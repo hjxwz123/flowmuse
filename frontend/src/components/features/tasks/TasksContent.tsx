@@ -9,7 +9,10 @@ import { useTranslations, useLocale } from 'next-intl'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Columns2, Columns4, Images } from 'lucide-react'
 import { Button, Card, Loading, SkeletonTaskCard } from '@/components/ui'
-import { imageService, videoService, researchService, tasksService } from '@/lib/api/services'
+import { imageService } from '@/lib/api/services/images'
+import { researchService } from '@/lib/api/services/research'
+import { tasksService } from '@/lib/api/services/tasks'
+import { videoService } from '@/lib/api/services/videos'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { useInboxPolling } from '@/lib/hooks/useInboxPolling'
 import {
@@ -25,6 +28,7 @@ import type { ApiResearchTask } from '@/lib/api/types/research'
 import { cn } from '@/lib/utils/cn'
 import { PageTransition } from '@/components/shared/PageTransition'
 import { FadeIn } from '@/components/shared/FadeIn'
+import { WorkspaceEmptyState } from '@/components/features/shared/WorkspaceEmptyState'
 
 type TaskFilter = 'all' | TaskStatus
 type TaskColumnMode = 2 | 4
@@ -591,17 +595,13 @@ export function TasksContent() {
             </Button>
           </Card>
         ) : filteredTasks.length === 0 ? (
-          <Card className="text-center py-12">
-            <h3 className="font-display text-2xl text-stone-900 dark:text-stone-100 mb-2">
-              {t('empty.title')}
-            </h3>
-            <p className="font-ui text-stone-600 dark:text-stone-400 mb-6">
-              {t('empty.description')}
-            </p>
-            <Button onClick={() => router.push(`/${locale}/create`)}>
-              {t('empty.action')}
-            </Button>
-          </Card>
+          <WorkspaceEmptyState
+            icon={Images}
+            title={t('empty.title')}
+            description={t('empty.description')}
+            actionLabel={t('empty.action')}
+            onAction={() => router.push(`/${locale}/create`)}
+          />
         ) : (
           <>
             <FadeIn variant="fade" delay={0.2}>

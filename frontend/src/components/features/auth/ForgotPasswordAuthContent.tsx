@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { AlertCircle, ArrowRight, Mail, Send } from 'lucide-react'
+import { AlertCircle, ArrowRight, Mail, MailCheck } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 
 import { AuthExperienceField } from '@/components/features/auth/AuthExperienceField'
+import { AuthStatusContent } from '@/components/features/auth/AuthStatusContent'
 import { authService } from '@/lib/api/services/auth'
 import { cn } from '@/lib/utils/cn'
 
@@ -69,90 +70,87 @@ export function ForgotPasswordAuthContent({
     }
   }
 
+  if (isSuccess) {
+    return (
+      <AuthStatusContent
+        icon={MailCheck}
+        tone="info"
+        title={t('successTitle')}
+        message={t('successMessage')}
+        meta={resetToken ? t('devTokenHint') : undefined}
+        actions={[
+          ...(resetToken
+            ? [
+                {
+                  label: t('useTokenButton'),
+                  onClick: () => router.push(`/${locale}/auth/reset-password?token=${resetToken}`),
+                  icon: ArrowRight,
+                  variant: 'cyan' as const,
+                },
+              ]
+            : []),
+          {
+            label: t('backToLogin'),
+            href: `/${locale}/auth/login`,
+            variant: 'secondary' as const,
+          },
+        ]}
+      />
+    )
+  }
+
   return (
     <div className={styles.formBoxWide}>
       <h1 className={styles.title}>{t('title')}</h1>
       <p className={styles.subtitle}>{t('subtitle')}</p>
 
-      {isSuccess ? (
-        <div>
-          <div className={cn(styles.banner, styles.bannerSuccess)}>
-            <Send className={styles.bannerIcon} />
-            <div className={styles.bannerBody}>
-              <p className={styles.bannerTitle}>{t('successTitle')}</p>
-              <p className={styles.bannerText}>{t('successMessage')}</p>
-            </div>
+      <form onSubmit={handleSubmit} className={styles.form}>
+        {error ? (
+          <div className={cn(styles.banner, styles.bannerError)}>
+            <AlertCircle className={styles.bannerIcon} />
+            <div className={styles.bannerBody}>{error}</div>
           </div>
+        ) : null}
 
-          <div className={styles.successActions}>
-            {resetToken ? (
-              <button
-                type="button"
-                onClick={() => router.push(`/${locale}/auth/reset-password?token=${resetToken}`)}
-                className={cn(styles.submitBtn, styles.submitBtnCyan)}
-              >
-                <span>{t('useTokenButton')}</span>
-                <ArrowRight className="h-5 w-5" />
-              </button>
-            ) : null}
+        <AuthExperienceField
+          label={t('emailLabel')}
+          type="email"
+          value={email}
+          onChange={(value) => {
+            setEmail(value)
+            if (error) setError('')
+          }}
+          placeholder={t('emailPlaceholder')}
+          autoComplete="email"
+          autoCapitalize="off"
+          icon={Mail}
+        />
 
-            <Link href={`/${locale}/auth/login`} className={styles.secondaryLink}>
-              <span>{t('backToLogin')}</span>
-              <span className={styles.secondaryLinkAccent}>
-                {isZh ? '返回入口' : 'Back to access'}
-              </span>
-            </Link>
-          </div>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} className={styles.form}>
-          {error ? (
-            <div className={cn(styles.banner, styles.bannerError)}>
-              <AlertCircle className={styles.bannerIcon} />
-              <div className={styles.bannerBody}>{error}</div>
-            </div>
-          ) : null}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className={cn(styles.submitBtn, styles.submitBtnCyan)}
+        >
+          {isLoading ? (
+            <>
+              <span className={styles.spinner} />
+              <span>{t('submitting')}</span>
+            </>
+          ) : (
+            <>
+              <span>{t('submitButton')}</span>
+              <ArrowRight className="h-5 w-5" />
+            </>
+          )}
+        </button>
 
-          <AuthExperienceField
-            label={t('emailLabel')}
-            type="email"
-            value={email}
-            onChange={(value) => {
-              setEmail(value)
-              if (error) setError('')
-            }}
-            placeholder={t('emailPlaceholder')}
-            autoComplete="email"
-            autoCapitalize="off"
-            icon={Mail}
-          />
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={cn(styles.submitBtn, styles.submitBtnCyan)}
-          >
-            {isLoading ? (
-              <>
-                <span className={styles.spinner} />
-                <span>{t('submitting')}</span>
-              </>
-            ) : (
-              <>
-                <span>{t('submitButton')}</span>
-                <ArrowRight className="h-5 w-5" />
-              </>
-            )}
-          </button>
-
-          <Link href={`/${locale}/auth/login`} className={styles.secondaryLink}>
-            <span>{t('backToLogin')}</span>
-            <span className={styles.secondaryLinkAccent}>
-              {isZh ? '返回入口' : 'Back to access'}
-            </span>
-          </Link>
-        </form>
-      )}
+        <Link href={`/${locale}/auth/login`} className={styles.secondaryLink}>
+          <span>{t('backToLogin')}</span>
+          <span className={styles.secondaryLinkAccent}>
+            {isZh ? '返回入口' : 'Back to access'}
+          </span>
+        </Link>
+      </form>
     </div>
   )
 }

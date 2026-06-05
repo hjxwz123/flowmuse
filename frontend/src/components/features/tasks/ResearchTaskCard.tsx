@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { Button, Card } from '@/components/ui'
 import { ChatMarkdown } from '@/components/features/chat/ChatMarkdown'
 import type { ApiResearchTask } from '@/lib/api/types/research'
-import { researchService } from '@/lib/api/services'
+import { researchService } from '@/lib/api/services/research'
 import { cn } from '@/lib/utils/cn'
 import { exportResearchReportToWord } from '@/lib/utils/exportResearchWord'
 

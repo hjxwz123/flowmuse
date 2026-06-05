@@ -22,7 +22,8 @@ import { Card, CardContent } from '@/components/ui/Card'
 import { FileDropzone } from '@/components/ui/FileDropzone'
 import { Modal } from '@/components/ui/Modal'
 import { Textarea } from '@/components/ui/Textarea'
-import { projectsService } from '@/lib/api/services'
+import { WorkspaceEmptyState } from '@/components/features/shared/WorkspaceEmptyState'
+import { projectsService } from '@/lib/api/services/projects'
 import type { ProjectQuotaSummary, ProjectSummary } from '@/lib/api/types/projects'
 import { useAuth } from '@/lib/hooks/useAuth'
 
@@ -308,21 +309,13 @@ export function ProjectsContent() {
               </div>
             </section>
           ) : projects.length === 0 ? (
-            <section className="rounded-[30px] border border-dashed border-stone-300 bg-white/75 px-6 py-16 text-center dark:border-stone-700 dark:bg-stone-900/60">
-              <FolderOpen className="mx-auto mb-4 h-14 w-14 text-stone-400 dark:text-stone-500" />
-              <p className="text-lg font-semibold text-stone-900 dark:text-stone-100">
-                {t('projectList.empty')}
-              </p>
-              <p className="mx-auto mt-2 max-w-xl text-sm text-stone-500 dark:text-stone-400">
-                {t('projectList.emptyDescription')}
-              </p>
-              <div className="mt-6">
-                <Button onClick={() => setShowCreateProjectModal(true)} className="gap-2 px-5">
-                  <Plus className="h-4 w-4" />
-                  {t('createProject.action')}
-                </Button>
-              </div>
-            </section>
+            <WorkspaceEmptyState
+              icon={FolderOpen}
+              title={t('projectList.empty')}
+              description={t('projectList.emptyDescription')}
+              actionLabel={t('createProject.action')}
+              onAction={() => setShowCreateProjectModal(true)}
+            />
           ) : (
             <section className="space-y-3">
               <div className="flex items-center justify-between gap-3">
